@@ -1,6 +1,8 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
+import logoLight from "./logo-light.svg";
+import logoDark from "./logo-dark.svg";
 
 export default function Navbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -31,11 +33,12 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-colors duration-300">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link
-          to="/"
-          className="text-2xl font-bold text-primary dark:text-white"
-        >
-          Squad Champs
+        <Link to="/" className="flex items-center gap-2">
+          <img
+            src={theme === "dark" ? logoLight : logoLight}
+            alt="Squad Champs Logo"
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Links */}

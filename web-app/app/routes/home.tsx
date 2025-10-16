@@ -7,8 +7,51 @@ import Navbar from "app/components/Navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Squad Champs – Build Your NBA/NFL Fantasy Team" },
+    {
+      name: "description",
+      content:
+        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+    },
+    {
+      name: "keywords",
+      content:
+        "fantasy basketball, fantasy football, NBA, NFL, fantasy sports, leagues, squads, live stats",
+    },
+    { name: "author", content: "Squad Champs Team" },
+
+    // Open Graph (for social media sharing)
+    {
+      property: "og:title",
+      content: "Squad Champs – Build Your NBA/NFL Fantasy Team",
+    },
+    {
+      property: "og:description",
+      content:
+        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://squadchamps.com" },
+    {
+      property: "og:image",
+      content: "https://squadchamps.com/public/logo.svg",
+    },
+
+    // Twitter Card
+    { name: "twitter:card", content: "summary_large_image" },
+    {
+      name: "twitter:title",
+      content: "Squad Champs – Build Your NBA/NFL Fantasy Team",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+    },
+    {
+      name: "twitter:image",
+      content: "https://squadchamps.com/public/logo.svg",
+    }, // optional
   ];
 }
 

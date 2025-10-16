@@ -13,11 +13,5 @@
     "types": [
         "./worker-configuration.d.ts"
     ],
-    "baseUrl": "./app",
-    "paths": {
-      "~/*": ["*"],
-      "@/*": ["*"]
-    },
-    "include": ["app"]
   }
 }

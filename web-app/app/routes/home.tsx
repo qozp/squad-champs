@@ -1,9 +1,9 @@
 import type { Route } from "./+types/home";
 import { Link } from "react-router";
 import { ArrowRight, TrendingUp, Users, Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import Navbar from "@/components/Navbar";
+import { Button } from "app/components/ui/button";
+import { Card, CardContent } from "app/components/ui/card";
+import Navbar from "app/components/Navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [

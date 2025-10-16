@@ -13,9 +13,7 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "app"),
-    },
-  },
+  optimizeDeps: {
+    exclude: ['js-big-decimal']
+  }
 });

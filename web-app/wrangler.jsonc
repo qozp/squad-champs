@@ -15,7 +15,7 @@
 	},
 	"routes": [
 		{
-		"pattern": "shop.example.com",
+		"pattern": "squadchamps.com",
 		"custom_domain": true
 		}
   	]

@@ -17,6 +17,10 @@
 		{
 		"pattern": "squadchamps.com",
 		"custom_domain": true
+		},
+		{
+		"pattern": "www.squadchamps.com",
+		"custom_domain": true
 		}
   	]
 	/**

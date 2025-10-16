@@ -1,32 +1,30 @@
+import type { Route } from "./+types/home";
+import { Link } from "react-router";
+import { ArrowRight, TrendingUp, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, TrendingUp, Users, Trophy } from "lucide-react";
-import { Link } from "react-router";
-import { useTheme } from "@/contexts/ThemeContext";
 import Navbar from "@/components/Navbar";
 
-export function meta() {
+export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Squad Champs - Build Your Fantasy Team" },
-    {
-      name: "description",
-      content: "Create your NBA/NFL fantasy squad and compete with friends!",
-    },
+    { title: "New React Router App" },
+    { name: "description", content: "Welcome to React Router!" },
   ];
 }
 
+export function loader({ context }: Route.LoaderArgs) {
+  return { message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE };
+}
+
 export default function Home() {
-  const { toggleTheme } = useTheme();
+  // const { toggleTheme } = useTheme();
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300 dark:bg-gray-900">
       <Navbar />
 
       {/* Hero Section */}
-      <section
-        className="relative overflow-hidden py-20 sm:py-32 
-  bg-blue-600 dark:bg-gray-800 transition-colors duration-300"
-      >
+      <section className="relative overflow-hidden py-20 sm:py-32 bg-blue-600 dark:bg-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4 text-center text-white">
           <h1 className="mb-6 text-5xl font-bold sm:text-6xl lg:text-7xl">
             Squad Champs

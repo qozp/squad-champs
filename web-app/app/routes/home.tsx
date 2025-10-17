@@ -64,8 +64,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300 dark:bg-gray-900">
-      <Navbar />
-
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 sm:py-32 bg-blue-600 dark:bg-gray-800 transition-colors duration-300">
         <div className="container mx-auto px-4 text-center text-white">

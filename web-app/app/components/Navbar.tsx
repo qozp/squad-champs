@@ -31,16 +31,12 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-colors duration-300">
+    <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md z-50 transition-colors duration-300">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <img
-            src={theme === "dark" ? logoDark : logoLight}
-            alt="Squad Champs Logo"
-            className="h-8 w-auto"
-          />
-          <span className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+          <img src={logoDark} alt="Squad Champs Logo" className="h-8 w-auto" />
+          <span className="font-semibold text-lg text-gray-100">
             Squad Champs
           </span>
         </Link>
@@ -53,7 +49,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-800 dark:text-gray-200"
+          className="md:hidden text-gray-200"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -66,7 +62,7 @@ export default function Navbar() {
           menuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="flex flex-col items-center gap-4 py-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+        <div className="flex flex-col items-center gap-4 py-4 border-t border-gray-700 bg-gray-900">
           <NavLinks onClick={() => setMenuOpen(false)} />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
@@ -78,8 +74,7 @@ export default function Navbar() {
 /* --- Reusable Components --- */
 
 function NavLinks({ onClick }: { onClick?: () => void }) {
-  const base =
-    "text-gray-800 dark:text-gray-200 hover:text-primary dark:hover:text-primary transition-colors";
+  const base = "text-gray-200 hover:text-primary transition-colors";
   return (
     <>
       <Link to="/" onClick={onClick} className={base}>

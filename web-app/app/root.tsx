@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import Navbar from "./components/Navbar";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -33,7 +34,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        {/* ✅ Global Navbar */}
+        <Navbar />
+
+        {/* ✅ Page content goes below */}
+        <main className="">{children}</main>
+
+        <footer className="py-4 text-center text-sm opacity-70">
+          © {new Date().getFullYear()} Squad Champs
+        </footer>
+
         <ScrollRestoration />
         <Scripts />
       </body>

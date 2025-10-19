@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
+import { Icon } from 'astro-icon/components'
 ---
 
 <html lang="en">
@@ -13,11 +14,35 @@ import Footer from "../components/Footer.astro";
     <main class="text-center px-6 py-24">
       <h1 class="text-5xl font-bold mb-4">Fantasy Sports, Reinvented</h1>
       <p class="text-lg mb-6 max-w-2xl mx-auto">
-        Build your dream team. Compete with friends. Dominate your league — SquadChamps brings the thrill of fantasy sports to the next level.
+        Build your dream team. Compete with friends. Dominate your league.
+        SquadChamps brings the thrill of fantasy sports to the next level.
       </p>
-      <a href="https://nba.squadchamps.com" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition">
-        Launch NBA App
-      </a>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="https://nba.squadchamps.com"
+          class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition"
+        >
+          <Icon name="mdi:basketball" class="w-6 h-6" />
+          Launch NBA App
+        </a>
+
+        <a
+          href="#"
+          class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-green-700 transition"
+        >
+          <Icon name="mdi:soccer" class="w-6 h-6" />
+          Launch Soccer App
+        </a>
+
+        <a
+          href="#"
+          class="flex items-center gap-2 bg-gray-700 text-white px-6 py-3 rounded-lg text-lg hover:bg-gray-800 transition"
+        >
+          <Icon name="mdi:football" class="w-6 h-6" />
+          Launch NFL App
+        </a>
+      </div>
     </main>
     <Footer />
   </body>

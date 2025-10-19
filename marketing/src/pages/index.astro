@@ -1,0 +1,49 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import { Icon } from 'astro-icon/components'
+---
+
+<html lang="en">
+  <head>
+    <title>Squad Champs</title>
+  </head>
+  <body class="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <Navbar />
+    <main class="flex-grow text-center px-6 py-24">
+      <h1 class="text-5xl font-bold mb-4">Fantasy Sports, Reinvented</h1>
+      <p class="text-lg mb-6 max-w-2xl mx-auto">
+        Build your dream team. Compete with friends. Dominate your league.
+        SquadChamps brings the thrill of fantasy sports to the next level.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="https://nba.squadchamps.com"
+          class="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-orange-600 transition"
+        >
+          <Icon name="mdi:basketball" class="w-6 h-6" />
+          NBA Squad Champs
+        </a>
+
+        <a
+          href="#"
+          class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
+        >
+          <Icon name="mdi:soccer" class="w-6 h-6" />
+          Coming Soon...
+        </a>
+
+        <a
+          href="#"
+          class="flex items-center gap-2 bg-yellow-800 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
+        >
+          <Icon name="mdi:football" class="w-6 h-6" />
+          Coming Soon...
+        </a>
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>

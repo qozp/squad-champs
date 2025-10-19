@@ -15,11 +15,7 @@
 	},
 	"routes": [
 		{
-		"pattern": "squadchamps.com",
-		"custom_domain": true
-		},
-		{
-		"pattern": "www.squadchamps.com",
+		"pattern": "play.squadchamps.com",
 		"custom_domain": true
 		}
   	]

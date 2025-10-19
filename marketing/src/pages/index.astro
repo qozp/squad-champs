@@ -7,11 +7,11 @@ import { Icon } from 'astro-icon/components'
 
 <html lang="en">
   <head>
-    <title>SquadChamps | Fantasy Sports Reimagined</title>
+    <title>Squad Champs</title>
   </head>
-  <body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+  <body class="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <Navbar />
-    <main class="text-center px-6 py-24">
+    <main class="flex-grow text-center px-6 py-24">
       <h1 class="text-5xl font-bold mb-4">Fantasy Sports, Reinvented</h1>
       <p class="text-lg mb-6 max-w-2xl mx-auto">
         Build your dream team. Compete with friends. Dominate your league.
@@ -21,26 +21,26 @@ import { Icon } from 'astro-icon/components'
       <div class="flex flex-wrap justify-center gap-4">
         <a
           href="https://nba.squadchamps.com"
-          class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition"
+          class="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-orange-600 transition"
         >
           <Icon name="mdi:basketball" class="w-6 h-6" />
-          Launch NBA App
+          NBA Squad Champs
         </a>
 
         <a
           href="#"
-          class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-green-700 transition"
+          class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
         >
           <Icon name="mdi:soccer" class="w-6 h-6" />
-          Launch Soccer App
+          Coming Soon...
         </a>
 
         <a
           href="#"
-          class="flex items-center gap-2 bg-gray-700 text-white px-6 py-3 rounded-lg text-lg hover:bg-gray-800 transition"
+          class="flex items-center gap-2 bg-yellow-800 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
         >
           <Icon name="mdi:football" class="w-6 h-6" />
-          Launch NFL App
+          Coming Soon...
         </a>
       </div>
     </main>

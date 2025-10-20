@@ -32,7 +32,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md z-50 transition-colors duration-300">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logoDark} alt="Squad Champs Logo" className="h-8 w-auto" />

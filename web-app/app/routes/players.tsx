@@ -1,6 +1,6 @@
-import { Card, CardContent } from "app/components/ui/card";
-import { Button } from "app/components/ui/button";
-import Navbar from "app/components/Navbar";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import Navbar from "~/components/Navbar";
 import { Link } from "react-router";
 
 export function meta() {

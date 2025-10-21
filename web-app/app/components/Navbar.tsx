@@ -31,12 +31,12 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md z-50 transition-colors duration-300">
-      <div className="container mx-auto py-4 flex justify-between items-center">
+    <nav className="bg-navbar shadow-xl transition-colors duration-300">
+      <div className="container mx-auto py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logoDark} alt="Squad Champs Logo" className="h-8 w-auto" />
-          <span className="font-semibold text-lg text-gray-100">
+          <span className="font-semibold text-lg text-navbar">
             Squad Champs
           </span>
         </Link>
@@ -74,7 +74,7 @@ export default function Navbar() {
 /* --- Reusable Components --- */
 
 function NavLinks({ onClick }: { onClick?: () => void }) {
-  const base = "text-gray-200 hover:text-primary transition-colors";
+  const base = "text-gray-200 hover:text-navbar/50 transition-colors";
   return (
     <>
       <Link to="/" onClick={onClick} className={base}>

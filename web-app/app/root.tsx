@@ -33,14 +33,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="flex flex-col min-h-screen">
         {/* ✅ Global Navbar */}
         <Navbar />
 
-        {/* ✅ Page content goes below */}
-        <main className="">{children}</main>
+        {/* ✅ Page content grows to fill remaining space */}
+        <main className="flex-1 flex flex-col">{children}</main>
 
-        <footer className="py-4 text-center text-sm opacity-70">
+        <footer className="bg-background/25 py-4 text-center text-sm">
           © {new Date().getFullYear()} Squad Champs
         </footer>
 
@@ -50,6 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
+
 
 export default function App() {
   return <Outlet />;

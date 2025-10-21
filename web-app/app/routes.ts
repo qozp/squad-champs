@@ -1,7 +1,7 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
-    route("basketball", "routes/home.tsx"),
+    index("routes/home.tsx"),
     route("players", "routes/players.tsx"),
     route("squad", "routes/squad.tsx"),
     // Add more pages here

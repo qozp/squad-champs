@@ -1,6 +1,12 @@
 import type { Route } from "./+types/home";
 import { Link } from "react-router";
-import { ArrowRight, TrendingUp, Users, Trophy } from "lucide-react";
+import {
+  ArrowRight,
+  TrendingUp,
+  Users,
+  Trophy,
+  DollarSign,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import Navbar from "~/components/Navbar";
@@ -93,25 +99,25 @@ export default function Home() {
             {[
               {
                 icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Create a Squad",
-                desc: "Build and manage your fantasy squad with player stats and performance tracking.",
+                title: "Squad Mangement",
+                desc: "Build your fantasy squad under a budget, manage with trades, and start a weekly lineup.",
               },
               {
                 icon: <Trophy className="h-6 w-6 text-secondary" />,
                 title: "League Competition",
-                desc: "Create or join leagues, compete with friends, and climb the leaderboard to claim victory.",
+                desc: "Create or join leagues, compete with friends, and climb the global leaderboard.",
               },
               {
-                icon: <TrendingUp className="h-6 w-6 text-secondary" />,
-                title: "Fantasy Stats",
-                desc: "Track player performance with detailed stats, trends, and insights to make informed decisions.",
+                icon: <DollarSign className="h-6 w-6 text-secondary" />,
+                title: "Prizes",
+                desc: "Earn rewards for being the top weekly and/or seasonal scorer. Partipation is completely free.",
               },
             ].map((f, i) => (
               <Card
                 key={i}
                 className="border border-border bg-card text-card-foreground transition-colors duration-300"
               >
-                <CardContent className="p-6 text-center">
+                <CardContent className="p-6 text-left">
                   <div className="w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center bg-background">
                     {f.icon}
                   </div>

@@ -2,48 +2,101 @@
 import "../styles/global.css";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
-import { Icon } from 'astro-icon/components'
+import { Icon } from "astro-icon/components";
 ---
 
 <html lang="en">
   <head>
     <title>Squad Champs</title>
   </head>
-  <body class="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+  <body
+    class="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100"
+  >
     <Navbar />
-    <main class="flex-grow text-center px-6 py-24">
-      <h1 class="text-5xl font-bold mb-4">Fantasy Sports, Reinvented</h1>
-      <p class="text-lg mb-6 max-w-2xl mx-auto">
-        Build your dream team. Compete with friends. Dominate your league.
-        SquadChamps brings the thrill of fantasy sports to the next level.
-      </p>
 
-      <div class="flex flex-wrap justify-center gap-4">
-        <a
-          href="https://basketball.squadchamps.com/"
-          class="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-orange-600 transition"
-        >
-          <Icon name="mdi:basketball" class="w-6 h-6" />
-          NBA Squad Champs
-        </a>
+    <main class="flex-grow text-center px-6 py-10 space-y-12">
+      <!-- Hero Section -->
+      <section class="space-y-4">
+        <h1 class="text-5xl font-bold">Fantasy Sports, Reinvented</h1>
+        <p class="text-lg max-w-2xl mx-auto">
+          Build your dream team. Dominate your friends. Compete globally.
+          <br />SquadChamps brings the thrill of fantasy sports to the next
+          level.
+        </p>
 
-        <a
-          href="#"
-          class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
-        >
-          <Icon name="mdi:soccer" class="w-6 h-6" />
-          Coming Soon...
-        </a>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a
+            href="https://basketball.squadchamps.com/"
+            class="flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-orange-600 transition"
+          >
+            <Icon name="mdi:basketball" class="w-6 h-6" />
+            NBA Squad Champs
+          </a>
 
-        <a
-          href="#"
-          class="flex items-center gap-2 bg-yellow-800 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
-        >
-          <Icon name="mdi:football" class="w-6 h-6" />
-          Coming Soon...
-        </a>
-      </div>
+          <a
+            href="#"
+            class="flex items-center gap-2 bg-yellow-800 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
+          >
+            <Icon name="mdi:football" class="w-6 h-6" />
+            Coming Soon...
+          </a>
+
+          <a
+            href="#"
+            class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg text-lg opacity-50 cursor-default"
+          >
+            <Icon name="mdi:baseball" class="w-6 h-6" />
+            Coming Soon...
+          </a>
+        </div>
+      </section>
+
+      <!-- About the Game Section -->
+      <section class="max-w-3xl mx-auto space-y-4 text-left">
+        <h2 class="text-3xl font-semibold">What is Squad Champs?</h2>
+        <p>
+          SquadChamps is a new type of fantasy game inspired by <a
+            href="https://fantasy.premierleague.com/"
+            target="_blank"
+            class="text-blue-600 hover:underline"
+          >
+            Fantasy Premier League.
+          </a> Build a squad with an initial budget, manage your squad week-to-week
+          with lineups and trades, and compete over the course of a full season with
+          global and friendly leagues.
+        </p>
+        <p>
+          Each week, your players earn points based on real-life performance.
+          The challenge is to assemble the best possible team while staying
+          within your budget. Some key featues:
+        </p>
+
+        <ul class="list-disc list-inside space-y-2">
+          <li>
+            <strong>Strategy:</strong> No draft. Create your squad from an initial
+            budget.
+          </li>
+          <li>
+            <strong>Season-long competition:</strong> Make trades throughout the
+            season within your budget, and start a lineup from your squad every week
+            to earn points.
+          </li>
+          <li>
+            <strong>Compete globally:</strong> Join leagues with friends or other
+            players around the world.
+          </li>
+          <li>
+            <strong>Win:</strong> Potential prizes for the top weekly and seasonal
+            scores.
+          </li>
+          <li>
+            <strong>100% Free, Forever!</strong> (As long as this is not sold to
+            someone else)
+          </li>
+        </ul>
+      </section>
     </main>
+
     <Footer />
   </body>
 </html>

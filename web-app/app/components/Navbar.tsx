@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import logoLight from "../assets/logo-light.svg";
@@ -7,6 +7,7 @@ import logoDark from "../assets/logo-dark.svg";
 export default function Navbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -31,19 +32,23 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-navbar shadow-xl transition-colors duration-300">
+    <nav className="bg-navbar shadow-md transition-colors duration-300">
       <div className="container mx-auto py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={logoDark} alt="Squad Champs Logo" className="h-8 w-auto" />
-          <span className="font-semibold text-lg text-navbar">
+          <img
+            src={theme === "dark" ? logoDark : logoLight}
+            alt="Squad Champs Logo"
+            className="h-8 w-auto"
+          />
+          <span className="font-semibold text-lg text-navbar-text">
             Squad Champs
           </span>
         </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLinks />
+          <NavLinks currentPath={location.pathname} />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -62,8 +67,11 @@ export default function Navbar() {
           menuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="flex flex-col items-center gap-4 py-4 border-t border-gray-700 bg-gray-900">
-          <NavLinks onClick={() => setMenuOpen(false)} />
+        <div className="flex flex-col items-center gap-4 py-4 border-t border-border bg-background/95 backdrop-blur-sm">
+          <NavLinks
+            currentPath={location.pathname}
+            onClick={() => setMenuOpen(false)}
+          />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
@@ -72,21 +80,43 @@ export default function Navbar() {
 }
 
 /* --- Reusable Components --- */
+function NavLinks({
+  onClick,
+  currentPath,
+}: {
+  onClick?: () => void;
+  currentPath?: string;
+}) {
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/squad", label: "Squad" },
+    { href: "/players", label: "Players" },
+  ];
 
-function NavLinks({ onClick }: { onClick?: () => void }) {
-  const base = "text-gray-200 hover:text-navbar/50 transition-colors";
   return (
-    <>
-      <Link to="/" onClick={onClick} className={base}>
-        Home
-      </Link>
-      <Link to="/squad" onClick={onClick} className={base}>
-        Squad
-      </Link>
-      <Link to="/players" onClick={onClick} className={base}>
-        Players
-      </Link>
-    </>
+    <div className="flex items-center gap-4">
+      {links.map((link) => {
+        const isActive = currentPath === link.href;
+        return (
+          <Link
+            key={link.href}
+            to={link.href}
+            onClick={onClick}
+            className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+              ${
+                isActive
+                  ? "bg-gray-600 grayscale-50 text-navbar"
+                  : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+              }`}
+          >
+            {link.label}
+            {isActive && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+            )}
+          </Link>
+        );
+      })}
+    </div>
   );
 }
 

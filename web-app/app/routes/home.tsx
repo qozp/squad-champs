@@ -99,7 +99,7 @@ export default function Home() {
             {[
               {
                 icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Squad Mangement",
+                title: "Squad Management",
                 desc: "Build your fantasy squad under a budget, manage with trades, and start a weekly lineup.",
               },
               {
@@ -121,8 +121,10 @@ export default function Home() {
                   <div className="w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center bg-background">
                     {f.icon}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
-                  <p className="text-muted-foreground">{f.desc}</p>
+                  <h3 className="text-xl text-foreground font-semibold mb-2">
+                    {f.title}
+                  </h3>
+                  <p className="text-foreground">{f.desc}</p>
                 </CardContent>
               </Card>
             ))}

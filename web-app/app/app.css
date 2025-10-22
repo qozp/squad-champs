@@ -1,4 +1,4 @@
-@import "tailwindcss" source(".");
+@import "tailwindcss";
 @import "tw-animate-css";
 
 /* Dark variant support */
@@ -84,7 +84,7 @@ body {
 /* 🌚 DARK MODE */
 .dark {
   --background: #202124; /* set */
-  --foreground: #e2e8f0;
+  --foreground: #f5f0e6;
   --secondary-foreground: #cbd5e1;
   --primary: #282828;
   --secondary: #5586d6;
@@ -94,13 +94,13 @@ body {
 
   --notification-icon: #e2e8f0;
 
-  --card: #2b302c;
+  --card: #2a2d3f;
   --card-foreground: #e2e8f0;
 
   --accent: #334155;
   --accent-foreground: #e2e8f0;
   --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  --muted-foreground: #e3d9ce;
   --border: #565656; /* set */
   --input: #475569;
   --ring: #64748b;

@@ -83,7 +83,7 @@ body {
 
 /* 🌚 DARK MODE */
 .dark {
-  --background: #202124; /* set */
+  --background: #3c3c3c; /* set */
   --foreground: #f5f0e6;
   --secondary-foreground: #cbd5e1;
   --primary: #282828;

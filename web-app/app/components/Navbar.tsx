@@ -67,7 +67,7 @@ export default function Navbar() {
           menuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="flex flex-col items-center gap-4 py-4 border-t border-border bg-background/95 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-4 py-4 border-t border-border bg-navbar/95 backdrop-blur-sm">
           <NavLinks
             currentPath={location.pathname}
             onClick={() => setMenuOpen(false)}

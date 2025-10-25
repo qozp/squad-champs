@@ -1,13 +1,18 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import logoLight from "../assets/logo-light.svg";
 import logoDark from "../assets/logo-dark.svg";
+import { useUser } from "~/contexts/SessionProvider";
+import { supabase } from "~/lib/supabaseClient";
+import { Button } from "./ui/button";
 
 export default function Navbar() {
+  const user = useUser();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -31,6 +36,11 @@ export default function Navbar() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
   return (
     <nav className="bg-navbar shadow-md transition-colors duration-300">
       <div className="container mx-auto py-2 flex justify-between items-center">
@@ -48,7 +58,19 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLinks currentPath={location.pathname} />
+          <NavLinks currentPath={location.pathname} user={user} />
+          {user ? (
+            <Button onClick={handleLogout} variant="default">
+              Logout
+            </Button>
+          ) : (
+            <Link
+              to="/login"
+              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
+            >
+              Login
+            </Link>
+          )}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -71,7 +93,24 @@ export default function Navbar() {
           <NavLinks
             currentPath={location.pathname}
             onClick={() => setMenuOpen(false)}
+            user={user}
           />
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
+            >
+              Login / Sign In
+            </Link>
+          )}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
@@ -83,14 +122,17 @@ export default function Navbar() {
 function NavLinks({
   onClick,
   currentPath,
+  user,
 }: {
   onClick?: () => void;
   currentPath?: string;
+  user?: any;
 }) {
   const links = [
     { href: "/", label: "Home" },
-    { href: "/squad", label: "Squad" },
+    ...(user ? [{ href: "/squad", label: "Squad" }] : []),
     { href: "/players", label: "Players" },
+    ...(user ? [{ href: "/profile", label: "Profile" }] : []),
   ];
 
   return (

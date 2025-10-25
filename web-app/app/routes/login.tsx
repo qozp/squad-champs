@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSession, useUser } from "~/contexts/SessionProvider";
 
 export default function Login() {
-  const user = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +21,6 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div>
-        <h1>Welcome {user?.email}</h1>
-        <p>User ID: {user?.id}</p>
-      </div>
       <form onSubmit={handleLogin} className="flex flex-col gap-2 w-64">
         <input
           type="email"

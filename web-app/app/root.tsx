@@ -10,7 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import Navbar from "./components/Navbar";
 import "./app.css";
-import { SessionProvider } from "./contexts/SessionProvider";
+import { SessionProvider, useSession } from "./contexts/SessionProvider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,9 +35,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        {/* ✅ Global Navbar */}
-        <Navbar />
-
         {/* ✅ Page content grows to fill remaining space */}
         <main className="bg-background flex-1 flex flex-col">{children}</main>
 
@@ -55,9 +52,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <SessionProvider>
-      <Outlet />
+      <SessionReady>
+        <Navbar />
+        <Layout>
+          <Outlet />
+        </Layout>
+      </SessionReady>
     </SessionProvider>
   );
+}
+
+/** ✅ Wait for the session before rendering anything that depends on auth */
+function SessionReady({ children }: { children: React.ReactNode }) {
+  const { loading } = useSession();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import Navbar from "./components/Navbar";
 import "./app.css";
+import { SessionProvider } from "./contexts/SessionProvider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -38,9 +39,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
 
         {/* ✅ Page content grows to fill remaining space */}
-        <main className="flex-1 flex flex-col">{children}</main>
+        <main className="bg-background flex-1 flex flex-col">{children}</main>
 
-        <footer className="bg-background/25 py-4 text-center text-sm">
+        <footer className="bg-background/50 py-4 text-center text-sm">
           © {new Date().getFullYear()} Squad Champs
         </footer>
 
@@ -51,9 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-
 export default function App() {
-  return <Outlet />;
+  return (
+    <SessionProvider>
+      <Outlet />
+    </SessionProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

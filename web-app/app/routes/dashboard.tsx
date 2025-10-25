@@ -1,9 +1,12 @@
-import { useUser } from "../root";
+import { useSession } from "../contexts/SessionProvider";
 
 export default function Dashboard() {
-  const { user } = useUser();
+  const { user, session, loading } = useSession();
 
-  if (!user) return <p>You must be logged in.</p>;
-
-  return <p>Welcome back, {user.email}!</p>;
+  return (
+    <div>
+      <h1>Welcome {user?.email}</h1>
+      <p>User ID: {user?.id}</p>
+    </div>
+  );
 }

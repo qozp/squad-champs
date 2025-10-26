@@ -4,7 +4,7 @@ import { Sun, Moon, Menu, X } from "lucide-react";
 import logoLight from "../assets/logo-light.svg";
 import logoDark from "../assets/logo-dark.svg";
 import { useUser } from "~/contexts/SessionProvider";
-import { supabase } from "~/lib/supabaseClient";
+import { getSupabaseClient } from "~/lib/supabaseClient";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const supabase = getSupabaseClient();
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {

@@ -4,7 +4,6 @@ declare module "react-router" {
   export interface AppLoadContext {
     cloudflare: {
       env: Env;
-      ctx: ExecutionContext;
     };
   }
 }
@@ -15,9 +14,9 @@ const requestHandler = createRequestHandler(
 );
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request: Request, env: Env) {
     return requestHandler(request, {
-      cloudflare: { env, ctx },
+      cloudflare: { env },
     });
   },
-} satisfies ExportedHandler<Env>;
+};

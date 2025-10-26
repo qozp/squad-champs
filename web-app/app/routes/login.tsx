@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { supabase } from "../lib/supabaseClient";
+import { getSupabaseClient } from "../lib/supabaseClient";
 import { useState } from "react";
 import { useSession, useUser } from "~/contexts/SessionProvider";
 
@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const supabase = getSupabaseClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

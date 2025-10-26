@@ -1,6 +1,6 @@
 // src/contexts/SessionProvider.tsx
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { getSupabaseClient } from "../lib/supabaseClient";
 import type { Session, User } from "@supabase/supabase-js";
 
 type SessionContextType = {
@@ -16,6 +16,7 @@ const SessionContext = createContext<SessionContextType>({
 });
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
+  const supabase = getSupabaseClient();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);

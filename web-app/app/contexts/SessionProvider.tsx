@@ -74,7 +74,7 @@ export function withSessionRedirect(Page: React.ComponentType) {
       }
     }, [loading, session, navigate, location]);
 
-    if (loading || !session) {
+    if (loading) {
       return (
         <div className="flex items-center justify-center min-h-screen">
           <p className="text-muted-foreground">Loading...</p>
@@ -85,6 +85,7 @@ export function withSessionRedirect(Page: React.ComponentType) {
     return <Page />;
   };
 }
+
 
 export function useSession() {
   return useContext(SessionContext);

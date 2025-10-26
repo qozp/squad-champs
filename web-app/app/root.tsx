@@ -10,7 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import Navbar from "./components/navbar";
 import "./app.css";
-import { SessionProvider } from "./contexts/SessionProvider";
+import { SessionProvider, useSession } from "./contexts/SessionProvider";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,7 +25,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export default function App() {
   return (
     <html lang="en">
       <head>
@@ -35,15 +35,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        {/* ✅ Global Navbar */}
-        <Navbar />
-
-        {/* ✅ Page content grows to fill remaining space */}
-        <main className="bg-background flex-1 flex flex-col">{children}</main>
-
-        <footer className="bg-background py-4 text-center text-sm">
-          © {new Date().getFullYear()} Squad Champs
-        </footer>
+        <SessionProvider>
+          <SessionReady>
+            <Navbar />
+            <main className="flex-1 flex flex-col bg-background">
+              <Outlet />
+            </main>
+            <footer className="py-4 text-center text-sm">
+              © {new Date().getFullYear()} Squad Champs
+            </footer>
+          </SessionReady>
+        </SessionProvider>
 
         <ScrollRestoration />
         <Scripts />
@@ -52,13 +54,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return (
-    <SessionProvider>
-      <Outlet />
-    </SessionProvider>
-  );
+function SessionReady({ children }: { children: React.ReactNode }) {
+  const { loading } = useSession();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }
+
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";

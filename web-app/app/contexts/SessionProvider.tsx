@@ -22,25 +22,36 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    let mounted = true;
+
+    const init = async () => {
+      // ✅ Fetch existing session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+    };
+
+    init();
+
+    // ✅ Listen to auth state changes (login, logout, token refresh)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (!mounted) return;
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
     });
 
-    // Subscribe to auth changes (login, logout, refresh)
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
-
     return () => {
-      listener.subscription.unsubscribe();
+      mounted = false;
+      subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   return (
     <SessionContext.Provider value={{ session, user, loading }}>
@@ -49,6 +60,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* --- Hooks --- */
 export function useSession() {
   return useContext(SessionContext);
 }

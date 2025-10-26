@@ -10,10 +10,10 @@ const test_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 export const getSupabaseClient = (env?: any) => {
     if (!supabase) {
         // Local dev uses Vite env
-        const url =
-            import.meta.env.VITE_SUPABASE_URL ?? (env?.VITE_SUPABASE_URL as string);
-        const key =
-            import.meta.env.VITE_SUPABASE_ANON_KEY ?? (env?.VITE_SUPABASE_ANON_KEY as string);
+        const url = test_URL
+        // import.meta.env.VITE_SUPABASE_URL ?? (env?.VITE_SUPABASE_URL as string);
+        const key = test_ANON_KEY
+        // import.meta.env.VITE_SUPABASE_ANON_KEY ?? (env?.VITE_SUPABASE_ANON_KEY as string);
 
         if (!url || !key) {
             throw new Error(

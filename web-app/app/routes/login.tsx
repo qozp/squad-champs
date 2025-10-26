@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
 import { getSupabaseClient } from "../lib/supabaseClient";
 import { useState } from "react";
-import { useSession, useUser } from "~/contexts/SessionProvider";
 
 export default function Login() {
   const [email, setEmail] = useState("");

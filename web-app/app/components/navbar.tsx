@@ -8,7 +8,7 @@ import { getSupabaseClient } from "~/lib/supabaseClient";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
-  const {session} = useSession();
+  const { session } = useSession();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
@@ -38,8 +38,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+      await supabase.auth.signOut({ scope: 'local' })
+      navigate("/");
   };
 
   return (

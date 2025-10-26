@@ -18,7 +18,7 @@ export default function Players() {
           Explore the top NBA players, their stats, and add them to your fantasy
           squad.
         </p>
-        <Card className="max-w-lg bg-card border border-border">
+        <Card className="max-w-lg mx-auto bg-card border border-border">
           <CardContent className="p-6 text-center">
             <p>Player list coming soon...</p>
           </CardContent>

@@ -1,20 +1,8 @@
-import { useSession } from "~/contexts/SessionProvider";
-import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useSession, withSessionRedirect } from "~/contexts/SessionProvider";
 
-export default function Profile() {
+function ProfilePage() {
   const { session } = useSession();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!session) {
-      navigate("/login");
-    }
-  }, [session, navigate]);
-
-  if (!session) return null;
-
-  const user = session.user;
+  const user = session?.user;
 
   return (
     <div className="min-h-screen text-foreground">
@@ -28,3 +16,6 @@ export default function Profile() {
     </div>
   );
 }
+
+// Wrap the page with the helper
+export default withSessionRedirect(ProfilePage);

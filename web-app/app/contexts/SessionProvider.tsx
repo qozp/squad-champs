@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSupabaseClient } from "../lib/supabaseClient";
 import type { Session, User } from "@supabase/supabase-js";
+import { useLocation, useNavigate } from "react-router";
 
 type SessionContextType = {
   session: Session | null;
@@ -61,6 +62,30 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 }
 
 /* --- Hooks --- */
+export function withSessionRedirect(Page: React.ComponentType) {
+  return function Wrapped() {
+    const { session, loading } = useSession();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+      if (!loading && !session) {
+        navigate("/login", { state: { from: location.pathname } });
+      }
+    }, [loading, session, navigate, location]);
+
+    if (loading || !session) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      );
+    }
+
+    return <Page />;
+  };
+}
+
 export function useSession() {
   return useContext(SessionContext);
 }

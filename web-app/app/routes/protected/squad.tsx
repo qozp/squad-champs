@@ -1,4 +1,5 @@
 import Navbar from "~/components/navbar";
+import { withSessionRedirect } from "~/contexts/SessionProvider";
 
 export function meta() {
   return [
@@ -7,7 +8,7 @@ export function meta() {
   ];
 }
 
-export default function Squad() {
+function SquadPage() {
   return (
     <div className="min-h-screen text-foreground">
       <section className="container mx-auto px-4 py-16">
@@ -19,3 +20,5 @@ export default function Squad() {
     </div>
   );
 }
+
+export default withSessionRedirect(SquadPage);

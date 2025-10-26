@@ -76,12 +76,16 @@ export default function Home() {
             Build your NBA fantasy squad and compete globally and with friends!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="default">
-              <Link to="/squad">Get Started</Link>
-            </Button>
-            <Button size="lg" variant="default">
-              <Link to="/players">Browse Players</Link>
-            </Button>
+            <Link to="/squad">
+              <Button size="lg" variant="default">
+                Get Started
+              </Button>
+            </Link>
+            <Link to="/players">
+              <Button size="lg" variant="default">
+                Browse Players
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

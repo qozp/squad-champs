@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import logoLight from "../assets/logo-light.svg";
 import logoDark from "../assets/logo-dark.svg";
-import { useUser } from "~/contexts/SessionProvider";
+import { useSession } from "~/contexts/SessionProvider";
 import { getSupabaseClient } from "~/lib/supabaseClient";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
-  const user = useUser();
+  const { session } = useSession();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
@@ -38,8 +38,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+      await supabase.auth.signOut({ scope: 'local' })
+      navigate("/");
   };
 
   return (
@@ -59,19 +59,12 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLinks currentPath={location.pathname} user={user} />
-          {user ? (
+          <NavLinks currentPath={location.pathname} session={session} />
+          {session ? (
             <Button onClick={handleLogout} variant="default">
               Logout
             </Button>
-          ) : (
-            <Link
-              to="/login"
-              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
-            >
-              Login
-            </Link>
-          )}
+          ) : null}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -94,24 +87,16 @@ export default function Navbar() {
           <NavLinks
             currentPath={location.pathname}
             onClick={() => setMenuOpen(false)}
-            user={user}
+            session={session}
           />
-          {user ? (
-            <button
+          {session ? (
+            <Button
               onClick={handleLogout}
-              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
+              variant="default"
             >
               Logout
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
-            >
-              Login / Sign In
-            </Link>
-          )}
+            </Button>
+          ) : null}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
@@ -123,17 +108,18 @@ export default function Navbar() {
 function NavLinks({
   onClick,
   currentPath,
-  user,
+  session,
 }: {
   onClick?: () => void;
   currentPath?: string;
-  user?: any;
+  session?: any;
 }) {
   const links = [
     { href: "/", label: "Home" },
-    ...(user ? [{ href: "/squad", label: "Squad" }] : []),
+    ...(session ? [{ href: "/squad", label: "Squad" }] : []),
     { href: "/players", label: "Players" },
-    ...(user ? [{ href: "/profile", label: "Profile" }] : []),
+    ...(session ? [{ href: "/profile", label: "Profile" }] : []),
+    ...(session ? [] : [{ href: "/login", label: "Login" }]),
   ];
 
   return (

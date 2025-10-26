@@ -1,13 +1,24 @@
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { getSupabaseClient } from "../lib/supabaseClient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "~/contexts/SessionProvider";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const supabase = getSupabaseClient();
+  const { session } = useSession();
+
+  const from = (location.state as { from?: string })?.from || "/";
+
+  useEffect(() => {
+    if (session) {
+      navigate(from, { replace: true });
+    }
+  }, [session, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

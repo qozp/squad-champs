@@ -65,11 +65,12 @@ export default function Navbar() {
               Logout
             </Button>
           ) : (
-            <Link
-              to="/login"
-              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
-            >
-              Login
+            <Link to="/login">
+              <Button
+                variant="default"
+              >
+                Login
+              </Button>
             </Link>
           )}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
@@ -97,19 +98,19 @@ export default function Navbar() {
             session={session}
           />
           {session ? (
-            <button
+            <Button
               onClick={handleLogout}
-              className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
+              variant="default"
             >
               Logout
-            </button>
+            </Button>
           ) : (
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
               className="px-3 py-2 rounded-md text-sm font-medium text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-all"
             >
-              Login / Sign In
+              Login
             </Link>
           )}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
@@ -134,6 +135,7 @@ function NavLinks({
     ...(session ? [{ href: "/squad", label: "Squad" }] : []),
     { href: "/players", label: "Players" },
     ...(session ? [{ href: "/profile", label: "Profile" }] : []),
+    // ...(session ? [] : [{ href: "/login", label: "Login" }]),
   ];
 
   return (

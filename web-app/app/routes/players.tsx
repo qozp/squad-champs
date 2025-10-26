@@ -12,18 +12,15 @@ export function meta() {
 export default function Players() {
   return (
     <div className="min-h-screen text-foreground">
-      <section className="container mx-auto px-4 py-16">
+      <section className="container px-4 py-4">
         <h1 className="text-4xl font-bold mb-8">Browse Players</h1>
         <p className="mb-6">
           Explore the top NBA players, their stats, and add them to your fantasy
           squad.
         </p>
-        <Card className="max-w-lg mx-auto bg-card border border-border">
+        <Card className="max-w-lg bg-card border border-border">
           <CardContent className="p-6 text-center">
             <p>Player list coming soon...</p>
-            <Button asChild className="mt-6">
-              <Link to="/squad">Build Your Squad</Link>
-            </Button>
           </CardContent>
         </Card>
       </section>

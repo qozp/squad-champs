@@ -42,7 +42,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-navbar shadow-md transition-colors duration-300">
+    <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
       <div className="container mx-auto py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">

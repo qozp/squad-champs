@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import Navbar from "~/components/Navbar";
+import Navbar from "~/components/navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -76,10 +76,10 @@ export default function Home() {
             Build your NBA fantasy squad and compete globally and with friends!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" variant="default">
+            <Button size="lg" variant="default">
               <Link to="/squad">Get Started</Link>
             </Button>
-            <Button asChild size="lg" variant="default">
+            <Button size="lg" variant="default">
               <Link to="/players">Browse Players</Link>
             </Button>
           </div>
@@ -141,7 +141,7 @@ export default function Home() {
           <p className="text-muted-foreground mb-8 text-lg">
             Start building your championship squad today
           </p>
-          <Button asChild size="lg" variant="default">
+          <Button size="lg" variant="default">
             <Link to="/squad">Create Your Squad</Link>
           </Button>
         </div>

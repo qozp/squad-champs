@@ -8,9 +8,9 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import Navbar from "./components/Navbar";
 import "./app.css";
 import { SessionProvider, useSession } from "./contexts/SessionProvider";
+import Navbar from "./components/navbar";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

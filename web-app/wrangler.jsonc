@@ -10,6 +10,7 @@
     	"nodejs_compat"
   	],
 	"main": "./workers/app.ts",
+	"preview_urls": true,
 	"vars": {
 		"VALUE_FROM_CLOUDFLARE": "Hello from Cloudflare",
 		"VITE_SUPABASE_URL":"https://ffenletsvfvbqvdbgdow.supabase.co",

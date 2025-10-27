@@ -1,4 +1,4 @@
-import Navbar from "~/components/navbar";
+import Navbar from "~/components/authNavbar";
 import { withSessionRedirect } from "~/contexts/SessionProvider";
 
 export function meta() {

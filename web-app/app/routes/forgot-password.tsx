@@ -27,7 +27,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   // Send the actual reset password email
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `/update-password`,
+    redirectTo: `${origin}/update-password`,
   });
 
   if (error) {

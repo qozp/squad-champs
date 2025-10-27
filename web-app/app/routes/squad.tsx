@@ -1,5 +1,4 @@
-import Navbar from "~/components/navbar";
-import { withSessionRedirect } from "~/contexts/SessionProvider";
+import Navbar from "~/components/authNavbar";
 
 export function meta() {
   return [
@@ -20,5 +19,3 @@ function SquadPage() {
     </div>
   );
 }
-
-export default withSessionRedirect(SquadPage);

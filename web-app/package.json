@@ -12,8 +12,10 @@
 		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
 	"dependencies": {
+		"@radix-ui/react-label": "^2.1.7",
 		"@radix-ui/react-slot": "^1.2.3",
 		"@radix-ui/react-tooltip": "^1.2.8",
+		"@react-router/fs-routes": "^7.9.4",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.76.1",
 		"class-variance-authority": "^0.7.1",
@@ -30,7 +32,7 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.13.5",
-		"@react-router/dev": "^7.9.2",
+		"@react-router/dev": "^7.9.4",
 		"@tailwindcss/vite": "^4.1.13",
 		"@types/node": "^22",
 		"@types/react": "^19.1.13",

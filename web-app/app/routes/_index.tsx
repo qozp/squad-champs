@@ -1,4 +1,4 @@
-import type { Route } from "./+types/home";
+import type { Route } from "../+types/root";
 import { Link } from "react-router";
 import {
   ArrowRight,
@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import Navbar from "~/components/navbar";
 
 export function meta({}: Route.MetaArgs) {
   return [

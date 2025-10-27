@@ -8,9 +8,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import Navbar from "./components/navbar";
 import "./app.css";
-import { SessionProvider, useSession } from "./contexts/SessionProvider";
+import Navbar from "./components/navbar";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,37 +34,18 @@ export default function App() {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <SessionProvider>
-          <SessionReady>
-            <Navbar />
-            <main className="flex-1 flex flex-col bg-background">
-              <Outlet />
-            </main>
-            <footer className="py-4 text-center text-sm">
-              © {new Date().getFullYear()} Squad Champs
-            </footer>
-          </SessionReady>
-        </SessionProvider>
-
+        <Navbar />
+        <main className="flex-1 flex flex-col bg-background">
+          <Outlet />
+        </main>
+        <footer className="py-4 text-center text-sm">
+          © {new Date().getFullYear()} Squad Champs
+        </footer>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
-}
-
-function SessionReady({ children }: { children: React.ReactNode }) {
-  const { loading } = useSession();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
-  return <>{children}</>;
 }
 
 

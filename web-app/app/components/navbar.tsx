@@ -3,17 +3,14 @@ import { useState, useEffect } from "react";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import logoLight from "../assets/logo-light.svg";
 import logoDark from "../assets/logo-dark.svg";
-import { useSession } from "~/contexts/SessionProvider";
-import { getSupabaseClient } from "~/lib/supabaseClient";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
-  const { session } = useSession();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const supabase = getSupabaseClient();
+  const session = null;
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -38,8 +35,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-      await supabase.auth.signOut({ scope: 'local' })
-      navigate("/");
+      // await supabase.auth.signOut({ scope: 'local' })
+      // navigate("/");
   };
 
   return (

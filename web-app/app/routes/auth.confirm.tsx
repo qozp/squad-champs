@@ -16,6 +16,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       token_hash,
     })
     if (!error) {
+      console.log(next, headers);
       return redirect(next, { headers })
     } else {
       return redirect(`/auth/error?error=${error?.message}`)

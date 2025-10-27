@@ -40,7 +40,10 @@ export default function Login() {
     } else {
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) setError(error.message);
-      else alert("Check your email for a confirmation link!");
+      else
+        alert(
+          "Check your email for a confirmation link! If you already have an account, please sign in."
+        );
     }
   };
 
@@ -49,7 +52,7 @@ export default function Login() {
       <Card className="w-96">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
-            {mode === "login" ? "Log In" : "Sign Up"}
+            {mode === "login" ? "Sign In" : "Sign Up"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -74,7 +77,7 @@ export default function Login() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <Button type="submit" className="w-full cursor-pointer">
-              {mode === "login" ? "Log In" : "Sign Up"}
+              {mode === "login" ? "Sign In" : "Sign Up"}
             </Button>
 
             <p className="text-center text-sm mt-2">
@@ -87,7 +90,7 @@ export default function Login() {
                 className="p-0 underline cursor-pointer text-foreground"
                 onClick={() => setMode(mode === "login" ? "signup" : "login")}
               >
-                {mode === "login" ? "Sign Up" : "Log In"}
+                {mode === "login" ? "Sign Up" : "Sign In"}
               </Button>
             </p>
           </form>

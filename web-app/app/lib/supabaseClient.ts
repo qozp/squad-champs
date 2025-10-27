@@ -23,7 +23,7 @@ export const getSupabaseClient = (env?: any) => {
             );
         }
 
-        console.log(url, key)
+        // console.log(url, key)
 
         supabase = createClient(url, key);
     }

@@ -37,6 +37,20 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
       setTheme(prefersDark ? "dark" : "light");
       document.documentElement.classList.toggle("dark", prefersDark);
     }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      const newTheme = e.matches ? "dark" : "light";
+      setTheme(newTheme);
+      document.documentElement.classList.toggle("dark", newTheme === "dark");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    // Cleanup listener on unmount
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  
   }, []);
 
   const toggleTheme = () => {

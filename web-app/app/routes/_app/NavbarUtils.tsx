@@ -61,7 +61,7 @@ export function ThemeToggle({
           theme === "dark" ? "translate-x-8" : "translate-x-0"
         } flex items-center justify-center`}
       >
-        {theme === "dark" ? "🌚" : "🌝"}
+        {/* {theme === "dark" ? "🌚" : "🌝"} */}
         {/* {theme === "dark" ? (
           <Moon className="w-4 h-4 text-gray-200" />
         ) : (

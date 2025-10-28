@@ -4,7 +4,11 @@ import AuthNavbar from "./AuthNavbar";
 import PublicNavbar from "./PublicNavbar";
 import { createClient } from "~/lib/supabase/server";
 
-export async function loader({ request }) {
+type LoaderArgs = {
+  request: Request;
+};
+
+export async function loader({ request }: LoaderArgs) {
   const { supabase } = createClient(request);
   const { data } = await supabase.auth.getUser();
   return { user: data.user || null };

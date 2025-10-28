@@ -1,5 +1,5 @@
 // components/CountryStateSelect.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Label } from "~/components/ui/label";
 import {
   Select,
@@ -30,10 +30,14 @@ export default function CountryStateSelect({
 }: CountryStateSelectProps) {
   const selectedCountry = countriesOrdered.find((c) => c[0] === nation);
   const regions: Region[] = selectedCountry ? selectedCountry[2] : [];
+  const prevNationRef = useRef<string | undefined>(undefined);
 
-  // Reset state if nation changes
   useEffect(() => {
-    setState("");
+    // Skip reset on initial render
+    if (prevNationRef.current && prevNationRef.current !== nation) {
+      setState(""); // reset only if nation actually changed
+    }
+    prevNationRef.current = nation;
   }, [nation]);
 
   return (

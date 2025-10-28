@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData, type LoaderFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
+import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/server";
 
@@ -45,7 +46,9 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen text-foreground">
       <section className="container px-10 py-10">
-        <h1 className="text-4xl font-bold mb-6">Profile</h1>
+        <h1 className="text-4xl font-bold p-2">Profile</h1>
+        {/* Divider between sections */}
+        <hr className="border border-border w-full transition-colors duration-300 mb-2" />
 
         <div className="text-lg text-foreground space-y-2">
           {profileFields.map((field) => (
@@ -54,10 +57,13 @@ export default function ProfilePage() {
             </p>
           ))}
         </div>
+        <div className="mt-3">
+          <Button onClick={() => setShowDialog(true)}>Update Profile</Button>
+        </div>
         <CreateProfileForm
           open={showDialog}
           onClose={() => setShowDialog(false)}
-          user={user}
+          profileData={profileData}
         />
       </section>
     </div>

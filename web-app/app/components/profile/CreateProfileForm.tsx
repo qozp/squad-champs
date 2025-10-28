@@ -19,19 +19,27 @@ import { containsBadWords } from "~/lib/moderation";
 interface CreateProfileFormProps {
   open: boolean;
   onClose: () => void;
-  user: User;
+  profileData?: {
+    display_name?: string;
+    first_name?: string;
+    last_name?: string;
+    nation?: string;
+    state?: string;
+  };
 }
 
 export default function CreateProfileForm({
   open,
   onClose,
-  user,
+  profileData = {},
 }: CreateProfileFormProps) {
-  const [displayName, setDisplayName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [nation, setNation] = useState("");
-  const [state, setState] = useState("");
+  const [displayName, setDisplayName] = useState(
+    profileData.display_name ?? ""
+  );
+  const [firstName, setFirstName] = useState(profileData.first_name ?? "");
+  const [lastName, setLastName] = useState(profileData.last_name ?? "");
+  const [nation, setNation] = useState(profileData.nation ?? "");
+  const [state, setState] = useState(profileData.state ?? "");
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
@@ -52,13 +60,16 @@ export default function CreateProfileForm({
       return;
     }
 
-    const { error } = await supabase.rpc("create_profile", {
+    const rpcName = profileData.display_name
+      ? "update_profile"
+      : "create_profile";
+
+    const { error } = await supabase.rpc(rpcName, {
       display_name: displayName,
       first_name: firstName || null,
       last_name: lastName || null,
       nation: nation || null,
       state: state || null,
-      user_id: user.id,
     });
 
     setLoading(false);
@@ -66,7 +77,6 @@ export default function CreateProfileForm({
     if (error) {
       toast.error("Error creating profile: " + error.message);
     } else {
-      toast.success("Profile created!");
       onClose();
       window.location.reload(); // refresh to show new profile
     }
@@ -76,7 +86,9 @@ export default function CreateProfileForm({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Create Your Profile</DialogTitle>
+          <DialogTitle>
+            {profileData.display_name ? "Update" : "Create"} Your Profile
+          </DialogTitle>
         </DialogHeader>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -123,7 +135,11 @@ export default function CreateProfileForm({
 
           <DialogFooter className="mt-4 flex justify-end">
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Profile"}
+              {loading
+                ? "Saving..."
+                : profileData.display_name
+                  ? "Update Profile"
+                  : "Create Profile"}
             </Button>
           </DialogFooter>
         </form>

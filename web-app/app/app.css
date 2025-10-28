@@ -62,7 +62,7 @@ body {
   --notification-icon: #183647;
 
   /* Card / Surface */
-  --card: #e2e3ed;
+  --card: #d2d3db; /* e2e3ed */
   --card-foreground: #183647;
 
   /* Accent / Muted / Border */

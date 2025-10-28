@@ -1,3 +1,6 @@
+import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { requireAuth } from "~/lib/requireAuth";
+
 export function meta() {
   return [
     { title: "My Squad - Squad Champs" },
@@ -5,7 +8,14 @@ export function meta() {
   ];
 }
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await requireAuth(request);
+  return { user };
+};
+
 export default function SquadPage() {
+  useLoaderData<typeof loader>();
+
   return (
     <div className="min-h-screen text-foreground">
       <section className="container mx-auto px-10 py-10">

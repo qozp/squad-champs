@@ -21,6 +21,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-// // Wrap the page with the helper
-// export default withSessionRedirect(ProfilePage);

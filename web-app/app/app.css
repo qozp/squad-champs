@@ -83,7 +83,7 @@ body {
 
 /* 🌚 DARK MODE */
 .dark {
-  --background: #3c3c3c; /* set */
+  --background: #181818; /* set */
   --foreground: #f5f0e6;
   --secondary-foreground: #cbd5e1;
   --primary: #282828;
@@ -94,7 +94,7 @@ body {
 
   --notification-icon: #e2e8f0;
 
-  --card: #00212b;
+  --card: #1f1f1f;
   --card-foreground: #e2e8f0;
 
   --accent: #334155;

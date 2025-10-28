@@ -24,15 +24,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  let { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
-  if (error) {
-    return {
-      error: error instanceof Error ? error.message : "An error occurred",
-    };
+  if (error) throw new Error(error.message);
+  if (!data.user) throw new Error("No user found");
+
+  const { data: profileData, error: profileError } = await supabase.rpc(
+    "get_profile",
+    { user_id: data.user.id }
+  );
+
+  if (profileError) throw new Error(profileError.message);
+
+  console.log(profileData);
+  if (profileData.length == 0) {
+    return redirect("/profile", { headers });
   }
 
   // Update this route to redirect to an authenticated route. The user already has an active session.
@@ -41,8 +50,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Login() {
   const fetcher = useFetcher<typeof action>();
-
-  const error = fetcher.data?.error;
   const loading = fetcher.state === "submitting";
 
   return (
@@ -86,7 +93,6 @@ export default function Login() {
                       required
                     />
                   </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </Button>

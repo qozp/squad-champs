@@ -1,7 +1,7 @@
 // app/routes/_landing/route.tsx
 import { Outlet, useLoaderData } from "react-router";
-import AuthNavbar from "./authNavbar";
-import PublicNavbar from "./publicNavbar";
+import AuthNavbar from "./AuthNavbar";
+import PublicNavbar from "./PublicNavbar";
 import { createClient } from "~/lib/supabase/server";
 
 export async function loader({ request }) {

@@ -1,11 +1,12 @@
 // app/routes/_landing/route.tsx
 import { Link, Outlet } from "react-router";
 import logoLight from "~/assets/logo-light.svg";
-import "./auth.css";
+
+// import "./auth.css";
 
 export default function LandingLayout() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="auth-layout flex flex-col min-h-screen">
       <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
         <div className="container py-2 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2">

@@ -1,51 +1,53 @@
-import { createClient } from 'app/lib/supabase/server'
-import { Button } from 'app/components/ui/button'
+import { createClient } from "app/lib/supabase/server";
+import { Button } from "app/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'app/components/ui/card'
-import { Input } from 'app/components/ui/input'
-import { Label } from 'app/components/ui/label'
-import { type ActionFunctionArgs, redirect, useFetcher } from 'react-router'
+} from "app/components/ui/card";
+import { Input } from "app/components/ui/input";
+import { Label } from "app/components/ui/label";
+import { type ActionFunctionArgs, redirect, useFetcher } from "react-router";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase, headers } = createClient(request)
-  const formData = await request.formData()
-  const password = formData.get('password') as string
+  const { supabase, headers } = createClient(request);
+  const formData = await request.formData();
+  const password = formData.get("password") as string;
 
   if (!password) {
-    return { error: 'Password is required' }
+    return { error: "Password is required" };
   }
 
-  const { error } = await supabase.auth.updateUser({ password: password })
+  const { error } = await supabase.auth.updateUser({ password: password });
 
   if (error) {
     return {
-      error: error instanceof Error ? error.message : 'An error occurred',
-    }
+      error: error instanceof Error ? error.message : "An error occurred",
+    };
   }
 
   // Redirect to sign-in page after successful password update
-  return redirect('/protected', { headers })
-}
+  return redirect("/protected", { headers });
+};
 
 export default function Page() {
-  const fetcher = useFetcher<typeof action>()
+  const fetcher = useFetcher<typeof action>();
 
-  const error = fetcher.data?.error
-  const loading = fetcher.state === 'submitting'
+  const error = fetcher.data?.error;
+  const loading = fetcher.state === "submitting";
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="flex min-h-auto w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-              <CardDescription>Please enter your new password below.</CardDescription>
+              <CardDescription>
+                Please enter your new password below.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <fetcher.Form method="post">
@@ -62,7 +64,7 @@ export default function Page() {
                   </div>
                   {error && <p className="text-sm text-red-500">{error}</p>}
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save new password'}
+                    {loading ? "Saving..." : "Save new password"}
                   </Button>
                 </div>
               </fetcher.Form>
@@ -71,5 +73,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  )
+  );
 }

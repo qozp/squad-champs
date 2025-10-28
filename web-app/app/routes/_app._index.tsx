@@ -75,14 +75,14 @@ export default function Home() {
             Build your NBA fantasy squad and compete globally and with friends!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/squad">
+            <Link to="/sign-up">
               <Button size="lg" variant="default">
-                Get Started
+                Sign Up
               </Button>
             </Link>
-            <Link to="/players">
+            <Link to="/login">
               <Button size="lg" variant="default">
-                Browse Players
+                Sign In
               </Button>
             </Link>
           </div>
@@ -141,12 +141,14 @@ export default function Home() {
       <section className="py-16 text-foreground transition-colors duration-300">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to dominate?</h2>
-          <p className="text-muted-foreground mb-8 text-lg">
+          <p className="text-foreground mb-8 text-lg">
             Start building your championship squad today
           </p>
-          <Button size="lg" variant="default">
-            <Link to="/squad">Create Your Squad</Link>
-          </Button>
+          <Link to="/squad">
+            <Button size="lg" variant="default">
+              Create Your Squad
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

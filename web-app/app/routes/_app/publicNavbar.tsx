@@ -1,16 +1,20 @@
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import logoLight from "~/assets/logo-light.svg";
 import logoDark from "~/assets/logo-dark.svg";
-import { Button } from "~/components/ui/button";
+import { NavLinks, ThemeToggle } from "./NavbarUtils";
 
-export default function publicNavbar() {
+export default function PublicNavbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const session = null;
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/players", label: "Players" },
+    { href: "/login", label: "Login" },
+  ];
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -41,7 +45,7 @@ export default function publicNavbar() {
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
-      <div className="container mx-auto py-2 flex justify-between items-center">
+      <div className="py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -56,12 +60,7 @@ export default function publicNavbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLinks currentPath={location.pathname} session={session} />
-          {session ? (
-            <Button onClick={handleLogout} variant="default">
-              Logout
-            </Button>
-          ) : null}
+          <NavLinks currentPath={location.pathname} mode="web" links={links} />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -84,93 +83,12 @@ export default function publicNavbar() {
           <NavLinks
             currentPath={location.pathname}
             onClick={() => setMenuOpen(false)}
-            session={session}
+            mode="mobile"
+            links={links}
           />
-          {session ? (
-            <Button onClick={handleLogout} variant="default">
-              Logout
-            </Button>
-          ) : null}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
     </nav>
-  );
-}
-
-/* --- Reusable Components --- */
-function NavLinks({
-  onClick,
-  currentPath,
-  session,
-}: {
-  onClick?: () => void;
-  currentPath?: string;
-  session?: any;
-}) {
-  const links = [
-    { href: "/", label: "Home" },
-    ...(session ? [{ href: "/squad", label: "Squad" }] : []),
-    { href: "/players", label: "Players" },
-    ...(session ? [{ href: "/profile", label: "Profile" }] : []),
-    ...(session ? [] : [{ href: "/login", label: "Login" }]),
-  ];
-
-  return (
-    <div className="flex items-center gap-4">
-      {links.map((link) => {
-        const isActive = currentPath === link.href;
-        return (
-          <Link
-            key={link.href}
-            to={link.href}
-            onClick={onClick}
-            className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-              ${
-                isActive
-                  ? "bg-gray-600 grayscale-50 text-navbar"
-                  : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
-              }`}
-          >
-            {link.label}
-            {isActive && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
-            )}
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function ThemeToggle({
-  theme,
-  toggleTheme,
-}: {
-  theme: "light" | "dark";
-  toggleTheme: () => void;
-}) {
-  return (
-    <div
-      onClick={toggleTheme}
-      className="relative w-16 h-8 flex items-center bg-gray-300 dark:bg-gray-600 rounded-full p-1 cursor-pointer transition-colors"
-    >
-      {/* Sliding circle */}
-      <div
-        className={`absolute top-1 w-6 h-6 bg-white dark:bg-gray-900 rounded-full shadow-md transform transition-transform ${
-          theme === "dark" ? "translate-x-8" : "translate-x-0"
-        } flex items-center justify-center`}
-      >
-        {theme === "dark" ? (
-          <Moon className="w-4 h-4 text-gray-200" />
-        ) : (
-          <Sun className="w-4 h-4 text-yellow-400" />
-        )}
-      </div>
-
-      {/* Static icons */}
-      <Sun className="absolute left-2 w-4 h-4 text-yellow-400" />
-      <Moon className="absolute right-2 w-4 h-4 text-gray-200" />
-    </div>
   );
 }

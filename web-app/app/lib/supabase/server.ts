@@ -1,7 +1,7 @@
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
 import { env } from 'cloudflare:workers'
 
-export function createClient(request: Request) {
+export function createClient(request: Request, env: any) {
   const headers = new Headers()
 
   const supabase = createServerClient(

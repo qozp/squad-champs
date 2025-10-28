@@ -10,7 +10,6 @@ export default function publicNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const session = null;
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -41,7 +40,7 @@ export default function publicNavbar() {
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
-      <div className="container mx-auto py-2 flex justify-between items-center">
+      <div className="py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -56,12 +55,7 @@ export default function publicNavbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLinks currentPath={location.pathname} session={session} />
-          {session ? (
-            <Button onClick={handleLogout} variant="default">
-              Logout
-            </Button>
-          ) : null}
+          <NavLinks currentPath={location.pathname} mode="web" />
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -84,13 +78,8 @@ export default function publicNavbar() {
           <NavLinks
             currentPath={location.pathname}
             onClick={() => setMenuOpen(false)}
-            session={session}
+            mode="mobile"
           />
-          {session ? (
-            <Button onClick={handleLogout} variant="default">
-              Logout
-            </Button>
-          ) : null}
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
@@ -102,22 +91,24 @@ export default function publicNavbar() {
 function NavLinks({
   onClick,
   currentPath,
-  session,
+  mode,
 }: {
   onClick?: () => void;
   currentPath?: string;
-  session?: any;
+  mode: string;
 }) {
   const links = [
     { href: "/", label: "Home" },
-    ...(session ? [{ href: "/squad", label: "Squad" }] : []),
     { href: "/players", label: "Players" },
-    ...(session ? [{ href: "/profile", label: "Profile" }] : []),
-    ...(session ? [] : [{ href: "/login", label: "Login" }]),
+    { href: "/login", label: "Login" },
   ];
 
   return (
-    <div className="flex items-center gap-4">
+    <div
+      className={`flex ${
+        mode === "mobile" ? "flex-col items-center gap-3" : "items-center gap-2"
+      }`}
+    >
       {links.map((link) => {
         const isActive = currentPath === link.href;
         return (

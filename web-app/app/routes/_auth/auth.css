@@ -62,14 +62,14 @@ body {
   --notification-icon: #183647;
 
   /* Card / Surface */
-  --card: #e2e3ed;
+  --card: #ecedf4;
   --card-foreground: #183647;
 
   /* Accent / Muted / Border */
   --accent: #eaeaea;
   --accent-foreground: #183647;
   --muted: #f5f5f5;
-  --muted-foreground: #2e546c;
+  --muted-foreground: #183647;
   --border: #565656;
   --input: #565656;
   --ring: #a0aec0;

@@ -46,7 +46,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
-      <div className="container mx-auto py-2 flex justify-between items-center">
+      <div className="py-2 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -112,7 +112,6 @@ function NavLinks({
   ];
 
   return (
-    // <div className="flex items-center gap-4">
     <div
       className={`flex ${
         mode === "mobile" ? "flex-col items-center gap-3" : "items-center gap-2"

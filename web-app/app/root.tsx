@@ -9,7 +9,6 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import Navbar from "./components/navbar";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -34,13 +33,7 @@ export default function App() {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1 flex flex-col bg-background">
-          <Outlet />
-        </main>
-        <footer className="py-4 text-center text-sm">
-          © {new Date().getFullYear()} Squad Champs
-        </footer>
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
       </body>

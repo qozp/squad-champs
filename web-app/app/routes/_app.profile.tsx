@@ -5,32 +5,40 @@ import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/client";
+import { createSupabaseClient } from "~/lib/supabase/server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, context }: any) => {
   const user = await requireAuth(request);
+  const { supabase } = createSupabaseClient(request, context.env);
 
-  return { user };
+  const { data: profileData } = await supabase.rpc("get_profile", {
+    user_id: user.id,
+  });
+
+  return { user, profile: profileData?.[0] ?? {} };
 };
 
 export default function ProfilePage() {
-  const { user } = useLoaderData<typeof loader>();
-  const [profile, setProfile] = useState<any>(null);
+  // const { user } = useLoaderData<typeof loader>();
+  // const [profile, setProfile] = useState<any>(null);
   const [showDialog, setShowDialog] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data, error } = await supabase.rpc("get_profile", {
-        user_id: user.id,
-      });
-      console.log(data);
-      if (error) return toast.error(error.message);
-      if (data?.length) setProfile(data[0]);
+  const { user, profile } = useLoaderData<typeof loader>();
 
-      if (!data?.length) setShowDialog(true);
-    };
-    fetchProfile();
-  }, [user]);
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     const { data, error } = await supabase.rpc("get_profile", {
+  //       user_id: user.id,
+  //     });
+  //     console.log(data);
+  //     if (error) return toast.error(error.message);
+  //     if (data?.length) setProfile(data[0]);
+
+  //     if (!data?.length) setShowDialog(true);
+  //   };
+  //   fetchProfile();
+  // }, [user]);
 
   if (!profile) {
     // wait for profile to load

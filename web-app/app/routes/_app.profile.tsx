@@ -8,13 +8,6 @@ import { createClient } from "~/lib/supabase/client";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireAuth(request);
-  const supabase = createClient();
-
-  const { data: profileData, error } = await supabase.rpc("get_profile", {
-    user_id: user.id,
-  });
-
-  if (error) throw new Error(error.message);
 
   return { user };
 };

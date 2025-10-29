@@ -9,7 +9,7 @@ type LoaderArgs = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const { supabase } = createClient(request);
+  const { supabase } = createSupabaseClient(request);
   const { data } = await supabase.auth.getUser();
   return { user: data.user || null };
 }

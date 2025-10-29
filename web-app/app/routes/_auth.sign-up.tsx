@@ -1,4 +1,4 @@
-import { createClient } from "app/lib/supabase/server";
+import { createSupabaseClient } from "app/lib/supabase/server";
 import { Button } from "app/components/ui/button";
 import {
   Card,
@@ -18,7 +18,7 @@ import {
 } from "react-router";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase } = createClient(request);
+  const { supabase } = createSupabaseClient(request);
 
   const url = new URL(request.url);
   const origin = url.origin;

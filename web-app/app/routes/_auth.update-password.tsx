@@ -1,4 +1,4 @@
-import { createClient } from "app/lib/supabase/server";
+import { createSupabaseClient } from "app/lib/supabase/server";
 import { Button } from "app/components/ui/button";
 import {
   Card,
@@ -12,7 +12,7 @@ import { Label } from "app/components/ui/label";
 import { type ActionFunctionArgs, redirect, useFetcher } from "react-router";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase, headers } = createClient(request);
+  const { supabase, headers } = createSupabaseClient(request);
   const formData = await request.formData();
   const password = formData.get("password") as string;
 

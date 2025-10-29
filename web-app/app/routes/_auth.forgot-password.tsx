@@ -1,4 +1,4 @@
-import { createClient } from "app/lib/supabase/server";
+import { createSupabaseClient } from "app/lib/supabase/server";
 import { Button } from "app/components/ui/button";
 import {
   Card,
@@ -22,7 +22,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;
 
-  const { supabase, headers } = createClient(request);
+  const { supabase, headers } = createSupabaseClient(request);
   const origin = new URL(request.url).origin;
 
   // Send the actual reset password email

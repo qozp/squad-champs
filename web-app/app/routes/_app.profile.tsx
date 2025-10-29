@@ -22,7 +22,7 @@ export default function ProfilePage() {
   // const { user } = useLoaderData<typeof loader>();
   // const [profile, setProfile] = useState<any>(null);
   const [showDialog, setShowDialog] = useState(false);
-  const supabase = createClient();
+  // const supabase = createClient();
 
   const { user, profile } = useLoaderData<typeof loader>();
 

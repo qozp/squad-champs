@@ -6,9 +6,12 @@ import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({
+  request,
+  context,
+}: LoaderFunctionArgs & { context: any }) => {
   const user = await requireAuth(request);
-  const { supabase } = createClient(request);
+  const { supabase } = createClient(request, context.env);
 
   const { data: profileData, error } = await supabase.rpc("get_profile", {
     user_id: user.id,

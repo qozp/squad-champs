@@ -12,12 +12,16 @@ import { Label } from "app/components/ui/label";
 import {
   type ActionFunctionArgs,
   Link,
+  type LoaderFunctionArgs,
   redirect,
   useFetcher,
 } from "react-router";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase, headers } = createClient(request);
+export const action = async ({
+  request,
+  context,
+}: LoaderFunctionArgs & { context: any }) => {
+  const { supabase, headers } = createClient(request, context.env);
 
   const formData = await request.formData();
 

@@ -7,9 +7,9 @@ import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
 
-export const loader = async ({ request, context }: any) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireAuth(request);
-  const { supabase } = createSupabaseClient(request, context.env);
+  const { supabase } = createSupabaseClient(request);
 
   const { data: profileData } = await supabase.rpc("get_profile", {
     user_id: user.id,

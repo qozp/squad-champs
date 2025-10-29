@@ -15,15 +15,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     user_id: user.id,
   });
 
-  return { user, profile: profileData?.[0] ?? {} };
+  return { user, profileData: profileData };
 };
 
 export default function ProfilePage() {
+  const { user, profileData } = useLoaderData<typeof loader>();
   const [showDialog, setShowDialog] = useState(false);
 
-  const { user, profile } = useLoaderData<typeof loader>();
+  const profile = profileData?.[0];
 
-  if (!profile) {
+  useEffect(() => {
+    console.log(profileData.length);
+    if (profileData.length == 0) {
+      setShowDialog(true);
+    }
+  }, [profileData]);
+
+  if (!profileData) {
     // wait for profile to load
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -35,7 +43,6 @@ export default function ProfilePage() {
   // Define fields dynamically
   const profileFields: { label: string; value?: string | null }[] = [
     { label: "Email", value: user?.email },
-    // { label: "User ID", value: user?.id },
     { label: "Display Name", value: profile?.display_name },
     { label: "First Name", value: profile?.first_name },
     { label: "Last Name", value: profile?.last_name },

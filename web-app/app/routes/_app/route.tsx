@@ -2,7 +2,7 @@
 import { Link, Outlet, useLoaderData } from "react-router";
 import AuthNavbar from "./AuthNavbar";
 import PublicNavbar from "./PublicNavbar";
-import { createClient } from "~/lib/supabase/server";
+import { createSupabaseClient } from "~/lib/supabase/server";
 
 type LoaderArgs = {
   request: Request;

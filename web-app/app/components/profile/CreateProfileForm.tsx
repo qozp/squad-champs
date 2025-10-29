@@ -78,7 +78,7 @@ export default function CreateProfileForm({
       toast.error("Error creating profile: " + error.message);
     } else {
       onClose();
-      window.location.reload(); // refresh to show new profile
+      window.location.reload(); // BAD PRACTICE
     }
   };
 

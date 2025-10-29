@@ -4,14 +4,11 @@ import { toast } from "sonner";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
-import { createClient } from "~/lib/supabase/server";
+import { createClient } from "~/lib/supabase/client";
 
-export const loader = async ({
-  request,
-  context,
-}: LoaderFunctionArgs & { context: any }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireAuth(request);
-  const { supabase } = createClient(request, context.env);
+  const supabase = createClient();
 
   const { data: profileData, error } = await supabase.rpc("get_profile", {
     user_id: user.id,
@@ -19,31 +16,47 @@ export const loader = async ({
 
   if (error) throw new Error(error.message);
 
-  return { user, profile: profileData };
+  return { user };
 };
 
 export default function ProfilePage() {
-  const { user, profile } = useLoaderData<typeof loader>();
+  const { user } = useLoaderData<typeof loader>();
+  const [profile, setProfile] = useState<any>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const supabase = createClient();
 
   useEffect(() => {
-    if (profile.length == 0) {
-      setShowDialog(true);
-    }
-  }, [profile]);
+    const fetchProfile = async () => {
+      const { data, error } = await supabase.rpc("get_profile", {
+        user_id: user.id,
+      });
+      console.log(data);
+      if (error) return toast.error(error.message);
+      if (data?.length) setProfile(data[0]);
 
-  // profileData is the first row of the array or empty object
-  const profileData = profile?.[0] ?? {};
+      if (!data?.length) setShowDialog(true);
+    };
+    fetchProfile();
+  }, [user]);
+
+  if (!profile) {
+    // wait for profile to load
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-foreground">Loading profile...</p>
+      </div>
+    );
+  }
 
   // Define fields dynamically
   const profileFields: { label: string; value?: string | null }[] = [
     { label: "Email", value: user?.email },
     // { label: "User ID", value: user?.id },
-    { label: "Display Name", value: profileData.display_name },
-    { label: "First Name", value: profileData.first_name },
-    { label: "Last Name", value: profileData.last_name },
-    { label: "Nation", value: profileData.nation },
-    { label: "State", value: profileData.state },
+    { label: "Display Name", value: profile?.display_name },
+    { label: "First Name", value: profile?.first_name },
+    { label: "Last Name", value: profile?.last_name },
+    { label: "Nation", value: profile?.nation },
+    { label: "State", value: profile?.state },
   ];
 
   return (
@@ -66,7 +79,7 @@ export default function ProfilePage() {
         <CreateProfileForm
           open={showDialog}
           onClose={() => setShowDialog(false)}
-          profileData={profileData}
+          profileData={profile}
         />
       </section>
     </div>

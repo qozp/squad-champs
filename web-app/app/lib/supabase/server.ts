@@ -1,12 +1,11 @@
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
-import { env } from 'cloudflare:workers'
 
-export function createClient(request: Request, env: any) {
+export function createClient(request: Request) {
   const headers = new Headers()
 
   const supabase = createServerClient(
-    env.VITE_SUPABASE_URL!,
-    env.VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY!,
+    process.env.VITE_SUPABASE_URL!,
+    process.env.VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY!,
     {
       cookies: {
         getAll() {

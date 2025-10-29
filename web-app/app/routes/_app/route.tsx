@@ -1,10 +1,5 @@
 // app/routes/_landing/route.tsx
-import {
-  Link,
-  Outlet,
-  useLoaderData,
-  type LoaderFunctionArgs,
-} from "react-router";
+import { Link, Outlet, useLoaderData } from "react-router";
 import AuthNavbar from "./AuthNavbar";
 import PublicNavbar from "./PublicNavbar";
 import { createClient } from "~/lib/supabase/server";
@@ -13,11 +8,8 @@ type LoaderArgs = {
   request: Request;
 };
 
-export async function loader({
-  request,
-  context,
-}: LoaderFunctionArgs & { context: any }) {
-  const { supabase } = createClient(request, context.env);
+export async function loader({ request }: LoaderArgs) {
+  const { supabase } = createClient(request);
   const { data } = await supabase.auth.getUser();
   return { user: data.user || null };
 }

@@ -7,6 +7,13 @@ import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
 
+export function meta() {
+  return [
+    { title: "Profile - Squad Champs" },
+    { name: "description", content: "Browse and edit your profile." },
+  ];
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireAuth(request);
   const { supabase } = createSupabaseClient(request);

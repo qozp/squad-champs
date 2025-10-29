@@ -17,6 +17,10 @@ import {
   useSearchParams,
 } from "react-router";
 
+export function meta() {
+  return [{ title: "Sign-Up - Squad Champs" }];
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { supabase } = createSupabaseClient(request);
 

@@ -18,6 +18,10 @@ import {
   useSearchParams,
 } from "react-router";
 
+export function meta() {
+  return [{ title: "Forgot Password - Squad Champs" }];
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;

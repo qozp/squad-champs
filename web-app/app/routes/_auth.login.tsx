@@ -16,6 +16,10 @@ import {
   useFetcher,
 } from "react-router";
 
+export function meta() {
+  return [{ title: "Login - Squad Champs" }];
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { supabase, headers } = createSupabaseClient(request);
 

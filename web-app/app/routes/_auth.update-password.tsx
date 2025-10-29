@@ -11,6 +11,10 @@ import { Input } from "app/components/ui/input";
 import { Label } from "app/components/ui/label";
 import { type ActionFunctionArgs, redirect, useFetcher } from "react-router";
 
+export function meta() {
+  return [{ title: "Update Password - Squad Champs" }];
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { supabase, headers } = createSupabaseClient(request);
   const formData = await request.formData();

@@ -19,26 +19,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function ProfilePage() {
-  // const { user } = useLoaderData<typeof loader>();
-  // const [profile, setProfile] = useState<any>(null);
   const [showDialog, setShowDialog] = useState(false);
-  // const supabase = createClient();
 
   const { user, profile } = useLoaderData<typeof loader>();
-
-  // useEffect(() => {
-  //   const fetchProfile = async () => {
-  //     const { data, error } = await supabase.rpc("get_profile", {
-  //       user_id: user.id,
-  //     });
-  //     console.log(data);
-  //     if (error) return toast.error(error.message);
-  //     if (data?.length) setProfile(data[0]);
-
-  //     if (!data?.length) setShowDialog(true);
-  //   };
-  //   fetchProfile();
-  // }, [user]);
 
   if (!profile) {
     // wait for profile to load

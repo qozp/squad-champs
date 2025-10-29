@@ -60,11 +60,6 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const handleLogout = async () => {
-    // await supabase.auth.signOut({ scope: 'local' })
-    // navigate("/");
-  };
-
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
       <div className="py-2 flex justify-between items-center">

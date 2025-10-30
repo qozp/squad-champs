@@ -1,6 +1,5 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Link } from "react-router";
+
 
 export function meta() {
   return [

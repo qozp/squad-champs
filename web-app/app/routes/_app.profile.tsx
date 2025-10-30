@@ -16,29 +16,41 @@ export function meta() {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireAuth(request);
-  const { supabase } = createSupabaseClient(request);
-
-  const { data: profileData } = await supabase.rpc("get_profile", {
-    user_id: user.id,
-  });
-
-  return { user, profileData: profileData };
+  return { user };
 };
 
 export default function ProfilePage() {
-  const { user, profileData } = useLoaderData<typeof loader>();
+  const { user } = useLoaderData<typeof loader>();
   const [showDialog, setShowDialog] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const profile = profileData?.[0];
+  const fetchProfile = async () => {
+    try {
+      const supabase = createClient();
 
-  useEffect(() => {
-    console.log(profileData.length);
-    if (profileData.length == 0) {
-      setShowDialog(true);
+      const { data, error } = await supabase.rpc("get_profile", {
+        user_id: user.id,
+      });
+      console.log(data[0]);
+
+      if (error) throw error;
+
+      setProfile(data[0]);
+
+      // Open create form if profile doesn’t exist
+      if (!data || data.length === 0) setShowDialog(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, [profileData]);
+  };
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-  if (!profileData) {
+  if (loading) {
     // wait for profile to load
     return (
       <div className="flex items-center justify-center min-h-screen">

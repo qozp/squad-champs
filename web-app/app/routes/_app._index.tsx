@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { containsBadWords } from "~/lib/moderation";
+import { containsBadWords, sanitizeInput } from "~/lib/moderation";
 
 export function meta({}: Route.MetaArgs) {
   return [

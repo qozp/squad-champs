@@ -77,3 +77,16 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 ---
 
 Built with ❤️ using React Router.
+
+
+### How to get env from cloudflare in fronted:
+
+```
+export function loader({ context }: Route.LoaderArgs) {
+  return { message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE };
+}
+
+export default function Home() {
+  const message = useLoaderData<typeof loader>();
+  console.log(message);
+```

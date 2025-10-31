@@ -1,20 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { toast } from "sonner";
 import { createClient } from "~/lib/supabase/client";
 import CountryStateSelect from "./CountryRegionSelect";
-import type { User } from "@supabase/supabase-js";
-import { containsBadWords } from "~/lib/moderation";
+import { containsBadWords, sanitizeInput } from "~/lib/moderation";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface CreateProfileFormProps {
   open: boolean;
@@ -33,29 +31,49 @@ export default function CreateProfileForm({
   onClose,
   profileData = {},
 }: CreateProfileFormProps) {
-  const [displayName, setDisplayName] = useState(
-    profileData.display_name ?? ""
-  );
-  const [firstName, setFirstName] = useState(profileData.first_name ?? "");
-  const [lastName, setLastName] = useState(profileData.last_name ?? "");
+  const supabase = createClient();
+
   const [nation, setNation] = useState(profileData.nation ?? "");
   const [state, setState] = useState(profileData.state ?? "");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const supabase = createClient();
+  const displayNameRef = useRef<HTMLInputElement>(null);
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     setLoading(true);
 
+    const displayName = displayNameRef.current?.value ?? "";
+    const firstName = firstNameRef.current?.value ?? "";
+    const lastName = lastNameRef.current?.value ?? "";
+
+    const newErrors: Record<string, string> = {};
+
     if (containsBadWords(displayName)) {
-      alert("Please avoid inappropriate language in Display Name.");
-      setLoading(false);
-      return;
+      newErrors.displayName =
+        "Inappropriate language detected in Display Name.";
+    } else if (displayName.length > 20) {
+      newErrors.displayName = "Display Name must be 20 characters or fewer.";
     }
 
-    if (containsBadWords(firstName) || containsBadWords(lastName)) {
-      toast.error("Please avoid inappropriate language in your name fields.");
+    if (containsBadWords(firstName)) {
+      newErrors.firstName = "Inappropriate language detected in First Name.";
+    } else if (firstName.length > 255) {
+      newErrors.firstName = "First Name must be 255 characters or fewer.";
+    }
+
+    if (containsBadWords(lastName)) {
+      newErrors.lastName = "Inappropriate language detected in Last Name.";
+    } else if (lastName.length > 255) {
+      newErrors.lastName = "Last Name must be 255 characters or fewer.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setLoading(false);
       return;
     }
@@ -65,9 +83,9 @@ export default function CreateProfileForm({
       : "create_profile";
 
     const { error } = await supabase.rpc(rpcName, {
-      display_name: displayName,
-      first_name: firstName || null,
-      last_name: lastName || null,
+      display_name: sanitizeInput(displayName),
+      first_name: sanitizeInput(firstName) || null,
+      last_name: sanitizeInput(lastName) || null,
       nation: nation || null,
       state: state || null,
     });
@@ -75,12 +93,36 @@ export default function CreateProfileForm({
     setLoading(false);
 
     if (error) {
-      toast.error("Error creating profile: " + error.message);
+      setErrors({ form: "Error saving profile: " + error.message });
     } else {
       onClose();
-      window.location.reload(); // BAD PRACTICE
+      window.location.reload(); // TODO: Replace with better revalidation later
     }
   };
+
+  const inputFields = [
+    {
+      id: "displayName",
+      label: "Display Name (Required)",
+      ref: displayNameRef,
+      required: true,
+      defaultValue: profileData.display_name ?? "",
+    },
+    {
+      id: "firstName",
+      label: "First Name",
+      ref: firstNameRef,
+      required: false,
+      defaultValue: profileData.first_name ?? "",
+    },
+    {
+      id: "lastName",
+      label: "Last Name",
+      ref: lastNameRef,
+      required: false,
+      defaultValue: profileData.last_name ?? "",
+    },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -89,40 +131,26 @@ export default function CreateProfileForm({
           <DialogTitle>
             {profileData.display_name ? "Update" : "Create"} Your Profile
           </DialogTitle>
+          <DialogDescription>
+            This information may be displayed elsewhere.
+          </DialogDescription>
         </DialogHeader>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          {[
-            {
-              id: "displayName",
-              label: "Display Name",
-              value: displayName,
-              setter: setDisplayName,
-              required: true,
-            },
-            {
-              id: "firstName",
-              label: "First Name",
-              value: firstName,
-              setter: setFirstName,
-              required: false,
-            },
-            {
-              id: "lastName",
-              label: "Last Name",
-              value: lastName,
-              setter: setLastName,
-              required: false,
-            },
-          ].map(({ id, label, value, setter, required }) => (
+          {inputFields.map(({ id, label, ref, required, defaultValue }) => (
             <div key={id} className="flex flex-col gap-1">
               <Label htmlFor={id}>{label}</Label>
               <Input
                 id={id}
-                value={value}
-                onChange={(e) => setter(e.target.value)}
+                defaultValue={defaultValue}
+                ref={ref}
                 required={required}
+                aria-invalid={!!errors[id]}
+                aria-describedby={errors[id] ? `${id}-error` : undefined}
               />
+              {errors[id] && (
+                <p className="text-sm text-destructive mt-1">{errors[id]}</p>
+              )}
             </div>
           ))}
 
@@ -132,6 +160,12 @@ export default function CreateProfileForm({
             stateValue={state}
             setState={setState}
           />
+
+          {errors.form && (
+            <p className="text-sm text-destructive text-center mt-2">
+              {errors.form}
+            </p>
+          )}
 
           <DialogFooter className="mt-4 flex justify-end">
             <Button type="submit" disabled={loading}>

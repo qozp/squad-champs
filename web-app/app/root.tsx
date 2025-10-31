@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { Toaster } from "sonner";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -36,6 +37,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   );

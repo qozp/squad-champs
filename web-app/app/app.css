@@ -40,6 +40,7 @@ body {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
 }
 
 /* 🌞 LIGHT MODE DEFAULTS */
@@ -50,9 +51,10 @@ body {
   /* site palette */
   --background: #F1F1F1;
   --foreground: #183647; /* Text Color */
-  --secondary-foreground: #183647; /* Secondary Text Color */
+  --secondary-foreground: #748189; /* Secondary Text Color */
   --primary: #f1f1f1; /* Primary Color */
   --secondary: #5586d6; /* Secondary Color */
+  --destructive: #ff2e2e;
 
   /* Navbar */
   --navbar-bg: #5586d6; /* Navigation Bar Color */

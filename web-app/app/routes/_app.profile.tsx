@@ -24,15 +24,13 @@ export default function ProfilePage() {
   const [showDialog, setShowDialog] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
   const fetchProfile = async () => {
     try {
-      const supabase = createClient();
-
       const { data, error } = await supabase.rpc("get_profile", {
         user_id: user.id,
       });
-      console.log(data[0]);
 
       if (error) throw error;
 
@@ -46,6 +44,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchProfile();
   }, []);

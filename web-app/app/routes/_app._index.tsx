@@ -1,5 +1,5 @@
 import type { Route } from "../+types/root";
-import { Link, useLoaderData } from "react-router";
+import { Link } from "react-router";
 import {
   ArrowRight,
   TrendingUp,
@@ -66,9 +66,6 @@ export function loader({ context }: Route.LoaderArgs) {
 }
 
 export default function Home() {
-  const message = useLoaderData<typeof loader>();
-  console.log(message);
-
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Hero Section */}

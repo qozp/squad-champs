@@ -12,6 +12,7 @@ import {
 import { createClient } from "~/lib/supabase/client";
 import CountryStateSelect from "./CountryRegionSelect";
 import { containsBadWords, sanitizeInput } from "~/lib/moderation";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface CreateProfileFormProps {
   open: boolean;
@@ -102,7 +103,7 @@ export default function CreateProfileForm({
   const inputFields = [
     {
       id: "displayName",
-      label: "Display Name",
+      label: "Display Name (Required)",
       ref: displayNameRef,
       required: true,
       defaultValue: profileData.display_name ?? "",
@@ -130,6 +131,9 @@ export default function CreateProfileForm({
           <DialogTitle>
             {profileData.display_name ? "Update" : "Create"} Your Profile
           </DialogTitle>
+          <DialogDescription>
+            This information may be displayed elsewhere.
+          </DialogDescription>
         </DialogHeader>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

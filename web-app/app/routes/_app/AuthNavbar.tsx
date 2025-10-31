@@ -17,7 +17,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
   const location = useLocation();
 
   const links = [
-    { href: "/", label: "Home" },
+    { href: "/home", label: "Home" },
     { href: "/squad", label: "Squad" },
     { href: "/players", label: "Players" },
     { href: "/profile", label: "Profile" },

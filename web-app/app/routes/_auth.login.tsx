@@ -12,13 +12,24 @@ import { Label } from "app/components/ui/label";
 import {
   type ActionFunctionArgs,
   Link,
+  type LoaderFunctionArgs,
   redirect,
   useFetcher,
+  useLoaderData,
 } from "react-router";
+import { requireAuth } from "~/lib/requireAuth";
 
 export function meta() {
   return [{ title: "Login - Squad Champs" }];
 }
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await requireAuth(request);
+
+  if (user) {
+    return redirect("/home");
+  }
+};
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { supabase, headers } = createSupabaseClient(request);
@@ -36,20 +47,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (error) throw new Error(error.message);
   if (!data.user) throw new Error("No user found");
 
-  const { data: profileData, error: profileError } = await supabase.rpc(
-    "get_profile",
-    { user_id: data.user.id }
-  );
-
-  if (profileError) throw new Error(profileError.message);
-
-  console.log(profileData);
-  if (profileData.length == 0) {
-    return redirect("/profile", { headers });
-  }
-
   // Update this route to redirect to an authenticated route. The user already has an active session.
-  return redirect("/", { headers });
+  return redirect("/home", { headers });
 };
 
 export default function Login() {

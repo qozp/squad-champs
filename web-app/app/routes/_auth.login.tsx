@@ -24,9 +24,11 @@ export function meta() {
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await requireAuth(request);
+  const { supabase } = createSupabaseClient(request);
+  const { data, error } = await supabase.auth.getUser();
 
-  if (user) {
+  if (error) return;
+  if (data?.user) {
     return redirect("/home");
   }
 };

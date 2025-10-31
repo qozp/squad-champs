@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
 import { toast } from "sonner";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
+import type { Route } from "../+types/root";
 
 export function meta() {
   return [
@@ -14,7 +15,7 @@ export function meta() {
   ];
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
   return { user };
 };

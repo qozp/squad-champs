@@ -1,5 +1,5 @@
 import type { Route } from "../+types/root";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 import {
   ArrowRight,
   TrendingUp,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { containsBadWords, sanitizeInput } from "~/lib/moderation";
+import { createSupabaseClient } from "~/lib/supabase/server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -61,7 +61,15 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export function loader({ context }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const { supabase } = createSupabaseClient(request);
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) return;
+  if (data?.user) {
+    return redirect("/home");
+  }
+
   return { message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE };
 }
 

@@ -1,5 +1,6 @@
-import { useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
 import { requireAuth } from "~/lib/requireAuth";
+import type { Route } from "../+types/root";
 
 export function meta() {
   return [
@@ -8,7 +9,7 @@ export function meta() {
   ];
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
   return { user };
 };

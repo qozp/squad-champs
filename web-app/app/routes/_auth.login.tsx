@@ -12,18 +12,18 @@ import { Label } from "app/components/ui/label";
 import {
   type ActionFunctionArgs,
   Link,
-  type LoaderFunctionArgs,
   redirect,
   useFetcher,
   useLoaderData,
 } from "react-router";
 import { requireAuth } from "~/lib/requireAuth";
+import type { Route } from "../+types/root";
 
 export function meta() {
   return [{ title: "Login - Squad Champs" }];
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const { supabase } = createSupabaseClient(request);
   const { data, error } = await supabase.auth.getUser();
 

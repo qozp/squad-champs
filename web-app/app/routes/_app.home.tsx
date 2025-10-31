@@ -1,5 +1,5 @@
 import type { Route } from "../+types/root";
-import { Link, useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import {
   ArrowRight,
   TrendingUp,
@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
   return { user };
 };

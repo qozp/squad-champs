@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import PlayersTable from "~/components/players/PlayersTable";
 
 export function meta() {
   return [
@@ -69,7 +70,7 @@ export default function Players() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+      <div className="min-h-screen flex items-center justify-center">
         Loading players...
       </div>
     );
@@ -83,44 +84,7 @@ export default function Players() {
           Explore the top NBA players, their stats, and add them to your fantasy
           squad.
         </p>
-        {players.length === 0 ? (
-          <Card className="max-w-lg mx-auto bg-card border border-border">
-            <CardContent className="p-6 text-center">
-              <p>No players found.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Position</TableHead>
-                <TableHead>Team</TableHead>
-                <TableHead>Height</TableHead>
-                <TableHead>Weight</TableHead>
-                <TableHead>Birthdate</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {players.map((player) => (
-                <TableRow key={player.id}>
-                  <TableCell>
-                    {player.first_name} {player.last_name}
-                  </TableCell>
-                  <TableCell>{player.position}</TableCell>
-                  <TableCell>{player.team_name || "N/A"}</TableCell>
-                  <TableCell>
-                    {player.height_in ? `${player.height_in}"` : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {player.weight_lb ? `${player.weight_lb} lb` : "N/A"}
-                  </TableCell>
-                  <TableCell>{player.birthdate || "N/A"}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        <PlayersTable />
       </section>
     </div>
   );

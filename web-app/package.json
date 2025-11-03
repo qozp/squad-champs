@@ -18,6 +18,7 @@
 		"@radix-ui/react-slot": "^1.2.3",
 		"@radix-ui/react-tooltip": "^1.2.8",
 		"@react-router/fs-routes": "^7.9.4",
+		"@shadcn/ui": "^0.0.4",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.76.1",
 		"bad-words": "^4.0.0",

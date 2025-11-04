@@ -1,23 +1,67 @@
 ---
 const links = [
   { href: "/", label: "Home" },
+  { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
 ];
 ---
 
-<nav
-  class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 shadow"
->
-  <a href="/" class="text-xl font-bold text-blue-600">Squad Champs</a>
-  <ul class="flex space-x-6">
-    {
-      links.map((link) => (
-        <li>
-          <a href={link.href} class="hover:text-blue-500">
-            {link.label}
-          </a>
-        </li>
-      ))
-    }
+<nav class="flex flex-col md:flex-row md:items-center md:justify-between px-6 py-4 bg-white dark:bg-gray-900 shadow">
+  <!-- Top Row: Logo + Hamburger -->
+  <div class="flex items-center space-x-4 w-full md:w-auto">
+        <!-- Mobile Menu Button -->
+    <button
+      id="menu-btn"
+      class="md:hidden flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+      aria-label="Toggle menu"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      </svg>
+    </button>
+    <a href="/" class="text-xl font-bold text-blue-600">Squad Champs</a>
+  </div>
+
+  <!-- Navigation Links -->
+  <ul
+    id="mobile-menu"
+    class="hidden md:flex flex-col md:flex-row md:space-x-6 mt-4 md:mt-0 items-center space-y-4 md:space-y-0"
+  >
+    {links.map((link) => (
+      <li>
+        <a
+          href={link.href}
+          class="block text-lg hover:text-blue-500 transition-colors"
+        >
+          {link.label}
+        </a>
+      </li>
+    ))}
   </ul>
+
+  <!-- Client-side Script -->
+  <script>
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+
+    btn?.addEventListener('click', () => {
+      menu?.classList.toggle('hidden');
+    });
+
+    // Close menu when link is clicked
+    menu?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => menu.classList.add('hidden'));
+    });
+  </script>
 </nav>

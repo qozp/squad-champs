@@ -76,7 +76,7 @@ export default function SquadPage() {
         <div className="flex items-center">
           <p>
             <strong>Squad Name: </strong>{" "}
-            {sanitizeInput(squad.name) ?? "Not set"}
+            {sanitizeInput(squad?.name) ?? "Not set"}
           </p>
         </div>
         {/* Button to open Create / Update Squad Form */}

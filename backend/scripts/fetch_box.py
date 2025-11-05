@@ -1,7 +1,7 @@
 import csv
 import json
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import re
 from dotenv import load_dotenv
 from supabase import create_client
@@ -166,10 +166,7 @@ def get_player_details_for_game(game, supabase):
 # Main
 # -----------------------------
 
-def main(target_date_str="2025-10-21"):
-    supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
-    target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date()
-
+def main_for_date(target_date, supabase):
     print(f"Fetching games for {target_date}...")
 
     # Determine which gameweek this date belongs to
@@ -208,4 +205,14 @@ def main(target_date_str="2025-10-21"):
         print("✅ Player Games inserted successfully.")
 
 if __name__ == "__main__":
-    main()
+    supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
+
+    start_date = datetime.strptime("2025-10-24", "%Y-%m-%d").date()
+    end_date = datetime.strptime("2025-11-04", "%Y-%m-%d").date()
+
+    delta = timedelta(days=1)
+    current_date = start_date
+
+    while current_date <= end_date:
+        main_for_date(current_date, supabase)
+        current_date += delta

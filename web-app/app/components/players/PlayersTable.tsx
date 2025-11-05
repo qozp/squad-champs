@@ -155,92 +155,102 @@ export default function PlayersTable() {
     { key: "avg_fp", label: "FPPG" },
   ];
 
-  return (
-    <div>
-      {/* Search Input */}
-      <div className="flex justify-between items-center">
-        <Input
-          placeholder="Search players..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <PositionFilter value={positionFilter} onChange={setPositionFilter} />
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((col) => (
-              <TableHead
-                key={col.key}
-                onClick={() => handleSort(col.key)}
-                className="cursor-pointer select-none"
-              >
-                {col.label}{" "}
-                {sortBy === col.key
-                  ? sortDirection === "asc"
-                    ? " ▲"
-                    : " ▼"
-                  : ""}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
+    if (loading) {
+      // wait for profile to load
+      return (
+        <div className="flex items-center justify-center p-10">
+          <p className="text-lg text-foreground">Loading players...</p>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        {/* Search Input */}
+        <div className="flex justify-between items-center">
+          <Input
+            placeholder="Search players..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm"
+          />
+          <PositionFilter value={positionFilter} onChange={setPositionFilter} />
+        </div>
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="text-center py-6">
-                Loading...
-              </TableCell>
+              {columns.map((col) => (
+                <TableHead
+                  key={col.key}
+                  onClick={() => handleSort(col.key)}
+                  className="cursor-pointer select-none"
+                >
+                  {col.label}{" "}
+                  {sortBy === col.key
+                    ? sortDirection === "asc"
+                      ? " ▲"
+                      : " ▼"
+                    : ""}
+                </TableHead>
+              ))}
             </TableRow>
-          ) : paginatedPlayers.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center py-6">
-                No players found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            paginatedPlayers.map((p) => (
-              <TableRow key={p.id}>
-                <TableCell>
-                  {p.first_name} {p.last_name}
+          </TableHeader>
+          <TableBody>
+            {paginatedPlayers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-6">
+                  No players found.
                 </TableCell>
-                <TableCell>{p.position}</TableCell>
-                <TableCell>{p.team_name ?? "—"}</TableCell>
-                <TableCell>{p.avg_pts.toFixed(1)}</TableCell>
-                <TableCell>{p.avg_reb.toFixed(1)}</TableCell>
-                <TableCell>{p.avg_ast.toFixed(1)}</TableCell>
-                <TableCell>{p.avg_stl.toFixed(1)}</TableCell>
-                <TableCell>{p.avg_blk.toFixed(1)}</TableCell>
-                <TableCell>{p.avg_fp.toFixed(1)}</TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              paginatedPlayers.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>
+                    <a
+                      href={`https://www.nba.com/player/${p.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {p.first_name} {p.last_name}
+                    </a>
+                  </TableCell>
+                  <TableCell>{p.position}</TableCell>
+                  <TableCell>{p.team_name ?? "—"}</TableCell>
+                  <TableCell>{p.avg_pts.toFixed(1)}</TableCell>
+                  <TableCell>{p.avg_reb.toFixed(1)}</TableCell>
+                  <TableCell>{p.avg_ast.toFixed(1)}</TableCell>
+                  <TableCell>{p.avg_stl.toFixed(1)}</TableCell>
+                  <TableCell>{p.avg_blk.toFixed(1)}</TableCell>
+                  <TableCell>{p.avg_fp.toFixed(1)}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-6">
-        <Button
-          variant="outline"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1 || loading}
-        >
-          Previous
-        </Button>
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-6">
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
 
-        <p className="text-sm text-muted-foreground">
-          Page {page} of {totalPages || 1}
-        </p>
+          <p className="text-sm text-muted-foreground">
+            Page {page} of {totalPages || 1}
+          </p>
 
-        <Button
-          variant="outline"
-          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          disabled={page === totalPages || loading}
-        >
-          Next
-        </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
 }

@@ -11,6 +11,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { createClient } from "~/lib/supabase/client";
 import { Input } from "../ui/input";
+import { Select } from "../ui/select";
+import PositionFilter from "./PositionSelect";
 
 const PAGE_SIZE = 10;
 
@@ -20,6 +22,11 @@ export default function PlayersTable() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<keyof any | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | "">(
+    "asc"
+  );
+  const [positionFilter, setPositionFilter] = useState("All Positions");
 
   const supabase = createClient();
 
@@ -43,13 +50,29 @@ export default function PlayersTable() {
         teamMap[t.id] = t.team_name;
       });
 
-      // Map each player to include team_name
-      const playersWithTeamName = playersData?.map((p: any) => ({
+      const { data: statsData, error } = await supabase.rpc(
+        "get_player_averages"
+      );
+
+      // Map stats by player_id for easy access
+      const statsMap: Record<number, any> = {};
+      statsData?.forEach((s: any) => {
+        statsMap[s.player_id] = s;
+      });
+
+      // Merge players, teams, and stats
+      const playersWithStats = playersData?.map((p: any) => ({
         ...p,
         team_name: p.team_id ? teamMap[p.team_id] : "N/A",
+        avg_pts: statsMap[p.id]?.avg_pts ?? 0,
+        avg_reb: statsMap[p.id]?.avg_reb ?? 0,
+        avg_ast: statsMap[p.id]?.avg_ast ?? 0,
+        avg_stl: statsMap[p.id]?.avg_stl ?? 0,
+        avg_blk: statsMap[p.id]?.avg_blk ?? 0,
+        avg_fp: statsMap[p.id]?.avg_fp ?? 0,
       }));
 
-      setPlayers(playersWithTeamName || []);
+      setPlayers(playersWithStats || []);
     } catch (err) {
       console.error("Error fetching players or teams:", err);
     } finally {
@@ -63,26 +86,74 @@ export default function PlayersTable() {
 
   // Filter players whenever the search term changes
   useEffect(() => {
-    if (!search.trim()) {
-      setFilteredPlayers(players);
-      setPage(1);
-      return;
+    let filtered = players;
+
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      filtered = filtered.filter((p) =>
+        `${p.first_name} ${p.last_name}`.toLowerCase().includes(query)
+      );
     }
 
-    const query = search.toLowerCase();
-    const filtered = players.filter((p) =>
-      `${p.first_name} ${p.last_name}`.toLowerCase().includes(query)
-    );
+    if (positionFilter != "All Positions") {
+      filtered = filtered.filter((p) => p.position === positionFilter);
+    }
 
     setFilteredPlayers(filtered);
-    setPage(1); // reset to first page when searching
-  }, [search, players]);
+    setPage(1);
+  }, [search, positionFilter, players]);
+
+  // Function to handle clicking a column header
+  const handleSort = (column: keyof any) => {
+    if (sortBy === column) {
+      // Cycle through desc → asc → none
+      if (sortDirection === "desc") {
+        setSortDirection("asc");
+      } else if (sortDirection === "asc") {
+        setSortBy(""); // Clear sort
+        setSortDirection(""); // No direction
+      } else {
+        setSortDirection("desc");
+      }
+    } else {
+      // New column clicked → start with descending
+      setSortBy(column);
+      setSortDirection("desc");
+    }
+  };
+
+  // Apply sorting
+  const sortedPlayers = [...filteredPlayers].sort((a, b) => {
+    if (!sortBy) return 0;
+    const valA = a[sortBy] ?? "";
+    const valB = b[sortBy] ?? "";
+
+    if (typeof valA === "number" && typeof valB === "number") {
+      return sortDirection === "asc" ? valA - valB : valB - valA;
+    }
+
+    return sortDirection === "asc"
+      ? String(valA).localeCompare(String(valB))
+      : String(valB).localeCompare(String(valA));
+  });
 
   const totalPages = Math.ceil(filteredPlayers.length / PAGE_SIZE);
-  const paginatedPlayers = filteredPlayers.slice(
+  const paginatedPlayers = sortedPlayers.slice(
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
   );
+
+  const columns = [
+    { key: "first_name", label: "Player" },
+    { key: "position", label: "Position" },
+    { key: "team_name", label: "Team" },
+    { key: "avg_pts", label: "PPG" },
+    { key: "avg_reb", label: "RPG" },
+    { key: "avg_ast", label: "APG" },
+    { key: "avg_stl", label: "SPG" },
+    { key: "avg_blk", label: "BPG" },
+    { key: "avg_fp", label: "FPPG" },
+  ];
 
   return (
     <div>
@@ -94,13 +165,25 @@ export default function PlayersTable() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        <PositionFilter value={positionFilter} onChange={setPositionFilter} />
       </div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Player</TableHead>
-            <TableHead>Position</TableHead>
-            <TableHead>Team</TableHead>
+            {columns.map((col) => (
+              <TableHead
+                key={col.key}
+                onClick={() => handleSort(col.key)}
+                className="cursor-pointer select-none"
+              >
+                {col.label}{" "}
+                {sortBy === col.key
+                  ? sortDirection === "asc"
+                    ? " ▲"
+                    : " ▼"
+                  : ""}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -124,6 +207,12 @@ export default function PlayersTable() {
                 </TableCell>
                 <TableCell>{p.position}</TableCell>
                 <TableCell>{p.team_name ?? "—"}</TableCell>
+                <TableCell>{p.avg_pts.toFixed(1)}</TableCell>
+                <TableCell>{p.avg_reb.toFixed(1)}</TableCell>
+                <TableCell>{p.avg_ast.toFixed(1)}</TableCell>
+                <TableCell>{p.avg_stl.toFixed(1)}</TableCell>
+                <TableCell>{p.avg_blk.toFixed(1)}</TableCell>
+                <TableCell>{p.avg_fp.toFixed(1)}</TableCell>
               </TableRow>
             ))
           )}

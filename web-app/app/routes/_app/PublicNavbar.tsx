@@ -12,6 +12,7 @@ export default function PublicNavbar() {
 
   const links = [
     { href: "/", label: "Home" },
+    { href: "/players", label: "Players" },
     { href: "/login", label: "Login" },
   ];
 

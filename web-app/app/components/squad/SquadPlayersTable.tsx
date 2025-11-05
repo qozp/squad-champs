@@ -11,11 +11,11 @@ import {
 import { Button } from "~/components/ui/button";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import { Input } from "../ui/input";
-import PositionFilter from "./PositionSelect";
+import PositionFilter from "../players/PositionSelect";
 
 const PAGE_SIZE = 10;
 
-export default function PlayersTable({}) {
+export default function SquadPlayersTable({}) {
   const [players, setPlayers] = useState<any[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,11 +81,6 @@ export default function PlayersTable({}) {
     { key: "first_name", label: "Player" },
     { key: "position", label: "Position" },
     { key: "team_name", label: "Team" },
-    { key: "avg_pts", label: "PPG" },
-    { key: "avg_reb", label: "RPG" },
-    { key: "avg_ast", label: "APG" },
-    { key: "avg_stl", label: "SPG" },
-    { key: "avg_blk", label: "BPG" },
     { key: "avg_fp", label: "FPPG" },
   ];
 

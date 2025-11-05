@@ -4,9 +4,10 @@ import { toast } from "sonner";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
-import { createClient } from "~/lib/supabase/client";
+import { supabaseBrowser } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
 import type { Route } from "../+types/root";
+import { sanitizeInput } from "~/lib/moderation";
 
 export function meta() {
   return [
@@ -25,11 +26,10 @@ export default function ProfilePage() {
   const [showDialog, setShowDialog] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase.rpc("get_profile", {
+      const { data, error } = await supabaseBrowser.rpc("get_profile", {
         user_id: user.id,
       });
 
@@ -62,7 +62,7 @@ export default function ProfilePage() {
   // Define fields dynamically
   const profileFields: { label: string; value?: string | null }[] = [
     { label: "Email", value: user?.email },
-    { label: "Display Name", value: profile?.display_name },
+    { label: "Display Name", value: sanitizeInput(profile?.display_name) },
     { label: "First Name", value: profile?.first_name },
     { label: "Last Name", value: profile?.last_name },
     { label: "Nation", value: profile?.nation },

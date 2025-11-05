@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { containsBadWords, sanitizeInput } from "~/lib/moderation";
 import { requireAuth } from "~/lib/requireAuth";
-import { createClient } from "~/lib/supabase/client";
+import { supabaseBrowser } from "~/lib/supabase/client";
 import { useEffect, useState } from "react";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { toast } from "sonner";
@@ -38,11 +38,9 @@ export default function Home() {
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
-
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase.rpc("get_profile", {
+      const { data, error } = await supabaseBrowser.rpc("get_profile", {
         user_id: user.id,
       });
 
@@ -60,15 +58,6 @@ export default function Home() {
   useEffect(() => {
     fetchProfile();
   }, []);
-
-  const profileFields: { label: string; value?: string | null }[] = [
-    { label: "Email", value: user?.email },
-    { label: "Display Name", value: profile?.display_name },
-    { label: "First Name", value: profile?.first_name },
-    { label: "Last Name", value: profile?.last_name },
-    { label: "Nation", value: profile?.nation },
-    { label: "State", value: profile?.state },
-  ];
 
   if (loading) {
     // wait for profile to load

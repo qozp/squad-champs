@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { Button } from "~/components/ui/button";
 import { requireAuth } from "~/lib/requireAuth";
-import { createClient } from "~/lib/supabase/client";
+import { supabaseBrowser } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
 import type { Route } from "../+types/root";
 import { sanitizeInput } from "~/lib/moderation";
@@ -26,11 +26,10 @@ export default function ProfilePage() {
   const [showDialog, setShowDialog] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase.rpc("get_profile", {
+      const { data, error } = await supabaseBrowser.rpc("get_profile", {
         user_id: user.id,
       });
 

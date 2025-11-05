@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { createClient } from "~/lib/supabase/client";
+import { supabaseBrowser } from "~/lib/supabase/client";
 import CountryStateSelect from "./CountryRegionSelect";
 import { containsBadWords, sanitizeInput } from "~/lib/moderation";
 import { DialogDescription } from "@radix-ui/react-dialog";
@@ -31,8 +31,6 @@ export default function CreateProfileForm({
   onClose,
   profileData = {},
 }: CreateProfileFormProps) {
-  const supabase = createClient();
-
   const [nation, setNation] = useState(profileData.nation ?? "");
   const [state, setState] = useState(profileData.state ?? "");
   const [loading, setLoading] = useState(false);
@@ -82,7 +80,7 @@ export default function CreateProfileForm({
       ? "update_profile"
       : "create_profile";
 
-    const { error } = await supabase.rpc(rpcName, {
+    const { error } = await supabaseBrowser.rpc(rpcName, {
       display_name: displayName,
       first_name: firstName || null,
       last_name: lastName || null,

@@ -9,3 +9,9 @@ export function createClient() {
     VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY!
   )
 }
+
+export const supabaseBrowser = createBrowserClient(
+  VITE_SUPABASE_URL!,
+  VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY!
+);
+

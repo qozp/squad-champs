@@ -10,24 +10,15 @@ import {
 } from "~/components/ui/table";
 
 export default function CurrentSquad() {
-  const [squad, setSquad] = useState<any | null>(null); // squad metadata
   const [players, setPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSquad = async () => {
       try {
-        // Fetch squad metadata for current user
-        const { data: squadData, error: squadError } = await supabaseBrowser
-          .from("squad")
-          .select("*");
-        if (squadError) throw squadError;
-        setSquad(squadData);
-
         // Fetch squad players using the RPC
         const { data: playerData, error: playerError } =
           await supabaseBrowser.rpc("get_squad_players_by_user");
-
         if (playerError) throw playerError;
         setPlayers(playerData || []);
       } catch (err) {
@@ -44,11 +35,6 @@ export default function CurrentSquad() {
 
   return (
     <div>
-      {squad && (
-        <p className="mb-4 font-semibold">
-          {squad.squad_name} Total Points: {squad.total_points}
-        </p>
-      )}
       <Table>
         <TableHeader>
           <TableRow>

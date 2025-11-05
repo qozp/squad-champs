@@ -79,7 +79,7 @@ export default function Home() {
           </p>
           <Link to="/squad">
             <Button size="lg" variant="default">
-              Create Your Squad
+              Manage Your Squad
             </Button>
           </Link>
         </div>

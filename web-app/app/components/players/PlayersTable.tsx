@@ -11,6 +11,8 @@ import {
 import { Button } from "~/components/ui/button";
 import { createClient } from "~/lib/supabase/client";
 import { Input } from "../ui/input";
+import { Select } from "../ui/select";
+import PositionFilter from "./PositionSelect";
 
 const PAGE_SIZE = 10;
 
@@ -21,7 +23,10 @@ export default function PlayersTable() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof any | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | "">(
+    "asc"
+  );
+  const [positionFilter, setPositionFilter] = useState("All Positions");
 
   const supabase = createClient();
 
@@ -81,29 +86,39 @@ export default function PlayersTable() {
 
   // Filter players whenever the search term changes
   useEffect(() => {
-    if (!search.trim()) {
-      setFilteredPlayers(players);
-      setPage(1);
-      return;
+    let filtered = players;
+
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      filtered = filtered.filter((p) =>
+        `${p.first_name} ${p.last_name}`.toLowerCase().includes(query)
+      );
     }
 
-    const query = search.toLowerCase();
-    const filtered = players.filter((p) =>
-      `${p.first_name} ${p.last_name}`.toLowerCase().includes(query)
-    );
+    if (positionFilter != "All Positions") {
+      filtered = filtered.filter((p) => p.position === positionFilter);
+    }
 
     setFilteredPlayers(filtered);
-    setPage(1); // reset to first page when searching
-  }, [search, players]);
+    setPage(1);
+  }, [search, positionFilter, players]);
 
   // Function to handle clicking a column header
   const handleSort = (column: keyof any) => {
     if (sortBy === column) {
-      // Toggle direction
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      // Cycle through desc → asc → none
+      if (sortDirection === "desc") {
+        setSortDirection("asc");
+      } else if (sortDirection === "asc") {
+        setSortBy(""); // Clear sort
+        setSortDirection(""); // No direction
+      } else {
+        setSortDirection("desc");
+      }
     } else {
+      // New column clicked → start with descending
       setSortBy(column);
-      setSortDirection("asc");
+      setSortDirection("desc");
     }
   };
 
@@ -150,6 +165,7 @@ export default function PlayersTable() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        <PositionFilter value={positionFilter} onChange={setPositionFilter} />
       </div>
       <Table>
         <TableHeader>

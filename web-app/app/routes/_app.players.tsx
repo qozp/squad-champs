@@ -20,10 +20,10 @@ export function meta() {
   ];
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const user = await requireAuth(request);
-  return { user };
-};
+// export const loader = async ({ request }: Route.LoaderArgs) => {
+//   const user = await requireAuth(request);
+//   return { user };
+// };
 
 export default function Players() {
   return (

@@ -7,6 +7,7 @@ import { requireAuth } from "~/lib/requireAuth";
 import { createClient } from "~/lib/supabase/client";
 import { createSupabaseClient } from "~/lib/supabase/server";
 import type { Route } from "../+types/root";
+import { sanitizeInput } from "~/lib/moderation";
 
 export function meta() {
   return [
@@ -62,7 +63,7 @@ export default function ProfilePage() {
   // Define fields dynamically
   const profileFields: { label: string; value?: string | null }[] = [
     { label: "Email", value: user?.email },
-    { label: "Display Name", value: profile?.display_name },
+    { label: "Display Name", value: sanitizeInput(profile?.display_name) },
     { label: "First Name", value: profile?.first_name },
     { label: "Last Name", value: profile?.last_name },
     { label: "Nation", value: profile?.nation },

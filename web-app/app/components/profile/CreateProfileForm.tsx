@@ -83,9 +83,9 @@ export default function CreateProfileForm({
       : "create_profile";
 
     const { error } = await supabase.rpc(rpcName, {
-      display_name: sanitizeInput(displayName),
-      first_name: sanitizeInput(firstName) || null,
-      last_name: sanitizeInput(lastName) || null,
+      display_name: displayName,
+      first_name: firstName || null,
+      last_name: lastName || null,
       nation: nation || null,
       state: state || null,
     });

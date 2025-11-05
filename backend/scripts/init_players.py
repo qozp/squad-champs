@@ -23,11 +23,16 @@ def get_player_details(player_id):
         info = commonplayerinfo.CommonPlayerInfo(player_id=player_id)
         data = info.get_normalized_dict()["CommonPlayerInfo"][0]
 
+        # Get position and trim to first part if it has a dash
+        position = data.get("POSITION") or "Unknown"
+        if position and "-" in position:
+            position = position.split("-")[0].strip()
+
         return {
             "id": data.get("PERSON_ID"),
             "first_name": data.get("FIRST_NAME"),
             "last_name": data.get("LAST_NAME"),
-            "position": data.get("POSITION") or "Unknown",
+            "position": position,
             "team_id": data.get("TEAM_ID") or None,
             "height_in": parse_height(data.get("HEIGHT")),
             "weight_lb": parse_weight(data.get("WEIGHT")),

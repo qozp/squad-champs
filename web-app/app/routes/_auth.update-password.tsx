@@ -33,7 +33,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   // Redirect to sign-in page after successful password update
-  return redirect("/protected", { headers });
+  return redirect("/home", { headers });
 };
 
 export default function Page() {

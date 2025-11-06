@@ -47,7 +47,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/protected`,
+      emailRedirectTo: `${origin}/home`,
     },
   });
 

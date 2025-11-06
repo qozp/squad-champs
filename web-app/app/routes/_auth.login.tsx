@@ -46,8 +46,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     password,
   });
 
-  if (error) throw new Error(error.message);
-  if (!data.user) throw new Error("No user found");
+  if (error) return { error: error.message };
 
   // Update this route to redirect to an authenticated route. The user already has an active session.
   return redirect("/home", { headers });
@@ -56,6 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Login() {
   const fetcher = useFetcher<typeof action>();
   const loading = fetcher.state === "submitting";
+  const error = fetcher.data?.error;
 
   return (
     <div className="flex min-h-auto w-full items-center justify-center p-6 md:-10">
@@ -98,6 +98,9 @@ export default function Login() {
                       required
                     />
                   </div>
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </Button>

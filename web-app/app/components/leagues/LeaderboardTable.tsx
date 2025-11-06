@@ -10,6 +10,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useState, useMemo } from "react";
+import { sanitizeInput } from "~/lib/moderation";
 
 interface Squad {
   user_id: string;
@@ -131,8 +132,8 @@ export default function LeaderboardTable({
           ) : (
             paginatedData.map((s) => (
               <TableRow key={s.user_id}>
-                <TableCell>{s.squad_name}</TableCell>
-                <TableCell>{s.display_name}</TableCell>
+                <TableCell>{sanitizeInput(s.squad_name)}</TableCell>
+                <TableCell>{sanitizeInput(s.display_name)}</TableCell>
                 <TableCell>{s.total_points}</TableCell>
               </TableRow>
             ))

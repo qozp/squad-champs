@@ -58,7 +58,7 @@ export default function SquadPlayersTable({}) {
       });
 
       // Merge players, teams, and stats
-      const playersWithStats = playersData?.map((p: any) => ({
+      let playersWithStats = playersData?.map((p: any) => ({
         ...p,
         team_name: p.team_id ? teamMap[p.team_id] : "N/A",
         avg_pts: statsMap[p.id]?.avg_pts ?? 0,
@@ -68,6 +68,9 @@ export default function SquadPlayersTable({}) {
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
       }));
+
+      // Sort by avg_fp descending (highest first)
+      playersWithStats = playersWithStats?.sort((a, b) => b.avg_fp - a.avg_fp);
 
       setPlayers(playersWithStats || []);
     } catch (err) {

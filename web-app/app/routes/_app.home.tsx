@@ -108,7 +108,7 @@ export default function Home() {
               {
                 icon: <DollarSign className="h-6 w-6 text-secondary" />,
                 title: "Prizes",
-                desc: "Earn rewards for being the top weekly and/or seasonal scorer. Partipation is completely free.",
+                desc: "Earn rewards for being the top weekly and/or seasonal scorer. Participation is completely free.",
               },
             ].map((f, i) => (
               <Card

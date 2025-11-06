@@ -52,9 +52,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 
   if (error) {
-    return { error: error.message };
-  }
+    // make the password requirement message concise
+    const message = error.message.includes(
+      "Password should be at least 8 characters"
+    )
+      ? "Password must be at least 8 characters and include a lowercase, uppercase, number, and symbol."
+      : error.message;
 
+    return { error: message };
+  }
   return redirect("/sign-up?success");
 };
 
@@ -113,6 +119,9 @@ export default function SignUp() {
                         name="password"
                         type="password"
                         required
+                        autoComplete="new-password"
+                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}"
+                        title="Must be at least 8 characters and include upper, lower, number, and symbol."
                       />
                     </div>
                     <div className="grid gap-2">

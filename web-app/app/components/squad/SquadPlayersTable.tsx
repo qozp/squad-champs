@@ -67,6 +67,7 @@ export default function SquadPlayersTable({}) {
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
+        price: p.price ? p.price : "N/A",
       }));
 
       // Sort by avg_fp descending (highest first)
@@ -85,6 +86,7 @@ export default function SquadPlayersTable({}) {
     { key: "position", label: "Position" },
     { key: "team_name", label: "Team" },
     { key: "avg_fp", label: "FPPG" },
+    { key: "price", label: "Price ($)" },
   ];
 
   useEffect(() => {

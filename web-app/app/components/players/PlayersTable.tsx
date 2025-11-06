@@ -67,6 +67,7 @@ export default function PlayersTable({}) {
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
+        price: p.price ? p.price : "N/A",
       }));
 
       // Sort by avg_fp descending (highest first)
@@ -90,6 +91,7 @@ export default function PlayersTable({}) {
     { key: "avg_stl", label: "SPG" },
     { key: "avg_blk", label: "BPG" },
     { key: "avg_fp", label: "FPPG" },
+    { key: "price", label: "Price ($)" },
   ];
 
   useEffect(() => {

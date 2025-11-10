@@ -222,12 +222,19 @@ def main_for_date(target_date, supabase):
 if __name__ == "__main__":
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
 
-    start_date = datetime.strptime("2025-11-05", "%Y-%m-%d").date()
-    end_date = datetime.strptime("2025-11-05", "%Y-%m-%d").date()
+    yesterday = date.today() - timedelta(days=1)
+    
+    print(f"Running daily job for {yesterday}...")
+    main_for_date(yesterday, supabase)
 
-    delta = timedelta(days=1)
-    current_date = start_date
 
-    while current_date <= end_date:
-        main_for_date(current_date, supabase)
-        current_date += delta
+
+    # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()
+    # end_date = datetime.strptime("2025-11-09", "%Y-%m-%d").date()
+
+    # delta = timedelta(days=1)
+    # current_date = start_date
+
+    # while current_date <= end_date:
+    #     main_for_date(current_date, supabase)
+    #     current_date += delta

@@ -21,7 +21,7 @@
 	},
 	"routes": [
 		{
-		"pattern": "basketball.squadchamps.com",
+		"pattern": "squadchamps.com",
 		"custom_domain": true
 		}
   	]

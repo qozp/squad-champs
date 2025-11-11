@@ -1,7 +1,7 @@
 import logging
 import os
 
-LOG_DIR = "logs"
+LOG_DIR = "log"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 # -----------------------------

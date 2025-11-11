@@ -1,5 +1,6 @@
 import csv
 import json
+import logging
 import os
 from datetime import datetime, date, timedelta
 import re
@@ -12,6 +13,19 @@ from init_players import get_player_details
 
 load_dotenv()
 
+# -----------------------------
+# Setup logging
+# -----------------------------
+
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, "daily_job.log")
+
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 
 # -----------------------------
 # Helper Functions
@@ -224,10 +238,15 @@ if __name__ == "__main__":
 
     yesterday = date.today() - timedelta(days=1)
     
-    print(f"Running daily job for {yesterday}...")
-    main_for_date(yesterday, supabase)
+    try:
+        print("Running daily job for %s...", yesterday)
+        logging.info("Starting daily job for %s", yesterday)
+        main_for_date(yesterday, supabase)
+        logging.info("✅ Successfully completed job for  %s", yesterday)
 
-
+    except Exception as e:
+        logging.error("❌ Error running job for  %s: %s", yesterday, e)
+        print(f"Error: {e}")
 
     # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()
     # end_date = datetime.strptime("2025-11-09", "%Y-%m-%d").date()

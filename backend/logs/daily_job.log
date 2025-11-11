@@ -1,0 +1,16 @@
+2025-11-11 14:56:55,696 [INFO] Starting daily job for 2025-11-10
+2025-11-11 14:56:56,761 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/gameweek?select=gameweek%2Cstart_date%2Cend_date "HTTP/2 200 OK"
+2025-11-11 14:56:57,462 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:57,709 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:57,875 [INFO] HTTP Request: PATCH https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?id=eq.1642403 "HTTP/2 200 OK"
+2025-11-11 14:56:57,964 [INFO] HTTP Request: PATCH https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?id=eq.1631111 "HTTP/2 200 OK"
+2025-11-11 14:56:58,166 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:58,332 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:58,579 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:58,797 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:59,008 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:59,225 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:59,393 [INFO] HTTP Request: GET https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player?select=id%2Cteam_id "HTTP/2 200 OK"
+2025-11-11 14:56:59,489 [INFO] HTTP Request: POST https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/game?columns=%22home_team_id%22%2C%22away_team_id%22%2C%22id%22%2C%22gameweek%22%2C%22away_score%22%2C%22home_score%22%2C%22date%22 "HTTP/2 201 Created"
+2025-11-11 14:56:59,636 [INFO] HTTP Request: POST https://ffenletsvfvbqvdbgdow.supabase.co/rest/v1/player_game?columns=%22turnovers%22%2C%22assists%22%2C%223pm%22%2C%22ftm%22%2C%22fga%22%2C%22steals%22%2C%223pa%22%2C%22blocks%22%2C%22score%22%2C%22fta%22%2C%22rebounds%22%2C%22fgm%22%2C%22points%22%2C%22minutes%22%2C%22game_id%22%2C%22player_id%22 "HTTP/2 201 Created"
+2025-11-11 14:56:59,648 [INFO] ✅ Successfully completed job for  2025-11-10

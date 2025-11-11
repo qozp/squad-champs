@@ -2,7 +2,7 @@ import json
 from nba_api.stats.endpoints import playercareerstats
 
 # Example player_id — Stephen Curry (201939)
-PLAYER_ID = 201939
+PLAYER_ID = 1641725
 
 def main():
     career = playercareerstats.PlayerCareerStats(player_id=PLAYER_ID)

@@ -8,6 +8,7 @@ from nba_api.stats.endpoints import playercareerstats
 
 # Reuse your fantasy scoring
 from fetch_box import calculate_score
+from batching import insert_in_batches
 
 load_dotenv()
 
@@ -53,7 +54,7 @@ def transform_to_history_rows(player_id, stats_records):
             continue
 
         try:
-            season_id = int(row["SEASON_ID"].replace("-", ""))
+            season_id = row["SEASON_ID"]
             team_id = int(row["TEAM_ID"])
         except ValueError:
             continue
@@ -72,6 +73,8 @@ def transform_to_history_rows(player_id, stats_records):
         ftm = int(row.get("FTM", 0))
         fta = int(row.get("FTA", 0))
         minutes = int(row.get("MIN", 0)) if not isinstance(row.get("MIN"), str) else 0
+        gp = int(row.get("GP", 0))
+        gs = int(row.get("GS", 0))
 
         stats = {
             "points": points,
@@ -107,7 +110,9 @@ def transform_to_history_rows(player_id, stats_records):
             "ftm": ftm,
             "fta": fta,
             "score": score,
-            "minutes": minutes
+            "minutes": minutes,
+            "gp": gp,
+            "gs": gs
         })
 
     return player_history_rows
@@ -129,7 +134,6 @@ def write_to_csv(rows, output_path):
 
     print(f"✅ Wrote {len(rows)} rows to {output_path}")
 
-
 # -----------------------------
 # Main
 # -----------------------------
@@ -141,6 +145,7 @@ def main():
     players = [p["id"] for p in resp.data]
     print(f"Found {len(players)} players.")
 
+    print("Fetching player history from NBA_API...")
     all_rows = []
     for i, player_id in enumerate(players, start=1):
         print(f"[{i}/{len(players)}] Fetching history for player {player_id}...")
@@ -148,19 +153,15 @@ def main():
         rows = transform_to_history_rows(player_id, career_stats)
         all_rows.extend(rows)
         time.sleep(0.6)
-        if i == 25:
-            break
 
     # Write to CSV for inspection
-    csv_path = os.path.join(TEST_DATA_DIR, "player_history_test.csv")
-    write_to_csv(all_rows, csv_path)
+    # csv_path = os.path.join(TEST_DATA_DIR, "player_history_test.csv")
+    # write_to_csv(all_rows, csv_path)
 
-    # Optional: Insert to Supabase after checking CSV
-    # Uncomment after verifying CSV content
-    # if all_rows:
-    #     print("Inserting into Supabase...")
-    #     supabase.table("player_history").insert(all_rows).execute()
-    #     print("✅ Successfully inserted player history records.")
+    # Insert to Supabase after checking CSV
+    if all_rows:
+        print(f"Calling insert in batches for {len(all_rows)} rows")
+        insert_in_batches(supabase, all_rows, "player_history", batch_size=100)
 
 
 if __name__ == "__main__":

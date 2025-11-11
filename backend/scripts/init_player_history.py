@@ -2,6 +2,7 @@ import os
 import csv
 from datetime import datetime
 import time
+from math import ceil
 from dotenv import load_dotenv
 from supabase import create_client
 from nba_api.stats.endpoints import playercareerstats
@@ -22,7 +23,6 @@ os.makedirs(TEST_DATA_DIR, exist_ok=True)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-
 
 # -----------------------------
 # Helpers
@@ -145,23 +145,43 @@ def main():
     players = [p["id"] for p in resp.data]
     print(f"Found {len(players)} players.")
 
+
     print("Fetching player history from NBA_API...")
-    all_rows = []
-    for i, player_id in enumerate(players, start=1):
-        print(f"[{i}/{len(players)}] Fetching history for player {player_id}...")
-        career_stats = fetch_player_career_stats(player_id)
-        rows = transform_to_history_rows(player_id, career_stats)
-        all_rows.extend(rows)
-        time.sleep(0.6)
+    BATCH_SIZE = 50
+    REQUEST_DELAY = 0.6  # Seconds between player requests in a batch
+
+    # === Set which batches to run ===
+    # batch_start = 0  # Uncomment this for a full run
+    # batch_start = 12     # batch index 12 = batch 13 (0-based)
+    total_batches = ceil(len(players) / BATCH_SIZE)
+
+    for batch_num in range(batch_start, total_batches):
+        start = batch_num * BATCH_SIZE
+        end = start + BATCH_SIZE
+        batch = players[start:end]
+        print(f"\n=== Processing batch {batch_num + 1}/{total_batches} ({len(batch)} players) ===")
+        batch_rows = []
+
+        for i, player_id in enumerate(batch, start=1):
+            print(f"  [{i}/{len(batch)}] Fetching history for player {player_id}...")
+            career_stats = fetch_player_career_stats(player_id)
+            rows = transform_to_history_rows(player_id, career_stats)
+            batch_rows.extend(rows)
+            time.sleep(REQUEST_DELAY)
+
+        print(f"✅ Finished batch {batch_num + 1}/{total_batches}")
+
+        # Insert all rows from this batch at once
+        if batch_rows:
+            print(f"🚀 Inserting {len(batch_rows)} rows from batch {batch_num + 1} into Supabase...")
+            supabase.table("player_history").insert(batch_rows).execute()
+            print(f"✅ Batch {batch_num + 1} inserted successfully.")
+        else:
+            print(f"⚠️ No rows to insert for batch {batch_num + 1}")
 
     # Write to CSV for inspection
     # csv_path = os.path.join(TEST_DATA_DIR, "player_history_test.csv")
     # write_to_csv(all_rows, csv_path)
-
-    # Insert to Supabase after checking CSV
-    if all_rows:
-        print(f"Calling insert in batches for {len(all_rows)} rows")
-        insert_in_batches(supabase, all_rows, "player_history", batch_size=100)
 
 
 if __name__ == "__main__":

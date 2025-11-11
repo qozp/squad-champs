@@ -1,6 +1,6 @@
 import csv
 import json
-import logging
+
 import os
 from datetime import datetime, date, timedelta
 import re
@@ -10,22 +10,9 @@ from nba_api.stats.endpoints import scoreboardv2
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 
 from init_players import get_player_details
+from logger_config import logger
 
 load_dotenv()
-
-# -----------------------------
-# Setup logging
-# -----------------------------
-
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
-LOG_FILE = os.path.join(LOG_DIR, "daily_job.log")
-
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-)
 
 # -----------------------------
 # Helper Functions
@@ -240,12 +227,12 @@ if __name__ == "__main__":
     
     try:
         print("Running daily job for %s...", day)
-        logging.info("Starting daily job for %s", day)
+        logger.info("Starting daily job for %s", day)
         main_for_date(day, supabase)
-        logging.info("✅ Successfully completed job for  %s", day)
+        logger.info("✅ Successfully completed job for  %s", day)
 
     except Exception as e:
-        logging.error("❌ Error running job for  %s: %s", day, e)
+        logger.error("❌ Error running job for  %s: %s", day, e)
         print(f"Error: {e}")
 
     # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()

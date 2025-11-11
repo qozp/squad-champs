@@ -145,6 +145,7 @@ def main():
     players = [p["id"] for p in resp.data]
     print(f"Found {len(players)} players.")
 
+    return
 
     print("Fetching player history from NBA_API...")
     BATCH_SIZE = 50

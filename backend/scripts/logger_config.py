@@ -3,14 +3,26 @@ import os
 
 LOG_DIR = "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
-LOG_FILE = os.path.join(LOG_DIR, "daily_job.log")
 
-# Configure root logger
+# -----------------------------
+# Root logger: Supabase & HTTP requests
+# -----------------------------
+SUPABASE_LOG_FILE = os.path.join(LOG_DIR, "supabase.log")
 logging.basicConfig(
-    filename=LOG_FILE,
+    filename=SUPABASE_LOG_FILE,
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
-# Optional: create a named logger
-logger = logging.getLogger("nba_daily_job")
+# -----------------------------
+# Named logger: Daily job timestamps only
+# -----------------------------
+daily_job_logger = logging.getLogger("daily_job")
+daily_job_logger.setLevel(logging.INFO)
+
+daily_job_handler = logging.FileHandler(os.path.join(LOG_DIR, "daily_job.log"))
+daily_job_handler.setFormatter(
+    logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+)
+daily_job_logger.addHandler(daily_job_handler)
+daily_job_logger.propagate = False  # Avoid writing to supabase.log

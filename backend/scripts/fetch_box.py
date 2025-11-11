@@ -10,7 +10,7 @@ from nba_api.stats.endpoints import scoreboardv2
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 
 from init_players import get_player_details
-from logger_config import logger
+from logger_config import daily_job_logger
 
 load_dotenv()
 
@@ -227,12 +227,12 @@ if __name__ == "__main__":
     
     try:
         print("Running daily job for %s...", day)
-        logger.info("Starting daily job for %s", day)
+        daily_job_logger.info("Starting daily job for %s", day)
         main_for_date(day, supabase)
-        logger.info("✅ Successfully completed job for  %s", day)
+        daily_job_logger.info("✅ Successfully completed job for  %s", day)
 
     except Exception as e:
-        logger.error("❌ Error running job for  %s: %s", day, e)
+        daily_job_logger.error("❌ Error running job for  %s: %s", day, e)
         print(f"Error: {e}")
 
     # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()

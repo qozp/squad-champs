@@ -58,7 +58,7 @@ export default function SquadPlayersTable({}) {
       });
 
       // Merge players, teams, and stats
-      const playersWithStats = playersData?.map((p: any) => ({
+      let playersWithStats = playersData?.map((p: any) => ({
         ...p,
         team_name: p.team_id ? teamMap[p.team_id] : "N/A",
         avg_pts: statsMap[p.id]?.avg_pts ?? 0,
@@ -67,7 +67,11 @@ export default function SquadPlayersTable({}) {
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
+        price: p.price ? p.price : "N/A",
       }));
+
+      // Sort by avg_fp descending (highest first)
+      playersWithStats = playersWithStats?.sort((a, b) => b.avg_fp - a.avg_fp);
 
       setPlayers(playersWithStats || []);
     } catch (err) {
@@ -82,6 +86,7 @@ export default function SquadPlayersTable({}) {
     { key: "position", label: "Position" },
     { key: "team_name", label: "Team" },
     { key: "avg_fp", label: "FPPG" },
+    { key: "price", label: "Price ($)" },
   ];
 
   useEffect(() => {

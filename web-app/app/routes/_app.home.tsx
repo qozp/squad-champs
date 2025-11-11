@@ -73,7 +73,7 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-16 text-foreground transition-colors duration-300">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to dominate?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to Play?</h2>
           <p className="text-foreground mb-8 text-lg">
             Start building your championship squad today
           </p>
@@ -96,14 +96,14 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Squad Management",
-                desc: "Build your fantasy squad under a budget, manage with trades, and start a weekly lineup.",
+                icon: <Trophy className="h-6 w-6 text-secondary" />,
+                title: "Create and Join Leagues",
+                desc: "Play against friends and family, colleagues, or anybody in leagues and cups. ",
               },
               {
-                icon: <Trophy className="h-6 w-6 text-secondary" />,
-                title: "League Competition",
-                desc: "Create or join leagues, compete with friends, and climb the global leaderboard.",
+                icon: <Users className="h-6 w-6 text-secondary" />,
+                title: "Squad Building",
+                desc: "Use your budget of $100 to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
               },
               {
                 icon: <DollarSign className="h-6 w-6 text-secondary" />,

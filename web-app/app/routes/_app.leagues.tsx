@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import LeaderboardTable from "~/components/leagues/LeaderboardTable";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "~/components/ui/card";
 
 export default function LeaguesPage() {
   const [squads, setSquads] = useState<any[]>([]);
@@ -27,10 +33,16 @@ export default function LeaguesPage() {
     return <p className="p-10 text-center">Loading leaderboard...</p>;
 
   return (
-    <div className="min-h-screen text-foreground p-10">
-      <h1 className="text-4xl font-bold mb-6">Leaderboard</h1>
-      <p className="text-lg mb-4">View top squads and their points.</p>
-      <LeaderboardTable data={squads} />
+    <div className="min-h-screen text-foreground m-4">
+      <Card className="">
+        <CardContent className="space-y-2">
+          <CardTitle className="text-2xl font-bold">Leaderboard</CardTitle>
+          <CardDescription className="text-lg">
+            View top squads and their points.
+          </CardDescription>
+          <LeaderboardTable data={squads} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

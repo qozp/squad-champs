@@ -236,16 +236,16 @@ def main_for_date(target_date, supabase):
 if __name__ == "__main__":
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
 
-    yesterday = date.today() - timedelta(days=1)
+    day = date.today() - timedelta(days=1) # set to yesterday
     
     try:
-        print("Running daily job for %s...", yesterday)
-        logging.info("Starting daily job for %s", yesterday)
-        main_for_date(yesterday, supabase)
-        logging.info("✅ Successfully completed job for  %s", yesterday)
+        print("Running daily job for %s...", day)
+        logging.info("Starting daily job for %s", day)
+        main_for_date(day, supabase)
+        logging.info("✅ Successfully completed job for  %s", day)
 
     except Exception as e:
-        logging.error("❌ Error running job for  %s: %s", yesterday, e)
+        logging.error("❌ Error running job for  %s: %s", day, e)
         print(f"Error: {e}")
 
     # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()

@@ -24,7 +24,7 @@ PRICE_STEP = 0.5
 def round_to_half(x):
     if pd.isna(x):
         return 0
-    return math.floor(x * 2) / 2
+    return round(x * 2) / 2
 
 def fetch_player_birthdates(supabase):
     """Fetch player IDs and birthdates from Supabase."""

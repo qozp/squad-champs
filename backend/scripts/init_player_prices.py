@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from supabase import create_client
 
+from logger_config import daily_job_logger
 from fetch_box import calculate_score
 
 load_dotenv()
@@ -278,9 +279,12 @@ def main():
 
     priced_df.to_csv(output_path, index=False)
     print(f"📁 Saved player prices CSV → {output_path}")
+    daily_job_logger.info(f"Saved player prices CSV → {output_path} (n={len(priced_df)})")
 
     print("⬆️ Updating Supabase player prices...")
+    daily_job_logger.info("Starting Supabase update for player prices...")
     update_player_prices(priced_df, supabase)
+    daily_job_logger.info(f"Supabase update complete for {len(priced_df)} players.")
 
     print(
         f"✅ Done! Avg price: {priced_df['price'].mean():.2f}, "

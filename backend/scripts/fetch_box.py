@@ -1,5 +1,6 @@
 import csv
 import json
+
 import os
 from datetime import datetime, date, timedelta
 import re
@@ -9,9 +10,9 @@ from nba_api.stats.endpoints import scoreboardv2
 from nba_api.live.nba.endpoints import scoreboard, boxscore
 
 from init_players import get_player_details
+from logger_config import daily_job_logger
 
 load_dotenv()
-
 
 # -----------------------------
 # Helper Functions
@@ -101,64 +102,79 @@ def calculate_score(stats):
 
 
 def get_player_details_for_game(game, supabase):
+    
     player_stats = []
 
+    home_team_id = int(game.get("homeTeam", {}).get("teamId"))
+    away_team_id = int(game.get("awayTeam", {}).get("teamId"))
+
     # Combine both teams’ player lists
-    all_players = []
-    all_players.extend(game.get("homeTeam", {}).get("players", []))
-    all_players.extend(game.get("awayTeam", {}).get("players", []))
+    home_players = game.get("homeTeam", {}).get("players", [])
+    away_players = game.get("awayTeam", {}).get("players", [])
 
-    existing_data = supabase.table("player").select("id").execute()
-    existing_ids = {p["id"] for p in existing_data.data} if existing_data.data else set()
+    existing_data = supabase.table("player").select("id, team_id").execute()
+    existing_info = {p["id"]: p.get("team_id") for p in existing_data.data} if existing_data.data else {}
 
-    for p in all_players:
-        player_id = int(p.get("personId"))
+    def process_team_players(players, team_id):
+        for p in players:
+            player_id = int(p.get("personId"))
 
-        if player_id not in existing_ids:
-            details = get_player_details(player_id)  # Your helper from the other file
-            if details:
-                supabase.table("player").insert(details).execute()
-                existing_ids.add(player_id)
-                print(f"Inserted new player {player_id} into Supabase")
-            else:
-                print(f"Failed to fetch details for player {player_id}")
+            # -----------------------------
+            # update team if changed
+            # -----------------------------
+            current_team = existing_info.get(player_id)
+            if current_team and current_team != team_id:
+                print(f"🔁 Updating team for player {player_id}: {existing_info[player_id]} → {team_id}")
+                supabase.table("player").update({"team_id": team_id}).eq("id", player_id).execute()
+                existing_info[player_id] = team_id
+
+            if player_id not in existing_info:
+                details = get_player_details(player_id)  # Your helper from the other file
+                if details:
+                    supabase.table("player").insert(details).execute()
+                    existing_info[player_id] = team_id
+                    print(f"Inserted new player {player_id} into Supabase")
+                else:
+                    print(f"Failed to fetch details for player {player_id}")
+                    continue
+
+            stats = p.get("statistics", {})
+
+            minutes_str = stats.get("minutesCalculated") or stats.get("minutes")
+            minutes = 0
+            if isinstance(minutes_str, str):
+                match = re.search(r"PT(\d+)M", minutes_str)
+                if match:
+                    minutes = int(match.group(1))
+
+            # Skip players who did not play
+            if minutes == 0:
                 continue
 
-        stats = p.get("statistics", {})
+            player_dict = {
+                "player_id": player_id,
+                "game_id": int(game.get("gameId")),
+                "points": int(stats.get("points", 0)),
+                "rebounds": int(stats.get("reboundsTotal", 0)),
+                "assists": int(stats.get("assists", 0)),
+                "steals": int(stats.get("steals", 0)),
+                "blocks": int(stats.get("blocks", 0)),
+                "turnovers": int(stats.get("turnovers", 0)),
+                "3pm": int(stats.get("threePointersMade", 0)),
+                "3pa": int(stats.get("threePointersAttempted", 0)),
+                "fgm": int(stats.get("fieldGoalsMade", 0)),
+                "fga": int(stats.get("fieldGoalsAttempted", 0)),
+                "ftm": int(stats.get("freeThrowsMade", 0)),
+                "fta": int(stats.get("freeThrowsAttempted", 0)),
+                "minutes": minutes,
+            }
 
-        minutes_str = stats.get("minutesCalculated") or stats.get("minutes")
-        minutes = 0
-        if isinstance(minutes_str, str):
-            match = re.search(r"PT(\d+)M", minutes_str)
-            if match:
-                minutes = int(match.group(1))
+            score = calculate_score(player_dict)
+            player_dict["score"] = score
+            player_stats.append(player_dict)
 
-        # Skip players who did not play
-        if minutes == 0:
-            continue
-
-        player_dict = {
-            "player_id": player_id,
-            "game_id": int(game.get("gameId")),
-            "points": int(stats.get("points", 0)),
-            "rebounds": int(stats.get("reboundsTotal", 0)),
-            "assists": int(stats.get("assists", 0)),
-            "steals": int(stats.get("steals", 0)),
-            "blocks": int(stats.get("blocks", 0)),
-            "turnovers": int(stats.get("turnovers", 0)),
-            "3pm": int(stats.get("threePointersMade", 0)),
-            "3pa": int(stats.get("threePointersAttempted", 0)),
-            "fgm": int(stats.get("fieldGoalsMade", 0)),
-            "fga": int(stats.get("fieldGoalsAttempted", 0)),
-            "ftm": int(stats.get("freeThrowsMade", 0)),
-            "fta": int(stats.get("freeThrowsAttempted", 0)),
-            "minutes": minutes,
-        }
-
-        score = calculate_score(player_dict)
-        player_dict["score"] = score
-
-        player_stats.append(player_dict)
+    process_team_players(home_players, home_team_id)
+    process_team_players(away_players, away_team_id)
 
     return player_stats
 
@@ -207,12 +223,24 @@ def main_for_date(target_date, supabase):
 if __name__ == "__main__":
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
 
-    start_date = datetime.strptime("2025-10-24", "%Y-%m-%d").date()
-    end_date = datetime.strptime("2025-11-04", "%Y-%m-%d").date()
+    day = date.today() - timedelta(days=1) # set to yesterday
+    
+    try:
+        print("Running daily job for %s...", day)
+        daily_job_logger.info("Starting daily job for %s", day)
+        main_for_date(day, supabase)
+        daily_job_logger.info("✅ Successfully completed job for  %s", day)
 
-    delta = timedelta(days=1)
-    current_date = start_date
+    except Exception as e:
+        daily_job_logger.error("❌ Error running job for  %s: %s", day, e)
+        print(f"Error: {e}")
 
-    while current_date <= end_date:
-        main_for_date(current_date, supabase)
-        current_date += delta
+    # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()
+    # end_date = datetime.strptime("2025-11-09", "%Y-%m-%d").date()
+
+    # delta = timedelta(days=1)
+    # current_date = start_date
+
+    # while current_date <= end_date:
+    #     main_for_date(current_date, supabase)
+    #     current_date += delta

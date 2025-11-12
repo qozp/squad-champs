@@ -356,7 +356,7 @@ def main():
     print("💰 Calculating prices...")
     priced_df = calculate_prices(merged)
 
-    plot_price_distribution(priced_df)
+    # plot_price_distribution(priced_df)
 
     # os.makedirs("test_data", exist_ok=True)
     # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

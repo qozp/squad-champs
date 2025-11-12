@@ -8,6 +8,7 @@ from supabase import create_client
 
 from logger_config import price_job_logger
 from fetch_box import calculate_score
+from plot_player_price import plot_price_distribution
 
 load_dotenv()
 
@@ -16,9 +17,9 @@ NBA_SEASON_START = date(2025, 10, 1)
 LAST_SEASON_ID = "2024-25"
 TOTAL_BUDGET = 100
 SQUAD_SIZE = 13
-AVG_BUDGET_PER_PLAYER = 6.25  # ~7.7 avg
+AVG_BUDGET_PER_PLAYER = 5.87  # ~7.7 avg
 MIN_PRICE = 4.0
-MAX_PRICE_GUIDE = 10.0
+TOP_PLAYER_SCALING_FACTOR = 1.1 # exponent
 PRICE_STEP = 0.5
 
 def round_to_half(x):
@@ -150,18 +151,25 @@ def calculate_prices(df: pd.DataFrame) -> pd.DataFrame:
     min_filled = df["weighted_score_filled"].min()
     df["raw_price"] = (df["weighted_score_filled"] - min_filled)  # starts at 0
 
-    # Scale to range 10
-    max_filled = df["raw_price"].max()
-    if max_filled > 0:
-        df["raw_price"] = df["raw_price"] / max_filled * 10
+    # Determine stretch exponent based on MAX_PRICE_GUIDE vs AVG_BUDGET_PER_PLAYER
+    # The bigger the gap, the more stretch
+    exponent = TOP_PLAYER_SCALING_FACTOR
+
+    # Apply nonlinear stretch to boost top performers
+    if df["raw_price"].max() > 0:
+        df["raw_price"] = (df["raw_price"] / df["raw_price"].max()) ** exponent
+
+    # Scale to target mean (without minimum yet)
+    target_mean = AVG_BUDGET_PER_PLAYER - MIN_PRICE
+    current_mean = df["raw_price"].mean()
+    if current_mean > 0:
+        df["raw_price"] = df["raw_price"] * (target_mean / current_mean)
 
     # Add minimum price
     df["raw_price"] = df["raw_price"] + MIN_PRICE
 
-    # Scale so that the mean is roughly AVG_BUDGET_PER_PLAYER
-    current_mean = df["raw_price"].mean()
-    scaling_factor = AVG_BUDGET_PER_PLAYER / current_mean
-    df["price"] = (df["raw_price"] * scaling_factor).apply(round_to_half)
+    # Round to nearest 0.5
+    df["price"] = df["raw_price"].apply(round_to_half)
 
     # Fill any remaining NaNs
     df["price"] = df["price"].fillna(MIN_PRICE)
@@ -348,13 +356,15 @@ def main():
     print("💰 Calculating prices...")
     priced_df = calculate_prices(merged)
 
-    os.makedirs("test_data", exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path = f"test_data/player_prices_{timestamp}.csv"
+    plot_price_distribution(priced_df)
 
-    priced_df.to_csv(output_path, index=False)
-    print(f"📁 Saved player prices CSV → {output_path}")
-    price_job_logger.info(f"Saved player prices CSV → {output_path} (n={len(priced_df)})")
+    # os.makedirs("test_data", exist_ok=True)
+    # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # output_path = f"test_data/player_prices_{timestamp}.csv"
+
+    # priced_df.to_csv(output_path, index=False)
+    # print(f"📁 Saved player prices CSV → {output_path}")
+    # price_job_logger.info(f"Saved player prices CSV → {output_path} (n={len(priced_df)})")
 
     print("⬆️ Updating Supabase player prices...")
     price_job_logger.info("Starting Supabase update for player prices...")

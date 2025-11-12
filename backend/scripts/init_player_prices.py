@@ -2,10 +2,11 @@ from datetime import date, datetime
 import pandas as pd
 import numpy as np
 import os
+import math
 from dotenv import load_dotenv
 from supabase import create_client
 
-from logger_config import daily_job_logger
+from logger_config import price_job_logger
 from fetch_box import calculate_score
 
 load_dotenv()
@@ -15,7 +16,7 @@ NBA_SEASON_START = date(2025, 10, 1)
 LAST_SEASON_ID = "2024-25"
 TOTAL_BUDGET = 100
 SQUAD_SIZE = 13
-AVG_BUDGET_PER_PLAYER = TOTAL_BUDGET / SQUAD_SIZE  # ~7.7 avg
+AVG_BUDGET_PER_PLAYER = 6.5  # ~7.7 avg
 MIN_PRICE = 4.0
 MAX_PRICE_GUIDE = 12.0
 PRICE_STEP = 0.5
@@ -23,7 +24,7 @@ PRICE_STEP = 0.5
 def round_to_half(x):
     if pd.isna(x):
         return 0
-    return round(x * 2) / 2
+    return math.floor(x * 2) / 2
 
 def fetch_player_birthdates(supabase):
     """Fetch player IDs and birthdates from Supabase."""
@@ -138,27 +139,32 @@ def calculate_prices(df: pd.DataFrame) -> pd.DataFrame:
     handling NaN (rookies) and rounding to nearest 0.5.
     """
 
-    # Check that the column exists
     if "weighted_score" not in df.columns:
         raise KeyError("Expected 'weighted_score' column in DataFrame before pricing.")
 
-    # Handle NaN scores (rookies, etc.)
-    df["weighted_score_filled"] = df["weighted_score"].fillna(df["weighted_score"].min())
+    # Fill NaNs (rookies, injured, etc.) using curr_norm or minimum weighted_score
+    min_score = df["weighted_score"].min()
+    df["weighted_score_filled"] = df["weighted_score"].fillna(df["curr_norm"].fillna(min_score))
 
-    # Normalize to 0-1
-    min_score = df["weighted_score_filled"].min()
-    max_score = df["weighted_score_filled"].max()
-    df["perf_norm"] = (df["weighted_score_filled"] - min_score) / (max_score - min_score)
+    # Normalize starting from 0
+    min_filled = df["weighted_score_filled"].min()
+    df["raw_price"] = (df["weighted_score_filled"] - min_filled)  # starts at 0
 
-    # Map normalized scores to price range
-    df["raw_price"] = MIN_PRICE + df["perf_norm"] * (MAX_PRICE_GUIDE - MIN_PRICE)
+    # Scale to range 10
+    max_filled = df["raw_price"].max()
+    if max_filled > 0:
+        df["raw_price"] = df["raw_price"] / max_filled * 10
 
-    # Round to nearest 0.5
-    df["price"] = df["raw_price"].fillna(MIN_PRICE)
+    # Add minimum price
+    df["raw_price"] = df["raw_price"] + MIN_PRICE
 
-    current_mean = df["price"].mean()
+    # Scale so that the mean is roughly AVG_BUDGET_PER_PLAYER
+    current_mean = df["raw_price"].mean()
     scaling_factor = AVG_BUDGET_PER_PLAYER / current_mean
-    df["price"] = (df["price"] * scaling_factor).apply(round_to_half)
+    df["price"] = (df["raw_price"] * scaling_factor).apply(round_to_half)
+
+    # Fill any remaining NaNs
+    df["price"] = df["price"].fillna(MIN_PRICE)
 
     # Keep columns useful for debugging
     debug_cols = [
@@ -187,8 +193,14 @@ def update_player_prices(df: pd.DataFrame, supabase, batch_size=100,):
     """Update player prices (and updated_at) in Supabase."""
     now = datetime.now().isoformat()
 
+    df["price_filled"] = df["price"].fillna(4.5)
+
     updates = [
-        {"id": int(row["player_id"]), "price": float(row["price"]), "updated_at": now}
+        {
+            "id": int(row["player_id"]),
+            "price": float(row["price_filled"]),
+            "updated_at": now,
+        }
         for _, row in df.iterrows()
     ]
 
@@ -198,8 +210,68 @@ def update_player_prices(df: pd.DataFrame, supabase, batch_size=100,):
 
         print(f"Batch {i // batch_size + 1} sent with {len(chunk)} items")
 
+def fill_all_missing_prices(supabase, default_price: float = 4.0, batch_size: int = 100):
+    """
+    Standalone function to update all players in Supabase with null price.
+    Sets their price to `default_price`.
+    """
+    now = datetime.now().isoformat()
+
+    # Fetch only players with price = null
+    response = (
+        supabase.table("player")
+        .select("id")
+        .is_("price", None)
+        .execute()
+    )
+    missing_players = response.data
+
+    if not missing_players:
+        print("No missing prices to update.")
+        return
+
+    # Prepare updates
+    updates = [
+        {"id": p["id"], "price": default_price, "updated_at": now}
+        for p in missing_players
+    ]
+
+    # Update in batches
+    for i in range(0, len(updates), batch_size):
+        chunk = updates[i : i + batch_size]
+        supabase.rpc("update_player_prices", {"price_updates": chunk}).execute()
+        print(f"Batch {i // batch_size + 1} updated {len(chunk)} missing prices.")
+
+    print(f"✅ Updated {len(updates)} players with default price {default_price}.")
+
+def clear_all_prices(supabase, batch_size: int = 100):
+    """
+    Set price to NULL for all players in Supabase.
+    """
+    now = datetime.now().isoformat()
+
+    # Fetch all player IDs
+    response = supabase.table("player").select("id").execute()
+    all_players = response.data
+
+    if not all_players:
+        print("No players found in the database.")
+        return
+
+    # Prepare updates
+    updates = [{"id": p["id"], "price": None, "updated_at": now} for p in all_players]
+
+    # Update in batches
+    for i in range(0, len(updates), batch_size):
+        chunk = updates[i : i + batch_size]
+        supabase.rpc("update_player_prices", {"price_updates": chunk}).execute()
+        print(f"Batch {i // batch_size + 1} cleared {len(chunk)} prices.")
+
+    print(f"✅ Cleared prices for {len(updates)} players.")
+
 def main():
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
+    # clear_all_prices(supabase)
 
     print("📊 Fetching current and past player averages...")
     current_df = fetch_player_averages_from_db(supabase)
@@ -227,11 +299,14 @@ def main():
     # 2️⃣ Merge normalized weights
     # --------------------------------------------------------
     print("🔄 Combining current (70%) and past (30%) normalized scores...")
-    merged = pd.merge(curr_norm, past_norm, on="player_id", how="left")
+    merged = pd.merge(curr_norm, past_norm, on="player_id", how="outer")  # use outer so we get all players
+
     merged["combined_norm"] = np.where(
-        merged["past_norm"].notna(),
-        merged["curr_norm"] * 0.7 + merged["past_norm"] * 0.3,
-        merged["curr_norm"]
+        merged["curr_norm"].notna(),
+        # has current season → weighted 70/30
+        merged["curr_norm"] * 0.7 + merged["past_norm"].fillna(0) * 0.3,
+        # no current season → use past season 70%
+        merged["past_norm"].fillna(0) * 0.7
     )
 
     # --------------------------------------------------------
@@ -279,12 +354,14 @@ def main():
 
     priced_df.to_csv(output_path, index=False)
     print(f"📁 Saved player prices CSV → {output_path}")
-    daily_job_logger.info(f"Saved player prices CSV → {output_path} (n={len(priced_df)})")
+    price_job_logger.info(f"Saved player prices CSV → {output_path} (n={len(priced_df)})")
 
     print("⬆️ Updating Supabase player prices...")
-    daily_job_logger.info("Starting Supabase update for player prices...")
+    price_job_logger.info("Starting Supabase update for player prices...")
     update_player_prices(priced_df, supabase)
-    daily_job_logger.info(f"Supabase update complete for {len(priced_df)} players.")
+    price_job_logger.info(f"Supabase update complete for {len(priced_df)} players.")
+
+    fill_all_missing_prices(supabase, default_price=MIN_PRICE)
 
     print(
         f"✅ Done! Avg price: {priced_df['price'].mean():.2f}, "

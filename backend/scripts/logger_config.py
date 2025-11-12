@@ -26,3 +26,17 @@ daily_job_handler.setFormatter(
 )
 daily_job_logger.addHandler(daily_job_handler)
 daily_job_logger.propagate = False  # Avoid writing to supabase.log
+
+# -----------------------------
+# Named logger: Price Updates
+# -----------------------------
+price_job_logger = logging.getLogger("price_job")
+price_job_logger.setLevel(logging.INFO)
+
+price_job_handler = logging.FileHandler(os.path.join(LOG_DIR, "price_job.log"))
+price_job_handler.setFormatter(
+    logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+)
+price_job_logger.addHandler(price_job_handler)
+price_job_logger.propagate = False  # Avoid writing to supabase.log
+

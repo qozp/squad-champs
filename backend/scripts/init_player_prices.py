@@ -16,9 +16,9 @@ NBA_SEASON_START = date(2025, 10, 1)
 LAST_SEASON_ID = "2024-25"
 TOTAL_BUDGET = 100
 SQUAD_SIZE = 13
-AVG_BUDGET_PER_PLAYER = 6.5  # ~7.7 avg
+AVG_BUDGET_PER_PLAYER = 6.25  # ~7.7 avg
 MIN_PRICE = 4.0
-MAX_PRICE_GUIDE = 12.0
+MAX_PRICE_GUIDE = 10.0
 PRICE_STEP = 0.5
 
 def round_to_half(x):
@@ -306,7 +306,7 @@ def main():
         # has current season → weighted 70/30
         merged["curr_norm"] * 0.7 + merged["past_norm"].fillna(0) * 0.3,
         # no current season → use past season 70%
-        merged["past_norm"].fillna(0) * 0.7
+        merged["past_norm"].fillna(0) * 0.9
     )
 
     # --------------------------------------------------------

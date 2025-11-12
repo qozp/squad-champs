@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load your CSV
-df = pd.read_csv("test_data/player_prices_20251112_153301.csv")
+df = pd.read_csv("test_data/player_prices_20251112_160227.csv")
 
 # --- Summary statistics ---
 print("📊 Price Summary Statistics:")

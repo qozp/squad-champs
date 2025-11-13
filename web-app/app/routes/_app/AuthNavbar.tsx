@@ -19,7 +19,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
   const links = [
     { href: "/home", label: "Home" },
     { href: "/squad", label: "Squad" },
-    { href: "/leagues", label: "Leagues" },
+    { href: "/leaderboard", label: "Leaderboard" },
     { href: "/players", label: "Players" },
     { href: "/profile", label: "Profile" },
     { href: "/logout", label: "Logout" },

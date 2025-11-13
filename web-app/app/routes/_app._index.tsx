@@ -75,7 +75,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex-1 bg-background text-foreground transition-colors duration-300">
       {/* Hero Section */}
       <section className="py-10 relative overflow-hidden text-primary-foreground transition-colors duration-300">
         <div className="container mx-auto px-4 text-center">
@@ -110,19 +110,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Squad Management",
-                desc: "Build your fantasy squad under a budget, manage with trades, and start a weekly lineup.",
+                icon: <Trophy className="h-6 w-6 text-secondary" />,
+                title: "Compete Globally",
+                desc: "Place in a global weekly and seasonal leaderboard against other squads around the world. ",
               },
               {
-                icon: <Trophy className="h-6 w-6 text-secondary" />,
-                title: "League Competition",
-                desc: "Create or join leagues, compete with friends, and climb the global leaderboard.",
+                icon: <Users className="h-6 w-6 text-secondary" />,
+                title: "Squad Building",
+                desc: "Use a $100 budget to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
               },
               {
                 icon: <DollarSign className="h-6 w-6 text-secondary" />,
                 title: "Prizes",
-                desc: "Earn rewards for being the top weekly and/or seasonal scorer. Participation is completely free.",
+                desc: "Earn rewards for top leaderboard placements. Participation is completely free.",
               },
             ].map((f, i) => (
               <Card

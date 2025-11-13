@@ -1,4 +1,5 @@
 import PlayersTable from "~/components/players/PlayersTable";
+import { Card, CardContent } from "~/components/ui/card";
 
 export function meta() {
   return [
@@ -14,15 +15,17 @@ export function meta() {
 
 export default function Players() {
   return (
-    <div className="min-h-screen text-foreground">
-      <section className="p-10">
-        <h1 className="text-4xl font-bold mb-8">Browse Players</h1>
-        <p className="mb-6">
-          Explore the top NBA players and their stats. All statistics are from
-          NBA.com.
-        </p>
-        <PlayersTable />
-      </section>
+    <div className="flex-1 text-foreground m-4">
+      <Card className="">
+        <CardContent className="">
+          <h1 className="text-4xl font-bold">Browse Players</h1>
+          <p className="">
+            Explore the top NBA players and their stats. Statistics are updated
+            daily from NBA.com.
+          </p>
+          <PlayersTable />
+        </CardContent>
+      </Card>
     </div>
   );
 }

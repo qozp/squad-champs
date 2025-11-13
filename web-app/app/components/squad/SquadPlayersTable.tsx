@@ -164,7 +164,7 @@ export default function SquadPlayersTable({}) {
   return (
     <div>
       {/* Search Input */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center space-x-2">
         <Input
           placeholder="Search players..."
           value={search}

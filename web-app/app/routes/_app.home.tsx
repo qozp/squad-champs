@@ -62,14 +62,14 @@ export default function Home() {
   if (loading) {
     // wait for profile to load
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-foreground">Loading...</p>
-      </div>
+      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+        Loading...
+      </p>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex-1 bg-background text-foreground transition-colors duration-300">
       {/* CTA Section */}
       <section className="py-16 text-foreground transition-colors duration-300">
         <div className="container mx-auto px-4 text-center">
@@ -97,18 +97,18 @@ export default function Home() {
             {[
               {
                 icon: <Trophy className="h-6 w-6 text-secondary" />,
-                title: "Create and Join Leagues",
-                desc: "Play against friends and family, colleagues, or anybody in leagues and cups. ",
+                title: "Compete Globally",
+                desc: "Place in a global weekly and seasonal leaderboard against other squads around the world. ",
               },
               {
                 icon: <Users className="h-6 w-6 text-secondary" />,
                 title: "Squad Building",
-                desc: "Use your budget of $100 to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
+                desc: "Use a $100 budget to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
               },
               {
                 icon: <DollarSign className="h-6 w-6 text-secondary" />,
                 title: "Prizes",
-                desc: "Earn rewards for being the top weekly and/or seasonal scorer. Participation is completely free.",
+                desc: "Earn rewards for top leaderboard placements. Participation is completely free.",
               },
             ].map((f, i) => (
               <Card

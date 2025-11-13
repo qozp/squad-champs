@@ -10,6 +10,7 @@ import { supabaseBrowser } from "~/lib/supabase/client";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { sanitizeInput } from "~/lib/moderation";
+import { Card, CardContent, CardTitle } from "~/components/ui/card";
 
 export function meta() {
   return [
@@ -23,7 +24,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return { user };
 };
 
-export default function SquadPage() {
+export default function Squad() {
   const { user } = useLoaderData<typeof loader>();
   const [loading, setLoading] = useState(true);
   const [squad, setSquad] = useState<any | null>(null);
@@ -59,37 +60,43 @@ export default function SquadPage() {
   if (loading) {
     // wait for squad to load
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-foreground">Loading Squad...</p>
-      </div>
+      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+        Loading Squad...
+      </p>
     );
   }
 
   return (
-    <div className="min-h-screen text-foreground">
-      <section className="p-10 space-y-4">
-        <h1 className="text-4xl font-bold mb-6">My Squad</h1>
-        <p className="text-lg text-foreground">
-          Manage your players and track your performance.
-        </p>
-        {/* Show squad name if exists */}
-        <div className="flex items-center">
-          <p>
-            <strong>Squad Name: </strong>{" "}
-            {sanitizeInput(squad?.name) ?? "Not set"}
+    <div className="space-y-4 md:flex md:space-x-4 md:space-y-0 flex-row flex-1 text-foreground m-4">
+      <Card className="flex-1">
+        <CardContent className="">
+          <CardTitle className="">My Squad</CardTitle>
+          <p className="text-lg text-foreground">
+            Manage your players and track your performance.
           </p>
-        </div>
-        {/* Button to open Create / Update Squad Form */}
-        <Button onClick={() => setShowDialog(true)}>
-          {squad ? "Update Name" : "Create Squad"}
-        </Button>
-        <CurrentSquad />
-      </section>
-
-      <section className="p-10">
-        <h2 className="text-2xl font-semibold mb-4">Add Players</h2>
-        <SquadPlayersTable />
-      </section>
+          {/* Show squad name if exists */}
+          <div className="items-center space-y-1">
+            <p>
+              <strong>Squad Name: </strong>{" "}
+              {sanitizeInput(squad?.name) ?? "Not set"}
+            </p>
+            <p>
+              <strong>Total Points: </strong> {squad?.total_points ?? "0"}
+            </p>
+          </div>
+          {/* Button to open Create / Update Squad Form */}
+          <Button onClick={() => setShowDialog(true)}>
+            {squad ? "Update Name" : "Create Squad"}
+          </Button>
+          <CurrentSquad />
+        </CardContent>
+      </Card>
+      <Card className="">
+        <CardContent className="">
+          <CardTitle className="">Add Players</CardTitle>
+          <SquadPlayersTable />
+        </CardContent>
+      </Card>
       <CreateSquadForm
         open={showDialog}
         onClose={() => setShowDialog(false)}

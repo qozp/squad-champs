@@ -31,7 +31,12 @@ export default function CurrentSquad() {
     fetchSquad();
   }, []);
 
-  if (loading) return <p>Loading your squad...</p>;
+  if (loading)
+    return (
+      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+        Loading squad...
+      </p>
+    );
 
   return (
     <div>

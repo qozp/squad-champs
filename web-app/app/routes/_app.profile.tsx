@@ -21,7 +21,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return { user };
 };
 
-export default function ProfilePage() {
+export default function Profile() {
   const { user } = useLoaderData<typeof loader>();
   const [showDialog, setShowDialog] = useState(false);
   const [profile, setProfile] = useState<any>(null);
@@ -53,9 +53,9 @@ export default function ProfilePage() {
   if (loading) {
     // wait for profile to load
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-foreground">Loading profile...</p>
-      </div>
+      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+        Loading profile...
+      </p>
     );
   }
 
@@ -70,8 +70,8 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen text-foreground">
-      <section className="container px-10 py-10">
+    <div className="text-foreground m-4">
+      <section className="p-4">
         <h1 className="text-4xl font-bold p-2">Profile</h1>
         {/* Divider between sections */}
         <hr className="border border-border w-full transition-colors duration-300 mb-2" />

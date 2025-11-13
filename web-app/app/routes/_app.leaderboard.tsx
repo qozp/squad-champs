@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-export default function LeaguesPage() {
+export default function Leaderboard() {
   const [squads, setSquads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,13 +30,17 @@ export default function LeaguesPage() {
   }, []);
 
   if (loading)
-    return <p className="p-10 text-center">Loading leaderboard...</p>;
+    return (
+      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+        Loading leaderboard...
+      </p>
+    );
 
   return (
-    <div className="min-h-screen text-foreground m-4">
+    <div className="flex-1 text-foreground m-4">
       <Card className="">
-        <CardContent className="space-y-2">
-          <CardTitle className="text-2xl font-bold">Leaderboard</CardTitle>
+        <CardContent className="">
+          <CardTitle className="">Leaderboard</CardTitle>
           <CardDescription className="text-lg">
             View top squads and their points.
           </CardDescription>

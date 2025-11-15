@@ -73,9 +73,6 @@ export default function Login() {
   const loading = fetcher.state === "submitting";
   const error = fetcher.data?.error;
 
-  console.log("test");
-  console.log(`${process.env.APP_URL}/auth/callback`);
-
   return (
     <div className="flex min-h-auto w-full items-center justify-center p-6 md:-10">
       <div className="w-full max-w-sm">

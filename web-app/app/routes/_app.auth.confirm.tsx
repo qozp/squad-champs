@@ -18,8 +18,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     next = "/";
   }
 
+  const { supabase, headers } = createSupabaseClient(request);
+
   if (token_hash && type) {
-    const { supabase, headers } = createSupabaseClient(request);
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
@@ -31,6 +32,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    return redirect(next, { headers });
+  }
+
   // redirect the user to an error page with some instructions
-  return redirect(`/auth/error?error=No token hash or type`);
+  return redirect(`/auth/error?error=Unable to authenticate`);
 }

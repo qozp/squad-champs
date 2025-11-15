@@ -31,8 +31,8 @@ export default function Leaderboard() {
 
   if (loading)
     return (
-      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
-        Loading leaderboard...
+      <p className="flex flex-1 items-center min-h-screen justify-center text-lg text-foreground">
+        Loading Leaderboard...
       </p>
     );
 

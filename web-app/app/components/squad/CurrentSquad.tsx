@@ -34,7 +34,7 @@ export default function CurrentSquad() {
   if (loading)
     return (
       <p className="flex flex-1 items-center justify-center text-lg text-foreground">
-        Loading squad...
+        Loading Squad Players...
       </p>
     );
 

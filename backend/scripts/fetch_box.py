@@ -129,6 +129,7 @@ def get_player_details_for_game(game, supabase):
                 existing_info[player_id] = team_id
 
             if player_id not in existing_info:
+                details["price"] = 4.5 # hardcoded entry price
                 details = get_player_details(player_id)  # Your helper from the other file
                 if details:
                     supabase.table("player").insert(details).execute()

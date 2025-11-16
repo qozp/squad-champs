@@ -4,6 +4,7 @@ import AuthNavbar from "./AuthNavbar";
 import PublicNavbar from "./PublicNavbar";
 import { createSupabaseClient } from "~/lib/supabase/server";
 import Footer from "./Footer";
+import Footer from "./Footer";
 
 type LoaderArgs = {
   request: Request;
@@ -20,9 +21,9 @@ export default function LandingLayout() {
 
   return (
     <div>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-background">
         {user ? <AuthNavbar user={user} /> : <PublicNavbar />}
-        <main className="flex flex-1 h-full bg-background">
+        <main className="h-full">
           <Outlet />
         </main>
       </div>

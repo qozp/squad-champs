@@ -62,7 +62,7 @@ export default function Home() {
   if (loading) {
     // wait for profile to load
     return (
-      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
+      <p className="flex flex-1 min-h-screen items-center justify-center text-lg text-foreground">
         Loading...
       </p>
     );

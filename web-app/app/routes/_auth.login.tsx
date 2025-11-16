@@ -34,8 +34,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-  // const APP_URL = context.cloudflare.env.APP_URL;
-  const APP_URL = "https://squadchamps.com";
+  const APP_URL = context.cloudflare.env.APP_URL;
+  // const APP_URL = "http://localhost:5173";
   const { supabase, headers } = createSupabaseClient(request);
   const formData = await request.formData();
 
@@ -136,6 +136,7 @@ export default function Login() {
                     type="submit"
                     name="_action"
                     value="google"
+                    formNoValidate
                     disabled={loading}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

@@ -1,10 +1,40 @@
 // app/routes/_landing/route.tsx
+import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router";
 import logoLight from "~/assets/logo-light.svg";
 
 // import "./auth.css";
 
 export default function LandingLayout() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.classList.toggle("dark", saved === "dark");
+    } else {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setTheme(prefersDark ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", prefersDark);
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      const newTheme = e.matches ? "dark" : "light";
+      setTheme(newTheme);
+      document.documentElement.classList.toggle("dark", newTheme === "dark");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    // Cleanup listener on unmount
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">

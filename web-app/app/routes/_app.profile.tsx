@@ -53,8 +53,8 @@ export default function Profile() {
   if (loading) {
     // wait for profile to load
     return (
-      <p className="flex flex-1 items-center justify-center text-lg text-foreground">
-        Loading profile...
+      <p className="flex flex-1 min-h-screen items-center justify-center text-lg text-foreground">
+        Loading Profile...
       </p>
     );
   }

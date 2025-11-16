@@ -35,7 +35,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   // const APP_URL = context.cloudflare.env.APP_URL;
-  const APP_URL = "http://localhost:5173/";
+  const APP_URL = "https://squadchamps.com";
   const { supabase, headers } = createSupabaseClient(request);
   const formData = await request.formData();
 

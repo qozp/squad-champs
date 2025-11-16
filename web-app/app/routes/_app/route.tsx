@@ -4,7 +4,6 @@ import AuthNavbar from "./AuthNavbar";
 import PublicNavbar from "./PublicNavbar";
 import { createSupabaseClient } from "~/lib/supabase/server";
 import Footer from "./Footer";
-import Footer from "./Footer";
 
 type LoaderArgs = {
   request: Request;

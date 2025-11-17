@@ -86,7 +86,7 @@ export default function FeatureCarousel() {
           {features.map((f, i) => (
             <CarouselItem
               key={i}
-              className="basis-full sm:basis-1/2 lg:basis-1/3"
+              className="basis-full md:basis-1/2 lg:basis-1/3"
             >
               <div className="p-1">
                 <Card key={i} className="">

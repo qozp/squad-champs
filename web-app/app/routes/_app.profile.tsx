@@ -54,7 +54,7 @@ export default function Profile() {
     // wait for profile to load
     return (
       <p className="flex flex-1 min-h-screen items-center justify-center text-lg text-foreground">
-        Loading profile...
+        Loading Profile...
       </p>
     );
   }

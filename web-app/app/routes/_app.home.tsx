@@ -1,12 +1,5 @@
 import type { Route } from "../+types/root";
 import { Link, useLoaderData } from "react-router";
-import {
-  ArrowRight,
-  TrendingUp,
-  Users,
-  Trophy,
-  DollarSign,
-} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { containsBadWords, sanitizeInput } from "~/lib/moderation";
@@ -15,6 +8,7 @@ import { supabaseBrowser } from "~/lib/supabase/client";
 import { useEffect, useState } from "react";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
 import { toast } from "sonner";
+import FeatureCarousel from "~/components/home/FeatureCarousel";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -88,13 +82,14 @@ export default function Home() {
       <hr className="border border-border w-1/2 mx-auto transition-colors duration-300" />
 
       {/* Features Section */}
-      <section className="py-12 transition-colors duration-300">
-        <div className="container mx-auto px-4">
+      <section className="flex flex-1 justify-center py-12 transition-colors duration-300">
+        <div className="flex flex-col justify-center w-full">
           <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
             Key Features
           </h2>
+          <FeatureCarousel />
           <div className="grid md:grid-cols-3 gap-8">
-            {[
+            {/* {[
               {
                 icon: <Trophy className="h-6 w-6 text-secondary" />,
                 title: "Compete Globally",
@@ -125,7 +120,7 @@ export default function Home() {
                   <p className="text-foreground">{f.desc}</p>
                 </CardContent>
               </Card>
-            ))}
+            ))} */}
           </div>
         </div>
       </section>

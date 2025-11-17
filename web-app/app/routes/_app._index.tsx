@@ -10,6 +10,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { createSupabaseClient } from "~/lib/supabase/server";
+import FeatureCarousel from "~/components/home/FeatureCarousel";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -107,40 +108,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
             Key Features
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Trophy className="h-6 w-6 text-secondary" />,
-                title: "Compete Globally",
-                desc: "Place in a global weekly and seasonal leaderboard against other squads around the world. ",
-              },
-              {
-                icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Squad Building",
-                desc: "Use a $100 budget to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
-              },
-              {
-                icon: <DollarSign className="h-6 w-6 text-secondary" />,
-                title: "Prizes",
-                desc: "Earn rewards for top leaderboard placements. Participation is completely free.",
-              },
-            ].map((f, i) => (
-              <Card
-                key={i}
-                className="border border-border bg-card text-card-foreground transition-colors duration-300"
-              >
-                <CardContent className="p-6 text-left">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center bg-background">
-                    {f.icon}
-                  </div>
-                  <h3 className="text-xl text-foreground font-semibold mb-2">
-                    {f.title}
-                  </h3>
-                  <p className="text-foreground">{f.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <FeatureCarousel />
         </div>
       </section>
 

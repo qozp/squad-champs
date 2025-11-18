@@ -16,16 +16,6 @@ import PriceSelect from "../players/PriceSelect";
 
 const PAGE_SIZE = 10;
 const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
-const MAX_PRICE_OPTIONS = [
-  { label: "Any", value: "Any" },
-  ...Array.from({ length: (13 - 4) / 0.5 + 1 }, (_, i) => {
-    const price = +(13 - i * 0.5).toFixed(1);
-    return {
-      label: `≤ $${price}`,
-      value: price,
-    };
-  }),
-];
 
 type PlayersTableForSquadProps = {
   mode?: "create" | "view";
@@ -104,11 +94,21 @@ export default function PlayersTableForSquad({
 
   const columns = [
     { key: "first_name", label: "Player" },
-    { key: "position", label: "Position" },
-    { key: "team_name", label: "Team" },
+    { key: "position", label: "Pos" },
     { key: "avg_fp", label: "FPPG" },
     { key: "price", label: "Price ($)" },
+    { key: "team_name", label: "Team" },
   ];
+
+  const shortPos = (pos: string) => {
+    if (!pos) return "";
+    const map: Record<string, string> = {
+      Guard: "G",
+      Forward: "F",
+      Center: "C",
+    };
+    return map[pos] ?? pos.charAt(0);
+  };
 
   const formatName = (first: string, last: string) => {
     const full = `${first} ${last}`;
@@ -242,6 +242,8 @@ export default function PlayersTableForSquad({
       <Table>
         <TableHeader>
           <TableRow>
+            {/* ADD NEW COLUMN FOR CREATE MODE */}
+            {mode === "create" && <TableHead>Add</TableHead>}
             {columns.map((col) => (
               <TableHead
                 key={col.key}
@@ -256,9 +258,6 @@ export default function PlayersTableForSquad({
                   : ""}
               </TableHead>
             ))}
-
-            {/* ADD NEW COLUMN FOR CREATE MODE */}
-            {mode === "create" && <TableHead>Add</TableHead>}
           </TableRow>
         </TableHeader>
 
@@ -272,25 +271,6 @@ export default function PlayersTableForSquad({
           ) : (
             paginatedPlayers.map((p) => (
               <TableRow key={p.id}>
-                {columns.map((col) => (
-                  <TableCell key={col.key}>
-                    {col.key === "first_name" ? (
-                      <a
-                        href={`https://www.nba.com/player/${p.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline"
-                      >
-                        {formatName(p.first_name, p.last_name)}
-                      </a>
-                    ) : typeof p[col.key] === "number" ? (
-                      p[col.key].toFixed(1)
-                    ) : (
-                      (p[col.key] ?? "—")
-                    )}
-                  </TableCell>
-                ))}
-
                 {/* ADD BUTTON LOGIC */}
                 {mode === "create" && (
                   <TableCell>
@@ -307,6 +287,26 @@ export default function PlayersTableForSquad({
                     )}
                   </TableCell>
                 )}
+                {columns.map((col) => (
+                  <TableCell key={col.key}>
+                    {col.key === "first_name" ? (
+                      <a
+                        href={`https://www.nba.com/player/${p.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {formatName(p.first_name, p.last_name)}
+                      </a>
+                    ) : col.key === "position" ? (
+                      shortPos(p.position)
+                    ) : typeof p[col.key] === "number" ? (
+                      p[col.key].toFixed(1)
+                    ) : (
+                      (p[col.key] ?? "—")
+                    )}
+                  </TableCell>
+                ))}
               </TableRow>
             ))
           )}

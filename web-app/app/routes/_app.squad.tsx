@@ -1,15 +1,14 @@
 import { useLoaderData } from "react-router";
 import { requireAuth } from "~/lib/requireAuth";
 import type { Route } from "../+types/root";
-import PlayersTable from "~/components/players/PlayersTable";
 import PlayersTableForSquad from "~/components/squad/PlayersTableForSquad";
-import CurrentSquad from "~/components/squad/CurrentSquad";
 import { useState, useEffect } from "react";
 import CreateSquadForm from "~/components/squad/SquadNameForm";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { sanitizeInput } from "~/lib/moderation";
+import { Pencil } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import SquadPlayersPanel from "~/components/squad/SquadPlayersPanel";
 import type { PlayerBasic } from "~/lib/types/squad";
@@ -184,17 +183,27 @@ export default function Squad() {
   const creatingNewSquad = hasSquad && !hasExistingPlayers;
 
   return (
-    <div className="space-y-4 md:flex md:space-x-4 md:space-y-0 flex-row flex-1 text-foreground m-4">
-      <Card className="flex-1">
+    <div className="space-y-4 lg:flex lg:space-x-4 lg:space-y-0 flex-row flex-1 text-foreground m-4">
+      <Card className="flex-1 lg:w-1/2">
         <CardContent className="">
           <CardTitle className="">
             {creatingNewSquad ? "Create" : "Edit"} Squad
           </CardTitle>
           {squadMeta && (
-            <div className="flex flex-row justify-between">
-              <p>
-                <strong>Name:</strong> {squadMeta.name}
-              </p>
+            <div className="flex flex-row space-x-1 justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <p className="flex items-center">
+                  <strong className="mr-1">Name:</strong> {squadMeta.name}
+                </p>
+
+                <Button
+                  onClick={() => setShowDialog(true)}
+                  className="text-muted-foreground hover:text-foreground transition cursor-pointer"
+                  aria-label="Edit squad name"
+                >
+                  <Pencil size={16} />
+                </Button>
+              </div>
               <p>
                 <strong>Total Points:</strong> {squadMeta.total_points}
               </p>
@@ -203,10 +212,7 @@ export default function Squad() {
               </p>
             </div>
           )}
-          {/* Button to open Create / Update Squad Form */}
-          <Button onClick={() => setShowDialog(true)}>
-            {squadMeta ? "Update Name" : "Create Squad"}
-          </Button>
+
           <SquadPlayersPanel
             mode={creatingNewSquad ? "create" : "update"}
             players={
@@ -243,7 +249,7 @@ export default function Squad() {
           )}
         </CardContent>
       </Card>
-      <Card className="">
+      <Card className="lg:w-1/2">
         <CardContent className="">
           <CardTitle className="">Add Players</CardTitle>
           <PlayersTableForSquad

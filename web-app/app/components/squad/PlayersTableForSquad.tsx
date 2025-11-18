@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   Table,
   TableHeader,
@@ -12,10 +11,37 @@ import { Button } from "~/components/ui/button";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import { Input } from "../ui/input";
 import PositionFilter from "../players/PositionSelect";
+import type { PlayerBasic } from "~/lib/types/squad";
+import PriceSelect from "../players/PriceSelect";
 
 const PAGE_SIZE = 10;
+const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
+const MAX_PRICE_OPTIONS = [
+  { label: "Any", value: "Any" },
+  ...Array.from({ length: (13 - 4) / 0.5 + 1 }, (_, i) => {
+    const price = +(13 - i * 0.5).toFixed(1);
+    return {
+      label: `≤ $${price}`,
+      value: price,
+    };
+  }),
+];
 
-export default function SquadPlayersTable({}) {
+type PlayersTableForSquadProps = {
+  mode?: "create" | "view";
+  selected?: number[];
+  playersMap?: Record<number, PlayerBasic>;
+  budget?: number;
+  onAddPlayer?: (id: number) => void;
+};
+
+export default function PlayersTableForSquad({
+  mode = "view",
+  selected = [],
+  playersMap,
+  budget,
+  onAddPlayer,
+}: PlayersTableForSquadProps) {
   const [players, setPlayers] = useState<any[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,38 +52,34 @@ export default function SquadPlayersTable({}) {
     "asc"
   );
   const [positionFilter, setPositionFilter] = useState("All Positions");
+  const [maxPrice, setMaxPrice] = useState<string>("Any");
 
   const fetchPlayersAndTeams = async () => {
     try {
-      // Fetch all players
       const { data: playersData, error: playersError } = await supabaseBrowser
         .from("player")
         .select("*");
       if (playersError) throw playersError;
 
-      // Fetch all teams
       const { data: teamsData, error: teamsError } = await supabaseBrowser
         .from("team")
         .select("*");
       if (teamsError) throw teamsError;
 
-      // Build a mapping from team_id → team_name
       const teamMap: Record<number, string> = {};
       teamsData?.forEach((t: any) => {
         teamMap[t.id] = t.team_abbreviation;
       });
 
-      const { data: statsData, error } = await supabaseBrowser.rpc(
+      const { data: statsData } = await supabaseBrowser.rpc(
         "get_player_averages"
       );
 
-      // Map stats by player_id for easy access
       const statsMap: Record<number, any> = {};
       statsData?.forEach((s: any) => {
         statsMap[s.player_id] = s;
       });
 
-      // Merge players, teams, and stats
       let playersWithStats = playersData?.map((p: any) => ({
         ...p,
         team_name: p.team_id ? teamMap[p.team_id] : "N/A",
@@ -67,10 +89,9 @@ export default function SquadPlayersTable({}) {
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
-        price: p.price ? p.price : "N/A",
+        price: p.price ?? "N/A",
       }));
 
-      // Sort by avg_fp descending (highest first)
       playersWithStats = playersWithStats?.sort((a, b) => b.avg_fp - a.avg_fp);
 
       setPlayers(playersWithStats || []);
@@ -89,51 +110,59 @@ export default function SquadPlayersTable({}) {
     { key: "price", label: "Price ($)" },
   ];
 
+  const formatName = (first: string, last: string) => {
+    const full = `${first} ${last}`;
+    if (full.length <= 16) return full;
+    return `${first.charAt(0)}. ${last}`;
+  };
+
   useEffect(() => {
     fetchPlayersAndTeams();
   }, []);
 
-  // Filter players whenever the search term changes
   useEffect(() => {
     let filtered = players;
 
     if (search.trim()) {
-      const query = search.toLowerCase();
+      const q = search.toLowerCase();
       filtered = filtered.filter((p) =>
-        `${p.first_name} ${p.last_name}`.toLowerCase().includes(query)
+        `${p.first_name} ${p.last_name}`.toLowerCase().includes(q)
       );
     }
 
-    if (positionFilter != "All Positions") {
+    if (positionFilter !== "All Positions") {
       filtered = filtered.filter((p) => p.position === positionFilter);
     }
 
-    setFilteredPlayers(filtered);
-    setPage(1);
-  }, [search, positionFilter, players]);
+    if (maxPrice !== "Any") {
+      filtered = filtered.filter((p) => p.price <= maxPrice);
+    }
 
-  // Function to handle clicking a column header
+    setFilteredPlayers(filtered);
+  }, [players, search, positionFilter, maxPrice, budget]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, positionFilter, maxPrice]);
+
   const handleSort = (column: keyof any) => {
     if (sortBy === column) {
-      // Cycle through desc → asc → none
-      if (sortDirection === "desc") {
-        setSortDirection("asc");
-      } else if (sortDirection === "asc") {
-        setSortBy(""); // Clear sort
-        setSortDirection(""); // No direction
+      if (sortDirection === "desc") setSortDirection("asc");
+      else if (sortDirection === "asc") {
+        setSortBy(null);
+        setSortDirection("");
       } else {
         setSortDirection("desc");
       }
     } else {
-      // New column clicked → start with descending
       setSortBy(column);
       setSortDirection("desc");
     }
   };
 
-  // Apply sorting
   const sortedPlayers = [...filteredPlayers].sort((a, b) => {
     if (!sortBy) return 0;
+
     const valA = a[sortBy] ?? "";
     const valB = b[sortBy] ?? "";
 
@@ -152,8 +181,43 @@ export default function SquadPlayersTable({}) {
     page * PAGE_SIZE
   );
 
+  const getPositionCounts = () => {
+    const counts: Record<PlayerBasic["position"], number> = {
+      Guard: 0,
+      Forward: 0,
+      Center: 0,
+    };
+
+    selected.forEach((id) => {
+      const p = playersMap?.[id];
+      if (p) counts[p.position] += 1;
+    });
+
+    return counts;
+  };
+
+  const isAddDisabled = (p: any) => {
+    if (mode !== "create") return true; // disable add entirely in view mode
+
+    const position = p.position as "Guard" | "Forward" | "Center";
+
+    // Already added
+    if (selected.includes(p.id)) return true;
+
+    // Squad full
+    if (selected.length >= 13) return true;
+
+    // Budget check
+    if (budget !== undefined && p.price > budget) return true;
+
+    // Position limits
+    const counts = getPositionCounts();
+    if (counts[position] >= POSITION_LIMITS[position]) return true;
+
+    return false;
+  };
+
   if (loading) {
-    // wait for profile to load
     return (
       <div className="flex items-center justify-center p-10">
         <p className="text-lg text-foreground">Loading players...</p>
@@ -163,7 +227,7 @@ export default function SquadPlayersTable({}) {
 
   return (
     <div>
-      {/* Search Input */}
+      {/* Search Controls */}
       <div className="flex justify-between items-center space-x-2">
         <Input
           placeholder="Search players..."
@@ -172,7 +236,9 @@ export default function SquadPlayersTable({}) {
           className="max-w-sm"
         />
         <PositionFilter value={positionFilter} onChange={setPositionFilter} />
+        <PriceSelect value={maxPrice} onChange={setMaxPrice} />
       </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -190,12 +256,16 @@ export default function SquadPlayersTable({}) {
                   : ""}
               </TableHead>
             ))}
+
+            {/* ADD NEW COLUMN FOR CREATE MODE */}
+            {mode === "create" && <TableHead>Add</TableHead>}
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {paginatedPlayers.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center py-6">
+              <TableCell colSpan={6} className="text-center py-6">
                 No players found.
               </TableCell>
             </TableRow>
@@ -211,7 +281,7 @@ export default function SquadPlayersTable({}) {
                         rel="noopener noreferrer"
                         className="hover:underline"
                       >
-                        {p.first_name} {p.last_name}
+                        {formatName(p.first_name, p.last_name)}
                       </a>
                     ) : typeof p[col.key] === "number" ? (
                       p[col.key].toFixed(1)
@@ -220,13 +290,30 @@ export default function SquadPlayersTable({}) {
                     )}
                   </TableCell>
                 ))}
+
+                {/* ADD BUTTON LOGIC */}
+                {mode === "create" && (
+                  <TableCell>
+                    {selected.includes(p.id) ? (
+                      <span className="">Added</span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        disabled={isAddDisabled(p)}
+                        onClick={() => onAddPlayer?.(p.id)}
+                      >
+                        Add
+                      </Button>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))
           )}
         </TableBody>
       </Table>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
         <Button
           variant="outline"
@@ -235,11 +322,9 @@ export default function SquadPlayersTable({}) {
         >
           Previous
         </Button>
-
         <p className="text-sm text-muted-foreground">
           Page {page} of {totalPages || 1}
         </p>
-
         <Button
           variant="outline"
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}

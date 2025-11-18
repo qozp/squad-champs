@@ -1,13 +1,7 @@
 import type { Route } from "../+types/root";
 import { Link, useLoaderData } from "react-router";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
-import { containsBadWords, sanitizeInput } from "~/lib/moderation";
 import { requireAuth } from "~/lib/requireAuth";
-import { supabaseBrowser } from "~/lib/supabase/client";
-import { useEffect, useState } from "react";
-import CreateProfileForm from "~/components/profile/CreateProfileForm";
-import { toast } from "sonner";
 import FeatureCarousel from "~/components/home/FeatureCarousel";
 
 export function meta({}: Route.MetaArgs) {

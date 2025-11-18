@@ -27,6 +27,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     { href: "/squad", label: "Squad" },
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/players", label: "Players" },
+    { href: "/help", label: "Help" },
     { href: "/profile", label: "Profile" },
     { href: "/logout", label: "Logout" },
   ];

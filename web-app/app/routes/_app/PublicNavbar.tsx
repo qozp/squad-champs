@@ -13,6 +13,7 @@ export default function PublicNavbar() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/players", label: "Players" },
+    { href: "/help", label: "Help" },
     { href: "/login", label: "Login" },
   ];
 

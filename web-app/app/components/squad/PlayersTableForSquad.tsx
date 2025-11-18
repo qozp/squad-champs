@@ -14,7 +14,7 @@ import PositionFilter from "../players/PositionSelect";
 import type { PlayerBasic } from "~/lib/types/squad";
 import PriceSelect from "../players/PriceSelect";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 12;
 const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
 
 type PlayersTableForSquadProps = {

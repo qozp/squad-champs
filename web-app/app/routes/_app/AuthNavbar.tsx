@@ -6,6 +6,9 @@ import { Menu, X } from "lucide-react";
 import logoLight from "~/assets/logo-light.svg";
 import logoDark from "~/assets/logo-dark.svg";
 import { NavLinks, ThemeToggle } from "./NavbarUtils";
+import { supabaseBrowser } from "~/lib/supabase/client";
+import CreateProfileForm from "~/components/profile/CreateProfileForm";
+import { toast } from "sonner";
 
 interface AuthNavbarProps {
   user: User;
@@ -14,6 +17,9 @@ interface AuthNavbarProps {
 export default function AuthNavbar({ user }: AuthNavbarProps) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
   const location = useLocation();
 
   const links = [
@@ -24,6 +30,25 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     { href: "/profile", label: "Profile" },
     { href: "/logout", label: "Logout" },
   ];
+
+  const fetchProfile = async () => {
+    try {
+      const { data, error } = await supabaseBrowser.rpc("get_user_profile", {});
+      if (error) throw error;
+
+      const profileRow = data && data.length > 0 ? data[0] : null;
+      setProfile(profileRow);
+      setShowDialog(profileRow === null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -51,7 +76,6 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
     // Cleanup listener on unmount
     return () => mediaQuery.removeEventListener("change", handleChange);
-  
   }, []);
 
   const toggleTheme = () => {
@@ -60,6 +84,15 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
+
+  if (loading) {
+    // wait for profile to load
+    return (
+      <p className="flex flex-1 min-h-screen items-center justify-center text-lg text-foreground">
+        Loading...
+      </p>
+    );
+  }
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
@@ -107,6 +140,11 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
       </div>
+      <CreateProfileForm
+        open={showDialog}
+        onClose={() => {}}
+        profileData={profile ?? {}}
+      />
     </nav>
   );
 }

@@ -28,39 +28,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export default function Home() {
   const { user } = useLoaderData<typeof loader>();
-  const [profile, setProfile] = useState<any>(null);
-  const [showDialog, setShowDialog] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProfile = async () => {
-    try {
-      const { data, error } = await supabaseBrowser.rpc("get_profile", {
-        user_id: user.id,
-      });
-
-      if (error) throw error;
-
-      setProfile(data[0]);
-      if (!data || data.length === 0) setShowDialog(true);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  if (loading) {
-    // wait for profile to load
-    return (
-      <p className="flex flex-1 min-h-screen items-center justify-center text-lg text-foreground">
-        Loading...
-      </p>
-    );
-  }
 
   return (
     <div className="flex-1 bg-background text-foreground transition-colors duration-300">
@@ -88,52 +55,8 @@ export default function Home() {
             Key Features
           </h2>
           <FeatureCarousel />
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* {[
-              {
-                icon: <Trophy className="h-6 w-6 text-secondary" />,
-                title: "Compete Globally",
-                desc: "Place in a global weekly and seasonal leaderboard against other squads around the world. ",
-              },
-              {
-                icon: <Users className="h-6 w-6 text-secondary" />,
-                title: "Squad Building",
-                desc: "Use a $100 budget to build a fantasy squad of 13 NBA players. Manage in-season with weekly line-ups and trades.",
-              },
-              {
-                icon: <DollarSign className="h-6 w-6 text-secondary" />,
-                title: "Prizes",
-                desc: "Earn rewards for top leaderboard placements. Participation is completely free.",
-              },
-            ].map((f, i) => (
-              <Card
-                key={i}
-                className="border border-border bg-card text-card-foreground transition-colors duration-300"
-              >
-                <CardContent className="p-6 text-left">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center bg-background">
-                    {f.icon}
-                  </div>
-                  <h3 className="text-xl text-foreground font-semibold mb-2">
-                    {f.title}
-                  </h3>
-                  <p className="text-foreground">{f.desc}</p>
-                </CardContent>
-              </Card>
-            ))} */}
-          </div>
         </div>
       </section>
-      <CreateProfileForm
-        open={showDialog}
-        onClose={() => {
-          toast.warning("Please create a profile to continue.", {
-            description: "Finish setting up your account.",
-            duration: 6000,
-          });
-        }}
-        profileData={profile}
-      />
     </div>
   );
 }

@@ -63,11 +63,6 @@ export default function Squad() {
     try {
       const { data: squadData } = await supabaseBrowser.rpc("get_squad");
       setSquadMeta(squadData?.[0] ?? null);
-      if (!squadData || squadData.length === 0) {
-        setShowDialog(true);
-        return;
-      }
-      console.log(squadData);
       setSquadBudget(squadData?.[0].budget);
 
       // Existing squad players
@@ -190,26 +185,30 @@ export default function Squad() {
             {creatingNewSquad ? "Create" : "Edit"} Squad
           </CardTitle>
           {squadMeta && (
-            <div className="flex flex-row space-x-1 justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <p className="flex items-center">
-                  <strong className="mr-1">Name:</strong> {squadMeta.name}
-                </p>
+            <div>
+              <div className="flex flex-row space-x-1 justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <p className="flex items-center">
+                    <strong className="mr-1">Name:</strong> {squadMeta.name}
+                  </p>
 
-                <Button
-                  onClick={() => setShowDialog(true)}
-                  className="text-muted-foreground hover:text-foreground transition cursor-pointer"
-                  aria-label="Edit squad name"
-                >
-                  <Pencil size={16} />
-                </Button>
+                  <Button
+                    onClick={() => setShowDialog(true)}
+                    className="text-muted-foreground hover:text-foreground transition cursor-pointer"
+                    aria-label="Edit squad name"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                </div>
               </div>
-              <p>
-                <strong>Total Points:</strong> {squadMeta.total_points}
-              </p>
-              <p>
-                <strong>Remaining Budget:</strong> ${squadBudget}
-              </p>
+              <div className="flex flex-row space-x-1 justify-between items-center">
+                <p>
+                  <strong>Total Points:</strong> {squadMeta.total_points}
+                </p>
+                <p>
+                  <strong>Remaining Budget:</strong> ${squadBudget}
+                </p>
+              </div>
             </div>
           )}
 

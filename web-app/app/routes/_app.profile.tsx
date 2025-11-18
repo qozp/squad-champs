@@ -29,16 +29,13 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabaseBrowser.rpc("get_profile", {
-        user_id: user.id,
-      });
+      const { data, error } = await supabaseBrowser.rpc("get_user_profile", {});
 
       if (error) throw error;
 
-      setProfile(data[0]);
-
+      const profileRow = data?.[0] ?? null;
+      setProfile(profileRow);
       // Open create form if profile doesn’t exist
-      if (!data || data.length === 0) setShowDialog(true);
     } catch (err) {
       console.error(err);
     } finally {
@@ -89,7 +86,7 @@ export default function Profile() {
         <CreateProfileForm
           open={showDialog}
           onClose={() => setShowDialog(false)}
-          profileData={profile}
+          profileData={profile ?? {}}
         />
       </section>
     </div>

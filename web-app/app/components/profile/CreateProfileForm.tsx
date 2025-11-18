@@ -18,6 +18,7 @@ interface CreateProfileFormProps {
   open: boolean;
   onClose: () => void;
   profileData?: {
+    squad_name?: string;
     display_name?: string;
     first_name?: string;
     last_name?: string;
@@ -39,6 +40,9 @@ export default function CreateProfileForm({
   const displayNameRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
+  const squadNameRef = useRef<HTMLInputElement>(null);
+
+  const isUpdate = !!profileData.display_name;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +52,7 @@ export default function CreateProfileForm({
     const displayName = displayNameRef.current?.value ?? "";
     const firstName = firstNameRef.current?.value ?? "";
     const lastName = lastNameRef.current?.value ?? "";
+    const squadName = squadNameRef.current?.value ?? "";
 
     const newErrors: Record<string, string> = {};
 
@@ -56,6 +61,17 @@ export default function CreateProfileForm({
         "Inappropriate language detected in Display Name.";
     } else if (displayName.length > 20) {
       newErrors.displayName = "Display Name must be 20 characters or fewer.";
+    }
+
+    // Squad Name validation — only when creating
+    if (!isUpdate) {
+      if (!squadName.trim()) {
+        newErrors.squadName = "Squad name is required.";
+      } else if (containsBadWords(squadName)) {
+        newErrors.squadName = "Inappropriate language detected in Squad Name.";
+      } else if (squadName.length > 20) {
+        newErrors.squadName = "Squad Name must be 20 characters or fewer.";
+      }
     }
 
     if (containsBadWords(firstName)) {
@@ -76,25 +92,53 @@ export default function CreateProfileForm({
       return;
     }
 
-    const rpcName = profileData.display_name
-      ? "update_profile"
-      : "create_profile";
+    if (isUpdate) {
+      const { error } = await supabaseBrowser.rpc("update_profile", {
+        display_name: displayName,
+        first_name: firstName || null,
+        last_name: lastName || null,
+        nation: nation || null,
+        state: state || null,
+      });
 
-    const { error } = await supabaseBrowser.rpc(rpcName, {
-      display_name: displayName,
-      first_name: firstName || null,
-      last_name: lastName || null,
-      nation: nation || null,
-      state: state || null,
-    });
+      setLoading(false);
+      if (error) setErrors({ form: error.message });
+      else {
+        onClose();
+        window.location.reload();
+      }
+      return;
+    }
+
+    const { error: profileError } = await supabaseBrowser.rpc(
+      "create_profile",
+      {
+        display_name: displayName,
+        first_name: firstName || null,
+        last_name: lastName || null,
+        nation: nation || null,
+        state: state || null,
+      }
+    );
+
+    if (profileError) {
+      setLoading(false);
+      setErrors({ form: "Error creating profile: " + profileError.message });
+      return;
+    }
+
+    const { error: squadError } = await supabaseBrowser.rpc(
+      "create_or_update_squad",
+      { name: squadName }
+    );
 
     setLoading(false);
 
-    if (error) {
-      setErrors({ form: "Error saving profile: " + error.message });
+    if (squadError) {
+      setErrors({ form: "Error creating squad: " + squadError.message });
     } else {
       onClose();
-      window.location.reload(); // TODO: Replace with better revalidation later
+      window.location.reload();
     }
   };
 
@@ -135,6 +179,20 @@ export default function CreateProfileForm({
         </DialogHeader>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          {!isUpdate && (
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="squadName">Squad Name (Required)</Label>
+              <Input
+                id="squadName"
+                defaultValue={profileData.squad_name ?? ""}
+                ref={squadNameRef}
+                required
+              />
+              {errors.squadName && (
+                <p className="text-sm text-destructive">{errors.squadName}</p>
+              )}
+            </div>
+          )}
           {inputFields.map(({ id, label, ref, required, defaultValue }) => (
             <div key={id} className="flex flex-col gap-1">
               <Label htmlFor={id}>{label}</Label>

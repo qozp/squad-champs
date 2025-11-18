@@ -13,28 +13,6 @@ import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import SquadPlayersPanel from "~/components/squad/SquadPlayersPanel";
 import type { PlayerBasic } from "~/lib/types/squad";
 
-// ------------------------------
-// LOCAL TYPES
-// ------------------------------
-
-type SquadMeta = {
-  name: string;
-  total_points: number;
-  budget: number;
-};
-
-type SquadPlayerRPC = {
-  player_id: number;
-  first_name: string;
-  last_name: string;
-  position: PlayerBasic["position"];
-  price: number;
-  is_starting: boolean;
-  is_captain: boolean;
-  is_vice_captain: boolean;
-  team_name: string;
-};
-
 export function meta() {
   return [
     { title: "My Squad - Squad Champs" },

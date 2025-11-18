@@ -29,6 +29,11 @@ interface Feature {
 
 const features = [
   {
+    icon: <TrendingUp className="h-6 w-6 text-secondary" />,
+    title: "Dynamic Prices",
+    desc: "Player prices can rise or fall based on form and demand.",
+  },
+  {
     icon: <Users className="h-6 w-6 text-secondary" />,
     title: "Build Your Squad",
     desc: "Use a $100 budget to build a fantasy squad of 13 NBA players.",
@@ -52,11 +57,6 @@ const features = [
     icon: <RefreshCcw className="h-6 w-6 text-secondary" />,
     title: "Player Trades",
     desc: "Trade players each week without exceeding your budget.",
-  },
-  {
-    icon: <TrendingUp className="h-6 w-6 text-secondary" />,
-    title: "Dynamic Prices",
-    desc: "Player prices can rise or fall based on form and demand.",
   },
 ];
 

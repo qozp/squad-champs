@@ -117,13 +117,13 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-16 text-foreground transition-colors duration-300">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to dominate?</h2>
-          <p className="text-foreground mb-8 text-lg">
-            Start building your championship squad today
+          <h2 className="text-3xl font-bold mb-4">Need More Info?</h2>
+          <p className="text-foreground mb-6 text-lg">
+            Visit our in-depth help page
           </p>
-          <Link to="/squad">
+          <Link to="/help">
             <Button size="lg" variant="default">
-              Create Your Squad
+              Rules & FAQs
             </Button>
           </Link>
         </div>

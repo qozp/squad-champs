@@ -18,14 +18,7 @@ export default function HelpTabs() {
       </TabsList>
 
       <TabsContent value="rules">
-        <Card>
-          <CardHeader>
-            <CardTitle>Game Rules</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RulesAccordion />
-          </CardContent>
-        </Card>
+        <RulesAccordion />
       </TabsContent>
 
       <TabsContent value="scoring">

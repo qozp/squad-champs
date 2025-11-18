@@ -18,10 +18,8 @@ export const scoringRules = [
 export default function ScoringSection() {
   return (
     <Card>
-      <CardHeader>
+      <CardContent className="text-sm text-muted-foreground space-y-3">
         <CardTitle>Scoring</CardTitle>
-      </CardHeader>
-      <CardContent className="text-sm text-muted-foreground space-y-4">
         <p>
           Players earn fantasy points based on their real NBA performance using
           a stat-weighted scoring system. A player's final weekly score is an

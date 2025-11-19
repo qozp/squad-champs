@@ -6,11 +6,11 @@ import {
   TableBody,
   TableCell,
 } from "~/components/ui/table";
-import type { PlayerBasic, SquadPlayerDisplay } from "~/lib/types/squad";
+import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 
 type SquadPlayersPanelProps = {
   mode: "create" | "update";
-  players: SquadPlayerDisplay[];
+  players: SquadPlayer[];
   onRemove?: (id: number) => void;
 };
 
@@ -26,20 +26,20 @@ export default function SquadPlayersPanel({
   onRemove,
 }: SquadPlayersPanelProps) {
   // Build organized lists
-  const grouped: Record<keyof typeof POSITION_SLOTS, SquadPlayerDisplay[]> = {
+  const grouped: Record<keyof typeof POSITION_SLOTS, SquadPlayer[]> = {
     Guard: [],
     Forward: [],
     Center: [],
   };
 
   players.forEach((p) => {
-    if (grouped[p.position]) grouped[p.position].push(p);
+    if (grouped[p.pos]) grouped[p.pos].push(p);
   });
 
   // Convert to slot rows
-  const renderRows = (position: keyof typeof POSITION_SLOTS) => {
-    const slots = POSITION_SLOTS[position];
-    const items = grouped[position];
+  const renderRows = (pos: keyof typeof POSITION_SLOTS) => {
+    const slots = POSITION_SLOTS[pos];
+    const items = grouped[pos];
 
     const rows = [];
 
@@ -47,7 +47,7 @@ export default function SquadPlayersPanel({
       const p = items[i];
 
       rows.push(
-        <TableRow key={`${position}-${i}`}>
+        <TableRow key={`${pos}-${i}`}>
           <TableCell>{i + 1}</TableCell>
           <TableCell>
             {p ? (
@@ -58,7 +58,7 @@ export default function SquadPlayersPanel({
               <span className="text-muted-foreground">—</span>
             )}
           </TableCell>
-          <TableCell>{position}</TableCell>
+          <TableCell>{pos}</TableCell>
           <TableCell>{p ? `$${p.price}` : "—"}</TableCell>
 
           {mode === "create" && p && onRemove && (

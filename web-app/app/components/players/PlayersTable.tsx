@@ -41,7 +41,7 @@ export default function PlayersTable({}) {
         .select("*");
       if (teamsError) throw teamsError;
 
-      // Build a mapping from team_id → team_name
+      // Build a mapping from team_id → team_abbreviation
       const teamMap: Record<number, string> = {};
       teamsData?.forEach((t: any) => {
         teamMap[t.id] = t.team_abbreviation;
@@ -60,7 +60,7 @@ export default function PlayersTable({}) {
       // Merge players, teams, and stats
       let playersWithStats = playersData?.map((p: any) => ({
         ...p,
-        team_name: p.team_id ? teamMap[p.team_id] : "N/A",
+        team_abbreviation: p.team_id ? teamMap[p.team_id] : "N/A",
         avg_pts: statsMap[p.id]?.avg_pts ?? 0,
         avg_reb: statsMap[p.id]?.avg_reb ?? 0,
         avg_ast: statsMap[p.id]?.avg_ast ?? 0,
@@ -83,8 +83,8 @@ export default function PlayersTable({}) {
 
   const columns = [
     { key: "first_name", label: "Player" },
-    { key: "position", label: "Position" },
-    { key: "team_name", label: "Team" },
+    { key: "pos", label: "Position" },
+    { key: "team_abbreviation", label: "Team" },
     { key: "avg_pts", label: "PPG" },
     { key: "avg_reb", label: "RPG" },
     { key: "avg_ast", label: "APG" },
@@ -110,7 +110,7 @@ export default function PlayersTable({}) {
     }
 
     if (positionFilter != "All Positions") {
-      filtered = filtered.filter((p) => p.position === positionFilter);
+      filtered = filtered.filter((p) => p.pos === positionFilter);
     }
 
     setFilteredPlayers(filtered);

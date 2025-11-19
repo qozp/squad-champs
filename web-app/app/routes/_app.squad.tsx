@@ -12,6 +12,7 @@ import { Pencil } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import SquadPlayersPanel from "~/components/squad/SquadPlayersPanel";
 import type { PlayerBasic } from "~/lib/types/squad";
+import LineupEditor from "~/components/squad/LineupEditor/LineupEditor";
 
 export function meta() {
   return [
@@ -52,7 +53,7 @@ export default function Squad() {
       // All players: for players table
       const { data: allPlayers } = await supabaseBrowser
         .from("player")
-        .select("id, position, price, first_name, last_name");
+        .select("id, pos, price, first_name, last_name");
 
       const map: Record<number, PlayerBasic> = {};
       allPlayers?.forEach((p) => {
@@ -60,7 +61,7 @@ export default function Squad() {
           id: p.id,
           first_name: p.first_name,
           last_name: p.last_name,
-          position: p.position as PlayerBasic["position"],
+          pos: p.pos as PlayerBasic["pos"],
           price: p.price,
         };
       });
@@ -109,7 +110,7 @@ export default function Squad() {
 
     selectedPlayers.forEach((id) => {
       const p = playersMap[id];
-      if (p) counts[p.position] += 1;
+      if (p) counts[p.pos] += 1;
     });
 
     return counts;
@@ -155,6 +156,8 @@ export default function Squad() {
   const hasExistingPlayers = squadPlayers.length > 0;
   const creatingNewSquad = hasSquad && !hasExistingPlayers;
 
+  const mode: "create" | "edit" = creatingNewSquad ? "create" : "edit";
+
   return (
     <div className="space-y-4 lg:flex lg:space-x-4 lg:space-y-0 flex-row flex-1 text-foreground m-4">
       <Card className="flex-1 lg:w-1/2">
@@ -167,7 +170,8 @@ export default function Squad() {
               <div className="flex flex-row space-x-1 justify-between items-center">
                 <div className="flex items-center space-x-2">
                   <p className="flex items-center">
-                    <strong className="mr-1">Name:</strong> {squadMeta.name}
+                    <strong className="mr-1">Name:</strong>{" "}
+                    {sanitizeInput(squadMeta.name)}
                   </p>
 
                   <Button
@@ -190,54 +194,54 @@ export default function Squad() {
             </div>
           )}
 
-          <SquadPlayersPanel
-            mode={creatingNewSquad ? "create" : "update"}
-            players={
-              creatingNewSquad
-                ? selectedPlayers.map((id) => playersMap[id])
-                : squadPlayers.map((p) => ({
-                    id: p.player_id,
-                    first_name: p.first_name,
-                    last_name: p.last_name,
-                    position: p.pos,
-                    price: p.purchase_price,
-                    is_starting: p.is_starting,
-                    is_captain: p.is_captain,
-                    is_vice_captain: p.is_vice_captain,
-                    team_name: p.team_abbreviation,
-                  }))
-            }
-            onRemove={removePlayer}
-          />
-          {creatingNewSquad && (
-            <div className="mt-4 flex space-x-3">
-              <Button
-                variant="outline"
-                onClick={removeAll}
-                disabled={selectedPlayers.length === 0}
-              >
-                Remove All
-              </Button>
+          {/* Show different UI based on mode */}
+          {mode === "create" ? (
+            <>
+              <SquadPlayersPanel
+                mode="create"
+                players={selectedPlayers.map((id) => playersMap[id])}
+                onRemove={removePlayer}
+              />
 
-              <Button onClick={submitSquad} disabled={!isValidSquad}>
-                Create Squad
-              </Button>
-            </div>
+              <div className="mt-4 flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={removeAll}
+                  disabled={selectedPlayers.length === 0}
+                >
+                  Remove All
+                </Button>
+
+                <Button
+                  onClick={submitSquad}
+                  disabled={selectedPlayers.length !== 13}
+                >
+                  Create Squad
+                </Button>
+              </div>
+            </>
+          ) : (
+            // EDIT MODE: LINEUP EDITOR
+            <LineupEditor initialPlayers={squadPlayers} />
           )}
         </CardContent>
       </Card>
-      <Card className="lg:w-1/2">
-        <CardContent className="">
-          <CardTitle className="">Add Players</CardTitle>
-          <PlayersTableForSquad
-            mode="create" // or update
-            selected={selectedPlayers}
-            playersMap={playersMap}
-            budget={squadBudget}
-            onAddPlayer={addPlayer}
-          />
-        </CardContent>
-      </Card>
+      {/* RIGHT CARD (Only used in create mode) */}
+      {mode === "create" && (
+        <Card className="lg:w-1/2">
+          <CardContent>
+            <CardTitle>Add Players</CardTitle>
+
+            <PlayersTableForSquad
+              mode="create"
+              selected={selectedPlayers}
+              playersMap={playersMap}
+              budget={squadBudget}
+              onAddPlayer={addPlayer}
+            />
+          </CardContent>
+        </Card>
+      )}
       <CreateSquadForm
         open={showDialog}
         onClose={() => setShowDialog(false)}

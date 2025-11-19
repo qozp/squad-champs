@@ -72,7 +72,7 @@ export default function PlayersTableForSquad({
 
       let playersWithStats = playersData?.map((p: any) => ({
         ...p,
-        team_name: p.team_id ? teamMap[p.team_id] : "N/A",
+        team_abbreviation: p.team_id ? teamMap[p.team_id] : "N/A",
         avg_pts: statsMap[p.id]?.avg_pts ?? 0,
         avg_reb: statsMap[p.id]?.avg_reb ?? 0,
         avg_ast: statsMap[p.id]?.avg_ast ?? 0,
@@ -97,7 +97,7 @@ export default function PlayersTableForSquad({
     { key: "position", label: "Pos" },
     { key: "avg_fp", label: "FPPG" },
     { key: "price", label: "Price ($)" },
-    { key: "team_name", label: "Team" },
+    { key: "team_abbreviation", label: "Team" },
   ];
 
   const shortPos = (pos: string) => {
@@ -182,7 +182,7 @@ export default function PlayersTableForSquad({
   );
 
   const getPositionCounts = () => {
-    const counts: Record<PlayerBasic["position"], number> = {
+    const counts: Record<PlayerBasic["pos"], number> = {
       Guard: 0,
       Forward: 0,
       Center: 0,
@@ -190,7 +190,7 @@ export default function PlayersTableForSquad({
 
     selected.forEach((id) => {
       const p = playersMap?.[id];
-      if (p) counts[p.position] += 1;
+      if (p) counts[p.pos] += 1;
     });
 
     return counts;
@@ -199,7 +199,7 @@ export default function PlayersTableForSquad({
   const isAddDisabled = (p: any) => {
     if (mode !== "create") return true; // disable add entirely in view mode
 
-    const position = p.position as "Guard" | "Forward" | "Center";
+    const position = p.pos as "Guard" | "Forward" | "Center";
 
     // Already added
     if (selected.includes(p.id)) return true;
@@ -299,7 +299,7 @@ export default function PlayersTableForSquad({
                         {formatName(p.first_name, p.last_name)}
                       </a>
                     ) : col.key === "position" ? (
-                      shortPos(p.position)
+                      shortPos(p.pos)
                     ) : typeof p[col.key] === "number" ? (
                       p[col.key].toFixed(1)
                     ) : (

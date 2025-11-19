@@ -32,7 +32,7 @@ def get_player_details(player_id):
             "id": data.get("PERSON_ID"),
             "first_name": data.get("FIRST_NAME"),
             "last_name": data.get("LAST_NAME"),
-            "position": position,
+            "pos": position,
             "team_id": data.get("TEAM_ID") or None,
             "height_in": parse_height(data.get("HEIGHT")),
             "weight_lb": parse_weight(data.get("WEIGHT")),

@@ -123,14 +123,23 @@ def get_player_details_for_game(game, supabase):
             # update team if changed
             # -----------------------------
             current_team = existing_info.get(player_id)
-            if current_team and current_team != team_id:
-                print(f"🔁 Updating team for player {player_id}: {existing_info[player_id]} → {team_id}")
+
+            # -----------------------------
+            # Update player's team if changed
+            # -----------------------------
+            if current_team is not None and current_team != team_id:
+                print(f"🔁 Updating team for player {player_id}: {current_team} → {team_id}")
                 supabase.table("player").update({"team_id": team_id}).eq("id", player_id).execute()
                 existing_info[player_id] = team_id
 
+
             if player_id not in existing_info:
-                details["price"] = 4.5 # hardcoded entry price
                 details = get_player_details(player_id)  # Your helper from the other file
+                if not details:
+                    print(f"Failed to fetch details for player {player_id}")
+                    continue
+
+                details["price"] = 4.0 # hardcoded entry price
                 if details:
                     supabase.table("player").insert(details).execute()
                     existing_info[player_id] = team_id

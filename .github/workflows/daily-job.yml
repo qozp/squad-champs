@@ -1,0 +1,42 @@
+name: Daily Fetch NBA Box scores
+
+on:
+  schedule:
+    - cron: "0 10 * * *"  # Runs every day at 10:00 UTC (5am ET)
+  workflow_dispatch: {}  # Allows manual run
+
+jobs:
+  run-daily-job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # prevents runaway jobs
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Fetch Box
+        working-directory: backend
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          echo "Running fetch box..."
+          python fetch_box.py
+
+      - name: Upload job logs
+        if: always()  # upload even if failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetch-box-logs
+          path: backend/logs/

@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import type { SquadPlayer } from "~/lib/types/squad";
 import { supabaseBrowser } from "~/lib/supabase/client";
+import { ArrowUpDown } from "lucide-react";
 
 interface LineupEditorTableProps {
   initialPlayers: SquadPlayer[];
@@ -49,6 +50,22 @@ export default function LineupEditorTable({
   const changedRowIndexes = useMemo(() => {
     return rows.map((p, i) => p.player_id !== initialOrder[i]);
   }, [rows, initialOrder]);
+
+  const shortPos = (pos: string) => {
+    if (!pos) return "";
+    const map: Record<string, string> = {
+      Guard: "G",
+      Forward: "F",
+      Center: "C",
+    };
+    return map[pos] ?? pos.charAt(0);
+  };
+
+  const formatName = (first: string, last: string) => {
+    const full = `${first} ${last}`;
+    if (full.length <= 16) return full;
+    return `${first.charAt(0)}. ${last}`;
+  };
 
   // -------------------------------
   // Row Switch Logic
@@ -139,12 +156,12 @@ export default function LineupEditorTable({
       <Table className="border rounded-lg">
         <TableHeader>
           <TableRow>
+            <TableHead className="">Action</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Player</TableHead>
             <TableHead>Position</TableHead>
             <TableHead>Team</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -161,6 +178,16 @@ export default function LineupEditorTable({
                   "transition-colors",
                 ].join(" ")}
               >
+                <TableCell className="">
+                  <Button
+                    variant={pendingSwitch === i ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => triggerSwitch(i)}
+                    className="cursor-pointer"
+                  >
+                    <ArrowUpDown size={16} />
+                  </Button>
+                </TableCell>
                 <TableCell className="font-medium">
                   {i === 0
                     ? "Captain"
@@ -172,27 +199,15 @@ export default function LineupEditorTable({
                 </TableCell>
 
                 <TableCell>
-                  {player ? `${player.first_name} ${player.last_name}` : "—"}
+                  {player
+                    ? `${formatName(player.first_name, player.last_name)}`
+                    : "—"}
                 </TableCell>
 
-                <TableCell>{player.pos ?? "—"}</TableCell>
+                <TableCell>{shortPos(player.pos) ?? "—"}</TableCell>
                 <TableCell>{player.team_abbreviation ?? "—"}</TableCell>
                 <TableCell>
                   {player ? `$${player.purchase_price}` : "—"}
-                </TableCell>
-
-                <TableCell className="text-right">
-                  <Button
-                    variant={pendingSwitch === i ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => triggerSwitch(i)}
-                  >
-                    {pendingSwitch === null
-                      ? "Switch"
-                      : pendingSwitch === i
-                        ? "Cancel"
-                        : "Confirm Swap"}
-                  </Button>
                 </TableCell>
               </TableRow>
             );

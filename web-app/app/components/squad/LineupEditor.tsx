@@ -67,6 +67,22 @@ export default function LineupEditorTable({
     return `${first.charAt(0)}. ${last}`;
   };
 
+function discardChanges() {
+  // Convert initialOrder IDs back to full player objects
+  const restoredRows = initialOrder.map(
+    (id) => initialPlayers.find((p) => p.player_id === id)!
+  );
+
+  setRows(restoredRows);
+
+  // Clear pending swap
+  setPendingSwitch(null);
+
+  // No more unsaved changes
+  setHasChanges(false);
+}
+
+
   // -------------------------------
   // Row Switch Logic
   // -------------------------------
@@ -243,10 +259,21 @@ export default function LineupEditorTable({
         </TableBody>
       </Table>
 
-      {/* SAVE BUTTON */}
-      <Button className="w-full mt-4" onClick={saveLineup}>
-        Save Lineup
-      </Button>
+      <div className="flex justify-end gap-3 mt-4">
+        {hasChanges && (
+          <Button
+            variant="outline"
+            onClick={discardChanges}
+            className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+          >
+            Discard Changes
+          </Button>
+        )}
+
+        <Button onClick={saveLineup} disabled={!hasChanges}>
+          Save Lineup
+        </Button>
+      </div>
     </div>
   );
 }

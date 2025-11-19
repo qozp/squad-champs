@@ -50,48 +50,52 @@ body {
 
   /* site palette */
   --background: #F1F1F1;
-  --foreground: #183647; /* Text Color */
-  --secondary-foreground: #748189; /* Secondary Text Color */
-  --primary: #f1f1f1; /* Primary Color */
-  --secondary: #5586d6; /* Secondary Color */
+  --foreground: #183647;
+  --secondary-foreground: #748189;
+
+  --primary: #f1f1f1;
+  --secondary: #5586d6; /* ⭐ unified brand color */
   --destructive: #ff2e2e;
 
   /* Navbar */
-  --navbar-bg: #5586d6; /* Navigation Bar Color */
-  --navbar-text: #ffffff; /* Navigation Bar Text Color */
+  --navbar-bg: #5586d6;
+  --navbar-text: #ffffff;
 
   /* Notification / Icons */
   --notification-icon: #183647;
 
-  /* Card / Surface */
-  --card: #e2e3ed; /* e2e3ed */
+  /* Card */
+  --card: #e2e3ed;
   --card-foreground: #183647;
 
   /* Accent / Muted / Border */
-  --accent: #eaeaea;
+  --accent: #E6EEF7;            /* ⭐ bluish neutral, mirrors dark accent */
   --accent-foreground: #183647;
-  --muted: #E3E3E3;
+
+  --muted: #E8F0FB;             /* ⭐ LIGHT-MODE MIRROR OF DARK MUTED */
   --muted-foreground: #183647;
-  --border: #565656;
-  --input: #565656;
+
+  --border: #C5CBD3;            /* ⭐ lighter for light mode */
+  --input: #C5CBD3;             /* ⭐ match border */
   --ring: #a0aec0;
 
-  /* Sidebar (if used) */
+  /* Sidebar */
   --sidebar: #ffffff;
   --sidebar-foreground: #183647;
-  --sidebar-border: #e5e5e5;
+  --sidebar-border: #d5dbe3;     /* softer */
   --sidebar-ring: #a0aec0;
 }
 
 /* 🌚 DARK MODE */
 .dark {
-  --background: #181818; /* set */
+  --background: #181818;
   --foreground: #e2e8f0;
   --secondary-foreground: #cbd5e1;
+
   --primary: #282828;
   --secondary: #5586d6;
 
-  --navbar-bg: #5586d6; /* Set, Keep same for both modes */
+  --navbar-bg: #5586d6;
   --navbar-text: #ffffff;
 
   --notification-icon: #e2e8f0;
@@ -99,20 +103,21 @@ body {
   --card: #1f1f1f;
   --card-foreground: #e2e8f0;
 
-  --accent: #334155;
+  --accent: #334155;            /* slate-700 */
   --accent-foreground: #e2e8f0;
-  --muted: #1e293b;
+
+  --muted: #1e293b;             /* slate-800 */
   --muted-foreground: #e2e8f0;
-  --border: #565656; /* set */
-  --input: #475569;
-  --ring: #64748b;
+
+  --border: #565656;
+  --input: #475569;              /* slate-600 */
+  --ring: #64748b;               /* slate-500 */
 
   --sidebar: #1e293b;
   --sidebar-foreground: #e2e8f0;
   --sidebar-border: #475569;
   --sidebar-ring: #64748b;
 }
-
 /* Base styling */
 @layer base {
   * {

@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button";
 import { sanitizeInput } from "~/lib/moderation";
 import { Pencil } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
-import SquadPlayersPanel from "~/components/squad/SquadPlayersPanel";
+import SquadPlayersPanel from "~/components/squad/CreateSquadPlayersPanel";
 import type { PlayerBasic } from "~/lib/types/squad";
 import LineupEditor from "~/components/squad/LineupEditor";
 
@@ -198,7 +198,6 @@ export default function Squad() {
           {mode === "create" ? (
             <>
               <SquadPlayersPanel
-                mode="create"
                 players={selectedPlayers.map((id) => playersMap[id])}
                 onRemove={removePlayer}
               />

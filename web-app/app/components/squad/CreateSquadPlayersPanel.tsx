@@ -8,25 +8,23 @@ import {
 } from "~/components/ui/table";
 import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 
-type SquadPlayersPanelProps = {
-  mode: "create" | "update";
-  players: SquadPlayer[];
-  onRemove?: (id: number) => void;
-};
-
 const POSITION_SLOTS = {
   Guard: 5,
   Forward: 5,
   Center: 3,
 };
 
+export interface SquadPlayersPanelProps {
+  players: PlayerBasic[];
+  onRemove: (id: number) => void;
+}
+
 export default function SquadPlayersPanel({
-  mode,
   players,
   onRemove,
 }: SquadPlayersPanelProps) {
   // Build organized lists
-  const grouped: Record<keyof typeof POSITION_SLOTS, SquadPlayer[]> = {
+  const grouped: Record<keyof typeof POSITION_SLOTS, PlayerBasic[]> = {
     Guard: [],
     Forward: [],
     Center: [],
@@ -61,7 +59,7 @@ export default function SquadPlayersPanel({
           <TableCell>{pos}</TableCell>
           <TableCell>{p ? `$${p.price}` : "—"}</TableCell>
 
-          {mode === "create" && p && onRemove && (
+          {p && (
             <TableCell>
               <button
                 className="text-red-500 hover:underline cursor-pointer"
@@ -91,7 +89,7 @@ export default function SquadPlayersPanel({
                 <TableHead>Player</TableHead>
                 <TableHead>Pos</TableHead>
                 <TableHead>Price</TableHead>
-                {mode === "create" && <TableHead>Remove</TableHead>}
+                <TableHead>Remove</TableHead>
               </TableRow>
             </TableHeader>
 

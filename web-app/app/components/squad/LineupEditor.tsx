@@ -27,12 +27,12 @@ export default function LineupEditorTable({
   );
   const bench = initialPlayers.filter((p) => !p.is_starting);
 
-  const initialOrder = [
+  const [initialOrder, setInitialOrder] = useState<number[]>([
     captain.player_id,
     vice.player_id,
     ...otherStarters.map((p) => p.player_id),
     ...bench.map((p) => p.player_id),
-  ];
+  ]);
 
   // Final lineup array
   const [rows, setRows] = useState<SquadPlayer[]>([
@@ -119,6 +119,7 @@ export default function LineupEditorTable({
     }
 
     toast.success("Lineup saved!");
+    setInitialOrder(rows.map((p) => p.player_id));
     setHasChanges(false);
   }
 

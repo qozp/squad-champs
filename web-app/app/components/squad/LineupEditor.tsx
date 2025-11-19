@@ -11,7 +11,7 @@ import {
 import { toast } from "sonner";
 import type { SquadPlayer } from "~/lib/types/squad";
 import { supabaseBrowser } from "~/lib/supabase/client";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Repeat } from "lucide-react";
 
 interface LineupEditorTableProps {
   initialPlayers: SquadPlayer[];
@@ -140,6 +140,78 @@ export default function LineupEditorTable({
     setHasChanges(false);
   }
 
+  function renderPlayerRow(player: SquadPlayer, index: number) {
+    const isChanged = changedRowIndexes[index];
+    const isPending = pendingSwitch === index;
+
+    return (
+      <TableRow
+        key={index}
+        className={[
+          isPending ? "bg-accent/40" : "",
+          isChanged ? "bg-blue-100 dark:bg-blue-900/30" : "",
+          "transition-colors",
+        ].join(" ")}
+      >
+        <TableCell className="space-x-1">
+          {/* Swap button */}
+          <Button
+            variant={isPending ? "secondary" : "outline"}
+            size="icon"
+            onClick={() => triggerSwitch(index)}
+          >
+            <ArrowUpDown size={16} />
+          </Button>
+
+          {/* Trade button */}
+          {/* <Button variant="outline" size="icon" onClick={() => onTrade(player)}>
+            <Repeat size={16} />
+          </Button> */}
+        </TableCell>
+
+        <TableCell>{formatName(player.first_name, player.last_name)}</TableCell>
+        <TableCell>{shortPos(player.pos)}</TableCell>
+        <TableCell>{player.team_abbreviation}</TableCell>
+        <TableCell>${player.purchase_price}</TableCell>
+      </TableRow>
+    );
+  }
+
+  function renderSection(label: string, start: number, end: number) {
+    return (
+      <>
+        <TableRow className="bg-muted/60">
+          <TableCell colSpan={6} className="font-semibold text-sm">
+            {label}
+          </TableCell>
+        </TableRow>
+
+        {rows.slice(start, end).map((player, i) => {
+          const actualIndex = start + i;
+          return renderPlayerRow(player, actualIndex);
+        })}
+      </>
+    );
+  }
+
+  const LINEUP_SECTIONS = [
+    {
+      label: "Captain & Vice-Captain",
+      start: 0,
+      end: 2, // slice(0, 2)
+    },
+    {
+      label: "Other Starters",
+      start: 2,
+      end: 10, // slice(2, 10)
+    },
+    {
+      label: "Bench",
+      start: 10,
+      end: 13, // slice(10, 13)
+    },
+  ] as const;
+
   // -------------------------------
   // Render
   // -------------------------------
@@ -156,8 +228,7 @@ export default function LineupEditorTable({
       <Table className="border rounded-lg">
         <TableHeader>
           <TableRow>
-            <TableHead className="">Action</TableHead>
-            <TableHead>Role</TableHead>
+            <TableHead>Action</TableHead>
             <TableHead>Player</TableHead>
             <TableHead>Position</TableHead>
             <TableHead>Team</TableHead>
@@ -166,52 +237,9 @@ export default function LineupEditorTable({
         </TableHeader>
 
         <TableBody>
-          {rows.map((player, i) => {
-            const isChanged = changedRowIndexes[i];
-
-            return (
-              <TableRow
-                key={i}
-                className={[
-                  pendingSwitch === i ? "bg-accent/40" : "",
-                  isChanged ? "bg-blue-100 dark:bg-blue-900/30" : "",
-                  "transition-colors",
-                ].join(" ")}
-              >
-                <TableCell className="">
-                  <Button
-                    variant={pendingSwitch === i ? "default" : "outline"}
-                    size="icon"
-                    onClick={() => triggerSwitch(i)}
-                    className="cursor-pointer"
-                  >
-                    <ArrowUpDown size={16} />
-                  </Button>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {i === 0
-                    ? "Captain"
-                    : i === 1
-                      ? "Vice-Captain"
-                      : i < 10
-                        ? `Starter ${i + 1}`
-                        : `Bench ${i - 9}`}
-                </TableCell>
-
-                <TableCell>
-                  {player
-                    ? `${formatName(player.first_name, player.last_name)}`
-                    : "—"}
-                </TableCell>
-
-                <TableCell>{shortPos(player.pos) ?? "—"}</TableCell>
-                <TableCell>{player.team_abbreviation ?? "—"}</TableCell>
-                <TableCell>
-                  {player ? `$${player.purchase_price}` : "—"}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {LINEUP_SECTIONS.map((section) =>
+            renderSection(section.label, section.start, section.end)
+          )}
         </TableBody>
       </Table>
 

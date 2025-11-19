@@ -70,7 +70,7 @@ export default function CurrentSquad() {
                   </a>
                 </TableCell>
                 <TableCell>{p.pos}</TableCell>
-                <TableCell>{p.team_name ?? "—"}</TableCell>
+                <TableCell>{p.team_abbreviation ?? "—"}</TableCell>
                 <TableCell>
                   <button className="text-red-500 hover:underline">
                     Remove

@@ -65,11 +65,9 @@ export default function FeatureCarousel() {
   const [isPaused, setIsPaused] = useState(false);
 
   const toggleAutoplay = () => {
-    console.log(isPaused);
     if (isPaused) autoplay.current.play();
     else autoplay.current.stop();
     setIsPaused(!isPaused);
-    console.log(isPaused);
   };
 
   return (

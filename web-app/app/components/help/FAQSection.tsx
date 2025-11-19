@@ -9,11 +9,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 export default function FAQSection() {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>FAQs</CardTitle>
-      </CardHeader>
-
       <CardContent>
+        <CardTitle>FAQs</CardTitle>
         <Accordion type="single" collapsible>
           <AccordionItem value="who">
             <AccordionTrigger>Who is Squad Champs?</AccordionTrigger>

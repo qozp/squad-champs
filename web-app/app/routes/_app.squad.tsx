@@ -12,7 +12,7 @@ import { Pencil } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import SquadPlayersPanel from "~/components/squad/SquadPlayersPanel";
 import type { PlayerBasic } from "~/lib/types/squad";
-import LineupEditor from "~/components/squad/LineupEditor/LineupEditor";
+import LineupEditor from "~/components/squad/LineupEditor";
 
 export function meta() {
   return [

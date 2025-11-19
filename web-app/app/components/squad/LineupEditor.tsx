@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Table,
@@ -22,14 +22,17 @@ export default function LineupEditorTable({
   // Extract exactly 13 players
   const captain = initialPlayers.find((p) => p.is_captain)!;
   const vice = initialPlayers.find((p) => p.is_vice_captain)!;
-
-  // Should be exactly 8
   const otherStarters = initialPlayers.filter(
     (p) => p.is_starting && !p.is_captain && !p.is_vice_captain
   );
-
-  // Should be exactly 3
   const bench = initialPlayers.filter((p) => !p.is_starting);
+
+  const initialOrder = [
+    captain.player_id,
+    vice.player_id,
+    ...otherStarters.map((p) => p.player_id),
+    ...bench.map((p) => p.player_id),
+  ];
 
   // Final lineup array
   const [rows, setRows] = useState<SquadPlayer[]>([
@@ -42,6 +45,10 @@ export default function LineupEditorTable({
   // Row the user first clicked “Switch” on
   const [pendingSwitch, setPendingSwitch] = useState<number | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+
+  const changedRowIndexes = useMemo(() => {
+    return rows.map((p, i) => p.player_id !== initialOrder[i]);
+  }, [rows, initialOrder]);
 
   // -------------------------------
   // Row Switch Logic
@@ -69,7 +76,8 @@ export default function LineupEditorTable({
 
     setRows(updated);
     setPendingSwitch(null);
-    setHasChanges(true); // 🔥 mark changes
+    const changed = updated.some((p, idx) => p.player_id !== initialOrder[idx]);
+    setHasChanges(changed);
   }
 
   // -------------------------------
@@ -140,48 +148,54 @@ export default function LineupEditorTable({
         </TableHeader>
 
         <TableBody>
-          {rows.map((player, i) => (
-            <TableRow
-              key={i}
-              className={
-                pendingSwitch === i ? "bg-accent/40 font-semibold" : ""
-              }
-            >
-              <TableCell className="font-medium">
-                {i === 0
-                  ? "Captain"
-                  : i === 1
-                    ? "Vice-Captain"
-                    : i < 10
-                      ? `Starter ${i + 1}`
-                      : `Bench ${i - 9}`}
-              </TableCell>
+          {rows.map((player, i) => {
+            const isChanged = changedRowIndexes[i];
 
-              <TableCell>
-                {player ? `${player.first_name} ${player.last_name}` : "—"}
-              </TableCell>
+            return (
+              <TableRow
+                key={i}
+                className={[
+                  pendingSwitch === i ? "bg-accent/40" : "",
+                  isChanged ? "bg-blue-100 dark:bg-blue-900/30" : "",
+                  "transition-colors",
+                ].join(" ")}
+              >
+                <TableCell className="font-medium">
+                  {i === 0
+                    ? "Captain"
+                    : i === 1
+                      ? "Vice-Captain"
+                      : i < 10
+                        ? `Starter ${i + 1}`
+                        : `Bench ${i - 9}`}
+                </TableCell>
 
-              <TableCell>{player.pos ?? "—"}</TableCell>
-              <TableCell>{player.team_abbreviation ?? "—"}</TableCell>
-              <TableCell>
-                {player ? `$${player.purchase_price}` : "—"}
-              </TableCell>
+                <TableCell>
+                  {player ? `${player.first_name} ${player.last_name}` : "—"}
+                </TableCell>
 
-              <TableCell className="text-right">
-                <Button
-                  variant={pendingSwitch === i ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => triggerSwitch(i)}
-                >
-                  {pendingSwitch === null
-                    ? "Switch"
-                    : pendingSwitch === i
-                      ? "Cancel"
-                      : "Confirm Swap"}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>{player.pos ?? "—"}</TableCell>
+                <TableCell>{player.team_abbreviation ?? "—"}</TableCell>
+                <TableCell>
+                  {player ? `$${player.purchase_price}` : "—"}
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <Button
+                    variant={pendingSwitch === i ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => triggerSwitch(i)}
+                  >
+                    {pendingSwitch === null
+                      ? "Switch"
+                      : pendingSwitch === i
+                        ? "Cancel"
+                        : "Confirm Swap"}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 

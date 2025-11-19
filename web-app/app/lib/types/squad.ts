@@ -7,7 +7,7 @@ export type PlayerBasic = {
 };
 
 export type SquadPlayer = PlayerBasic & {
-    player_id: number;
+    player_id?: number;
     is_starting?: boolean;
     is_captain?: boolean;
     is_vice_captain?: boolean;

@@ -34,7 +34,7 @@ export default function TradesTab({
   const [budgetDiff, setBudgetDiff] = useState<number>(0);
 
   function removePlayer(playerId: number) {
-    const sp = squadPlayers.find((p) => p?.player_id === playerId);
+    const sp = displayedPlayers.find((p) => p?.player_id === playerId);
     if (!sp) return;
 
     const sellPrice = getSalePrice(sp);
@@ -47,6 +47,56 @@ export default function TradesTab({
     );
   }
 
+  function addPlayer(id: number): void {
+    const p = allPlayersMap[id];
+    if (!p) return;
+
+    // Find the positional slot
+    const slotIndex = findEmptySlotForPlayer(p, displayedPlayers);
+    if (slotIndex === null) {
+      toast.error(`No available ${p.pos} slot. Remove a ${p.pos} first.`);
+      return;
+    }
+
+    let newBudget = budget;
+
+    // Deduct cost
+    newBudget -= p.current_price;
+    setBudgetDiff((prev) => prev - p.current_price);
+
+    // Update budget upstream
+    onBudgetChange(newBudget);
+
+    // Insert new player
+    setDisplayedPlayers((prev) => {
+      const clone = [...prev];
+      clone[slotIndex] = p;
+      return clone;
+    });
+
+    toast.success(`${p.first_name} ${p.last_name} added to your squad.`);
+  }
+
+  function findEmptySlotForPlayer(
+    player: PlayerBasic,
+    players: SquadPlayerSlot[]
+  ): number | null {
+    // Layout: 5 Guards, 5 Forwards, 3 Centers
+    const POSITIONS = {
+      Guard: { start: 0, count: 5 },
+      Forward: { start: 5, count: 5 },
+      Center: { start: 10, count: 3 },
+    } as const;
+
+    const { start, count } = POSITIONS[player.pos];
+
+    for (let i = start; i < start + count; i++) {
+      if (players[i] === null) return i; // found empty slot
+    }
+
+    return null; // no slots available
+  }
+
   function discardChanges(): void {
     setDisplayedPlayers(squadPlayers);
     onBudgetChange(budget - budgetDiff);
@@ -56,8 +106,6 @@ export default function TradesTab({
 
   function sendSubmit(): void {
     const payload = { rowsOut, rowsIn };
-
-    console.log("Submitting Trades:", payload);
     onSubmit(payload);
   }
 
@@ -112,6 +160,28 @@ export default function TradesTab({
     return false;
   }, [displayedPlayers, squadPlayers]);
 
+  const canSubmit = useMemo(() => {
+    // 1. Budget must be >= 0
+    if (budget < 0) return false;
+
+    // 2. Must have exactly 13 filled slots
+    const filledCount = displayedPlayers.filter((p) => p !== null).length;
+    if (filledCount !== 13) return false;
+
+    // 3. All positional slots must be filled
+    const counts = { Guard: 0, Forward: 0, Center: 0 };
+
+    displayedPlayers.forEach((p) => {
+      if (p) counts[p.pos]++;
+    });
+
+    if (counts.Guard !== 5) return false;
+    if (counts.Forward !== 5) return false;
+    if (counts.Center !== 3) return false;
+
+    return true;
+  }, [budget, displayedPlayers]);
+
   // ------------------------------
   // UI
   // ------------------------------
@@ -139,7 +209,7 @@ export default function TradesTab({
             <Button
               variant="outline"
               onClick={sendSubmit}
-              disabled={!hasChanges}
+              disabled={!hasChanges || !canSubmit}
             >
               Submit Trades
             </Button>
@@ -155,9 +225,11 @@ export default function TradesTab({
             selected={selectedIds}
             playersMap={allPlayersMap}
             budget={budget}
+            onAddPlayer={addPlayer}
           ></PlayersTableForSquad>
         </CardContent>
       </Card>
     </div>
   );
 }
+

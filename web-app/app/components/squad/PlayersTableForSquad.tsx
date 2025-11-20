@@ -21,8 +21,6 @@ type PlayersTableForSquadProps = {
   selected?: number[];
   playersMap?: Record<number, PlayerBasic>;
   budget?: number;
-
-  // CREATE MODE
   onAddPlayer?: (id: number) => void;
 };
 
@@ -131,7 +129,7 @@ export default function PlayersTableForSquad({
     }
 
     if (positionFilter !== "All Positions") {
-      filtered = filtered.filter((p) => p.position === positionFilter);
+      filtered = filtered.filter((p) => p.pos === positionFilter);
     }
 
     if (maxPrice !== "Any") {

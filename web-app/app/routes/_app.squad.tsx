@@ -29,11 +29,13 @@ export default function SquadPage() {
   const [playersMap, setPlayersMap] = useState<Record<number, PlayerBasic>>({});
   const [budget, setBudget] = useState<number>(0);
   const [showDialog, setShowDialog] = useState(false);
+  const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
 
   const fetchSquad = async () => {
     try {
       const { data: squadData } = await supabaseBrowser.rpc("get_squad");
       const meta = squadData?.[0] ?? null;
+      console.log(meta);
 
       setSquadMeta(meta);
       setBudget(meta?.budget ?? 0);
@@ -73,8 +75,22 @@ export default function SquadPage() {
     }
   };
 
+  async function fetchCurrentGameweek() {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    const { data } = await supabaseBrowser
+      .from("gameweek")
+      .select("gameweek, start_date, end_date")
+      .lte("start_date", today)
+      .gte("end_date", today)
+      .maybeSingle();
+
+    if (data) setCurrentGameweek(data.gameweek);
+  }
+
   useEffect(() => {
     fetchSquad();
+    fetchCurrentGameweek();
   }, []);
 
   // -------------------------
@@ -86,6 +102,7 @@ export default function SquadPage() {
     if (!p) return;
     setBudget((b) => b - p.current_price);
     setSelectedPlayers((prev) => [...prev, id]);
+    toast.success(`${p.first_name} ${p.last_name} added to your squad.`);
   };
 
   const removePlayer = (id: number) => {
@@ -102,6 +119,7 @@ export default function SquadPage() {
     );
     setBudget((b) => b + totalRefund);
     setSelectedPlayers([]);
+    toast.success("Changes discarded.");
   };
 
   const submitSquad = async () => {
@@ -154,6 +172,7 @@ export default function SquadPage() {
       <SquadMetadata
         squadMeta={squadMeta}
         budget={budget}
+        currentGameweek={currentGameweek}
         onEditName={() => setShowDialog(true)}
       />
 

@@ -32,7 +32,7 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           echo "Running fetch box..."
-          python script/fetch_box.py
+          python scripts/fetch_box.py
 
       - name: Upload job logs
         if: always()  # upload even if failed

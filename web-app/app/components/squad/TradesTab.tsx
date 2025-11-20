@@ -1,130 +1,116 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import SquadPlayersPanel from "./CreateSquadPlayersPanel";
+import CreateSquadPlayersPanel from "./CreateSquadPlayersPanel";
 import PlayersTableForSquad from "./PlayersTableForSquad";
-import type { SquadPlayer, PlayerBasic } from "~/lib/types/squad";
+import { type SquadPlayer, type PlayerBasic } from "~/lib/types/squad";
+import { getSalePrice } from "~/lib/helpers/squadPlayer";
 import { toast } from "sonner";
+
+interface TradePayload {
+  rowsOut: SquadPlayer[];
+  rowsIn: PlayerBasic[];
+}
 
 interface TradesTabProps {
   squadPlayers: SquadPlayer[];
   allPlayersMap: Record<number, PlayerBasic>;
   budget: number;
-  onSubmit: (rows: (PlayerBasic | null)[]) => Promise<void>;
+  onBudgetChange: (newBudget: number) => void;
+  onSubmit: (payload: TradePayload) => Promise<void>;
 }
+
+type SquadPlayerSlot = PlayerBasic | null;
 
 export default function TradesTab({
   squadPlayers,
   allPlayersMap,
   budget,
+  onBudgetChange,
   onSubmit,
 }: TradesTabProps) {
-  // ------------------------------
-  // Build 13 rows (squad layout)
-  // ------------------------------
-  const initialRows: (PlayerBasic | null)[] = squadPlayers.map((p) => ({
-    id: p.player_id,
-    first_name: p.first_name,
-    last_name: p.last_name,
-    pos: p.pos,
-    purchase_price: p.purchase_price,
-    price: p.purchase_price,
-    team_abbreviation: p.team_abbreviation,
-  }));
+  const [displayedPlayers, setDisplayedPlayers] =
+    useState<SquadPlayerSlot[]>(squadPlayers);
+  const [budgetDiff, setBudgetDiff] = useState<number>(0);
 
-  // Fill missing positions with null
-  while (initialRows.length < 13) initialRows.push(null);
+  function removePlayer(playerId: number) {
+    const sp = squadPlayers.find((p) => p?.player_id === playerId);
+    if (!sp) return;
 
-  const [rows, setRows] = useState<(PlayerBasic | null)[]>(initialRows);
-  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+    const sellPrice = getSalePrice(sp);
 
-  const POSITION_MAX = { Guard: 5, Forward: 5, Center: 3 };
+    onBudgetChange(budget + sellPrice);
+    setBudgetDiff((prev) => prev + sellPrice);
 
-  // ------------------------------
-  // Remove a player (creates hole)
-  // ------------------------------
-  function removePlayerAt(index: number) {
-    setRows((prev) => {
-      const updated = [...prev];
-      updated[index] = null;
-      return updated;
-    });
+    setDisplayedPlayers((prev) =>
+      prev.map((slot) => (slot?.player_id === playerId ? null : slot))
+    );
   }
 
-  // ------------------------------
-  // Validation helpers
-  // ------------------------------
-  function validatePlayerAdd(player: PlayerBasic): string | null {
-    // Duplicate check
-    if (rows.some((r) => r?.id === player.id)) {
-      return "Player already in squad.";
-    }
-
-    // Team limit
-    const teamCount = rows.filter(
-      (r) => r?.team_abbreviation === player.team_abbreviation
-    ).length;
-
-    if (teamCount >= 3) {
-      return "Max 3 players from the same team.";
-    }
-
-    // Position limit
-    const posCount = rows.filter((r) => r?.pos === player.pos).length;
-
-    if (posCount >= POSITION_MAX[player.pos]) {
-      return `Cannot add more ${player.pos}s.`;
-    }
-
-    // Budget check
-    if (budget - player.price < 0) {
-      return "Not enough budget.";
-    }
-
-    return null;
+  function discardChanges(): void {
+    setDisplayedPlayers(squadPlayers);
+    onBudgetChange(budget - budgetDiff);
+    setBudgetDiff(0);
+    toast.success("Changes discarded.");
   }
 
-  // ------------------------------
-  // Add player into next empty slot
-  // ------------------------------
-  function addPlayerToEmptySlot(player: PlayerBasic) {
-    const validationError = validatePlayerAdd(player);
-    if (validationError) {
-      toast.error(validationError);
-      return;
-    }
+  function sendSubmit(): void {
+    const payload = { rowsOut, rowsIn };
 
-    setRows((prev) => {
-      const updated = [...prev];
-      const emptyIndex = updated.findIndex((r) => r === null);
-
-      if (emptyIndex === -1) {
-        toast.error("No available slot.");
-        return prev;
-      }
-
-      updated[emptyIndex] = player;
-      setHighlightedIndex(emptyIndex);
-      setTimeout(() => setHighlightedIndex(null), 2000);
-
-      return updated;
-    });
+    console.log("Submitting Trades:", payload);
+    onSubmit(payload);
   }
 
-  // ------------------------------
-  // Discard all changes
-  // ------------------------------
-  function discardChanges() {
-    setRows(initialRows);
-    setHighlightedIndex(null);
-  }
+  const selectedIds = useMemo(() => {
+    return displayedPlayers
+      .filter((p): p is PlayerBasic => p !== null)
+      .map((p) => p.player_id);
+  }, [displayedPlayers]);
 
-  // ------------------------------
-  // Can save?
-  // ------------------------------
+  // Players removed or replaced
+  const rowsOut = useMemo(() => {
+    return squadPlayers
+      .map((orig, idx) => {
+        const cur = displayedPlayers[idx];
+
+        if (orig && !cur) return orig; // removed
+        if (orig && cur && orig.player_id !== cur.player_id) return orig; // replaced
+
+        return null;
+      })
+      .filter((p): p is SquadPlayer => p !== null);
+  }, [displayedPlayers, squadPlayers]);
+
+  // Players added or replacements
+  const rowsIn = useMemo(() => {
+    return displayedPlayers
+      .map((cur, idx) => {
+        const orig = squadPlayers[idx];
+
+        if (!orig && cur) return cur; // newly added
+        if (orig && cur && orig.player_id !== cur.player_id) return cur; // replacement
+
+        return null;
+      })
+      .filter((p): p is PlayerBasic => p !== null);
+  }, [displayedPlayers, squadPlayers]);
+
   const hasChanges = useMemo(() => {
-    return JSON.stringify(rows) !== JSON.stringify(initialRows);
-  }, [rows, initialRows]);
+    if (displayedPlayers.length !== squadPlayers.length) return true;
+
+    for (let i = 0; i < displayedPlayers.length; i++) {
+      const a = displayedPlayers[i];
+      const b = squadPlayers[i];
+
+      // One is null, the other isn't
+      if ((a === null) !== (b === null)) return true;
+
+      // Both non-null, check if different players
+      if (a && b && a.player_id !== b.player_id) return true;
+    }
+
+    return false;
+  }, [displayedPlayers, squadPlayers]);
 
   // ------------------------------
   // UI
@@ -135,14 +121,28 @@ export default function TradesTab({
       <Card className="flex-1">
         <CardContent>
           <CardTitle>Your Squad</CardTitle>
+          <CreateSquadPlayersPanel
+            players={displayedPlayers}
+            onRemove={removePlayer}
+          ></CreateSquadPlayersPanel>
 
-          <div className="mt-4 space-y-4">
-            <SquadPlayersPanel
-              mode="trade"
-              players={rows}
-              onRemove={removePlayerAt}
-              highlightedIndex={highlightedIndex}
-            />
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={discardChanges}
+              className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+              disabled={!hasChanges}
+            >
+              Discard Changes
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={sendSubmit}
+              disabled={!hasChanges}
+            >
+              Submit Trades
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -151,38 +151,11 @@ export default function TradesTab({
       <Card className="flex-1">
         <CardContent>
           <CardTitle>Trade In</CardTitle>
-
           <PlayersTableForSquad
-            mode="trade"
-            selected={[]} // no highlighting on right panel
+            selected={selectedIds}
             playersMap={allPlayersMap}
             budget={budget}
-            onAddPlayer={(id) => {
-              const p = allPlayersMap[id];
-              if (p) addPlayerToEmptySlot(p);
-            }}
-          />
-
-          {/* ACTION BUTTONS */}
-          <div className="mt-4 flex gap-3">
-            {hasChanges && (
-              <Button
-                variant="outline"
-                className="border-red-400 text-red-600"
-                onClick={discardChanges}
-              >
-                Discard Changes
-              </Button>
-            )}
-
-            <Button
-              className="flex-1"
-              disabled={!hasChanges}
-              onClick={() => onSubmit(rows)}
-            >
-              Save Trades
-            </Button>
-          </div>
+          ></PlayersTableForSquad>
         </CardContent>
       </Card>
     </div>

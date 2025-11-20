@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button";
-import SquadPlayersPanel from "./CreateSquadPlayersPanel";
+import CreateSquadPlayersPanel from "./CreateSquadPlayersPanel";
 import PlayersTableForSquad from "./PlayersTableForSquad";
 import type { PlayerBasic } from "~/lib/types/squad";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
@@ -30,7 +30,7 @@ export default function CreateSquad({
         <CardContent>
           <CardTitle>Your Selected Players</CardTitle>
 
-          <SquadPlayersPanel
+          <CreateSquadPlayersPanel
             players={selectedPlayers.map((id) => playersMap[id])}
             onRemove={onRemovePlayer}
           />
@@ -56,7 +56,6 @@ export default function CreateSquad({
         <CardContent>
           <CardTitle>Add Players</CardTitle>
           <PlayersTableForSquad
-            mode="create"
             selected={selectedPlayers}
             playersMap={playersMap}
             budget={budget}

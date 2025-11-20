@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import SquadMetadata from "~/components/squad/SquadMetadata";
 import CreateSquad from "~/components/squad/CreateSquad";
 import SquadNameForm from "~/components/squad/SquadNameForm";
-import type { PlayerBasic } from "~/lib/types/squad";
+import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import TradesTab from "~/components/squad/TradesTab";
 import LineupTab from "~/components/squad/LineupTab";
@@ -45,10 +45,28 @@ export default function SquadPage() {
 
       const { data: allPlayers } = await supabaseBrowser
         .from("player")
-        .select("id, pos, price, first_name, last_name");
+        .select("id, pos, current_price, first_name, last_name");
+
+      type PlayerRow = {
+        id: number; // from the DB
+        pos: "Guard" | "Forward" | "Center";
+        current_price: number;
+        first_name: string;
+        last_name: string;
+      };
 
       const map: Record<number, PlayerBasic> = {};
-      allPlayers?.forEach((p) => (map[p.id] = p));
+
+      if (!allPlayers) return;
+      allPlayers.forEach((p: PlayerRow) => {
+        map[p.id] = {
+          player_id: p.id, // normalize here
+          first_name: p.first_name,
+          last_name: p.last_name,
+          pos: p.pos,
+          current_price: p.current_price,
+        };
+      });
       setPlayersMap(map);
     } finally {
       setLoading(false);
@@ -66,20 +84,20 @@ export default function SquadPage() {
   const addPlayer = (id: number) => {
     const p = playersMap[id];
     if (!p) return;
-    setBudget((b) => b - p.price);
+    setBudget((b) => b - p.current_price);
     setSelectedPlayers((prev) => [...prev, id]);
   };
 
   const removePlayer = (id: number) => {
     const p = playersMap[id];
     if (!p) return;
-    setBudget((b) => b + p.price);
+    setBudget((b) => b + p.current_price);
     setSelectedPlayers((prev) => prev.filter((x) => x !== id));
   };
 
   const removeAll = () => {
     let totalRefund = selectedPlayers.reduce(
-      (acc, id) => acc + (playersMap[id]?.price || 0),
+      (acc, id) => acc + (playersMap[id]?.current_price || 0),
       0
     );
     setBudget((b) => b + totalRefund);
@@ -102,6 +120,21 @@ export default function SquadPage() {
     await fetchSquad();
   };
 
+  function submitTrade({
+    rowsOut,
+    rowsIn,
+  }: {
+    rowsOut: SquadPlayer[];
+    rowsIn: PlayerBasic[];
+  }) {
+    console.log("Trade Payload", { rowsOut, rowsIn });
+
+    // Later:
+    // await supabaseBrowser.rpc("apply_trades", { rows_out: rowsOut, rows_in: rowsIn });
+
+    return Promise.resolve();
+  }
+
   // -------------------------
 
   const hasSquad = !!squadMeta;
@@ -114,10 +147,6 @@ export default function SquadPage() {
         Loading Squad...
       </p>
     );
-  }
-
-  function submitTrade(outId: number, inId: number): Promise<void> {
-    throw new Error("Function not implemented.");
   }
 
   return (
@@ -159,7 +188,9 @@ export default function SquadPage() {
             <TradesTab
               squadPlayers={squadPlayers}
               allPlayersMap={playersMap}
-              onTrade={submitTrade}
+              budget={budget}
+              onBudgetChange={setBudget}
+              onSubmit={submitTrade}
             />
           </TabsContent>
         </Tabs>

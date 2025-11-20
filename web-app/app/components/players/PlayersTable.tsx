@@ -67,7 +67,7 @@ export default function PlayersTable({}) {
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
-        price: p.price ? p.price : "N/A",
+        price: p.current_price ? p.current_price : "N/A",
       }));
 
       // Sort by avg_fp descending (highest first)

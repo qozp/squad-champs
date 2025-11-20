@@ -18,11 +18,18 @@ const PAGE_SIZE = 12;
 const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
 
 type PlayersTableForSquadProps = {
-  mode?: "create" | "view";
+  mode?: "create" | "view" | "trade";
   selected?: number[];
   playersMap?: Record<number, PlayerBasic>;
   budget?: number;
+
+  // CREATE MODE
   onAddPlayer?: (id: number) => void;
+
+  // TRADE MODE
+  selectedTradeIn?: number | null;
+  onSelectTradeIn?: (id: number) => void;
+  isTradeDisabled?: (player: any) => boolean;
 };
 
 export default function PlayersTableForSquad({
@@ -31,6 +38,9 @@ export default function PlayersTableForSquad({
   playersMap,
   budget,
   onAddPlayer,
+  selectedTradeIn,
+  onSelectTradeIn,
+  isTradeDisabled,
 }: PlayersTableForSquadProps) {
   const [players, setPlayers] = useState<any[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<any[]>([]);
@@ -92,6 +102,10 @@ export default function PlayersTableForSquad({
     }
   };
 
+  useEffect(() => {
+    fetchPlayersAndTeams();
+  }, []);
+
   const columns = [
     { key: "first_name", label: "Player" },
     { key: "position", label: "Pos" },
@@ -115,10 +129,6 @@ export default function PlayersTableForSquad({
     if (full.length <= 16) return full;
     return `${first.charAt(0)}. ${last}`;
   };
-
-  useEffect(() => {
-    fetchPlayersAndTeams();
-  }, []);
 
   useEffect(() => {
     let filtered = players;

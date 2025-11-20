@@ -13,19 +13,19 @@ import { supabaseBrowser } from "~/lib/supabase/client";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { containsBadWords } from "~/lib/moderation";
 
-interface CreateSquadFormProps {
+interface SquadNameFormProps {
   open: boolean;
   onClose: () => void;
   userId: string;
   squadName?: string | null; // current squad name
 }
 
-export default function CreateSquadForm({
+export default function SquadNameForm({
   open,
   onClose,
   userId,
   squadName,
-}: CreateSquadFormProps) {
+}: SquadNameFormProps) {
   const squadNameRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

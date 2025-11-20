@@ -89,7 +89,7 @@ export default function SquadPlayersPanel({
                 <TableHead>Player</TableHead>
                 <TableHead>Pos</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Remove</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
 

@@ -233,15 +233,13 @@ function discardChanges() {
   // -------------------------------
   return (
     <div className="space-y-2">
-      <h2 className="text-lg font-semibold">Edit Lineup</h2>
-
       {hasChanges && (
         <div className="rounded-md bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-300">
           Click <strong>Save Lineup</strong> below to save your changes.
         </div>
       )}
 
-      <Table className="border rounded-lg">
+      <Table className="">
         <TableHeader>
           <TableRow>
             <TableHead>Action</TableHead>

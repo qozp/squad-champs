@@ -24,7 +24,7 @@ export default function SquadMetadata({
 
   const freeTradesLabel =
     graceWeek !== null
-      ? `${freeTrades} (GW${graceWeek} Free)`
+      ? `${freeTrades} (Week ${graceWeek} Free)`
       : `${freeTrades}`;
 
   return (
@@ -36,26 +36,16 @@ export default function SquadMetadata({
           <CardTitle className="w-1/3 justify-start">Squad</CardTitle>
 
           {/* Middle: Gameweek with arrows */}
-          <div className="w-1/3 flex justify-center items-center gap-2 text-sm text-muted-foreground">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground opacity-50 cursor-not-allowed"
-              disabled
-            >
+          <div className="w-1/3 flex justify-center items-center gap-x-3 text-sm text-muted-foreground">
+            <Button variant="default" size="icon" className="h-7 w-7" disabled>
               <ChevronLeft size={16} />
             </Button>
 
             <span className="font-medium text-lg">
-              {currentGameweek ? `Week ${currentGameweek}` : "GW —"}
+              {currentGameweek ? `Week ${currentGameweek}` : "Week —"}
             </span>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground opacity-50 cursor-not-allowed"
-              disabled
-            >
+            <Button variant="default" size="icon" className="h-7 w-7" disabled>
               <ChevronRight size={16} />
             </Button>
           </div>

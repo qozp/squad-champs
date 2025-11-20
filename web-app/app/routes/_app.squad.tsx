@@ -7,9 +7,12 @@ import { toast } from "sonner";
 
 import SquadMetadata from "~/components/squad/SquadMetadata";
 import CreateSquad from "~/components/squad/CreateSquad";
-import ViewSquad from "~/components/squad/viewSquad/ViewSquad";
 import SquadNameForm from "~/components/squad/SquadNameForm";
 import type { PlayerBasic } from "~/lib/types/squad";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import TradesTab from "~/components/squad/TradesTab";
+import LineupTab from "~/components/squad/LineupTab";
+import ScoresTab from "~/components/squad/ScoresTab";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
@@ -113,6 +116,10 @@ export default function SquadPage() {
     );
   }
 
+  function submitTrade(outId: number, inId: number): Promise<void> {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="space-y-4 p-4">
       <SquadMetadata
@@ -132,7 +139,30 @@ export default function SquadPage() {
           onSubmit={submitSquad}
         />
       ) : (
-        <ViewSquad squadPlayers={squadPlayers} squadMeta={squadMeta} />
+        <Tabs defaultValue="lineup" className="w-full">
+          {/* TABS OUTSIDE CARD */}
+          <TabsList className="mb-2 w-full justify-start">
+            <TabsTrigger value="lineup">Lineup</TabsTrigger>
+            <TabsTrigger value="scores">Scores</TabsTrigger>
+            <TabsTrigger value="trades">Trades</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="lineup">
+            <LineupTab squadPlayers={squadPlayers} />
+          </TabsContent>
+
+          <TabsContent value="scores">
+            <ScoresTab squadMeta={squadMeta} />
+          </TabsContent>
+
+          <TabsContent value="trades">
+            <TradesTab
+              squadPlayers={squadPlayers}
+              allPlayersMap={playersMap}
+              onTrade={submitTrade}
+            />
+          </TabsContent>
+        </Tabs>
       )}
 
       <SquadNameForm

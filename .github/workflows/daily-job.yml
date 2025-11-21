@@ -2,7 +2,7 @@ name: Daily Fetch NBA Box Scores
 
 on:
   schedule:
-    - cron: "0 10 * * *"  # Runs daily at 10:00 UTC (5am ET)
+    - cron: "0 11 * * *"  # Runs daily at 10:00 UTC (5am ET)
   workflow_dispatch: {}  # Manual trigger
 
 jobs:
@@ -33,10 +33,3 @@ jobs:
         run: |
           echo "Running daily NBA fetch..."
           python daily_game_runner.py
-
-      - name: Upload daily logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: daily-job-log
-          path: backend/logs/daily_box.log

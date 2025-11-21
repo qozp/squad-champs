@@ -164,7 +164,9 @@ export default function SquadPage() {
       }
 
       await fetchSquad();
-      toast.success("Trades submitted successfully!");
+      toast.success(
+        "Trades submitted successfully! Reset your lineup if needed."
+      );
     } catch (err: any) {
       console.error("Unexpected trade error:", err);
       toast.error(err.message ?? "Unexpected error submitting trades.");

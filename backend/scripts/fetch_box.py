@@ -7,12 +7,29 @@ import re
 from dotenv import load_dotenv
 from supabase import create_client
 from nba_api.stats.endpoints import scoreboardv2
-from nba_api.live.nba.endpoints import scoreboard, boxscore
+from nba_api.live.nba.endpoints import boxscore, scoreboard
 
-from init_players import get_player_details
-from logger_config import daily_job_logger
+from scripts.init_players import get_player_details
+# from logger_config import daily_job_logger
 
 load_dotenv()
+
+def save_csv(filename, rows):
+    """Save a list of dicts to CSV."""
+    if not rows:
+        return
+
+    # Ensure logs folder exists
+    os.makedirs("logs", exist_ok=True)
+
+    path = os.path.join("logs", filename)
+
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"📁 Saved CSV: {path}")
 
 # -----------------------------
 # Helper Functions
@@ -29,6 +46,76 @@ def get_gameweek_for_date(supabase, target_date):
     return 1
 
 
+def insert_todays_pending_games(supabase):
+    print("Fetching today's games (LIVE API)...")
+
+    try:
+        sb = scoreboard.ScoreBoard()
+        data = sb.get_dict()["scoreboard"]["games"]
+
+        rows = []
+        for g in data:
+            rows.append({
+                "game_id": g["gameId"],
+                "game_date": g["gameTimeUTC"][:10],  # YYYY-MM-DD
+                "processed": False
+            })
+
+        if rows:
+            supabase.table("pending_game").upsert(rows).execute()
+            print(f"Inserted / updated {len(rows)} pending games.")
+        else:
+            print("No games found for today.")
+
+    except Exception as e:
+        print("Error inserting today's games:", e)
+
+def get_unprocessed_pending_games(supabase):
+    resp = supabase.table("pending_game") \
+        .select("game_id") \
+        .eq("processed", False) \
+        .execute()
+
+    return [row["game_id"] for row in resp.data]
+
+def process_pending_games(supabase):
+    pending = get_unprocessed_pending_games(supabase)
+
+    print(f"Found {len(pending)} pending games to process")
+
+    for gid in pending:
+        try:
+            # Fetch LIVE box score
+            bs = boxscore.BoxScore(gid)
+            game = bs.get_dict()["game"]
+
+            # Build your inserts
+            gameweek = get_gameweek_for_date(
+                supabase,
+                datetime.strptime(game["gameTimeUTC"][:10], "%Y-%m-%d").date()
+            )
+
+            game_details = get_game_details_for_game(game, gameweek)
+            player_stats = get_player_details_for_game(game, supabase)
+
+            # Insert game
+            supabase.table("game").upsert(game_details).execute()
+
+            # Insert players
+            if player_stats:
+                supabase.table("player_game").insert(player_stats).execute()
+
+            # Mark as processed
+            supabase.table("pending_game") \
+                .update({"processed": True}) \
+                .eq("game_id", gid) \
+                .execute()
+
+            print(f"Processed {gid}")
+
+        except Exception as e:
+            print(f"Error processing {gid}: {e}")
+
 def get_game_ids_for_date(target_date):
     """
     Fetch all NBA games for a given date using nba_api.
@@ -38,6 +125,25 @@ def get_game_ids_for_date(target_date):
         scoreboard = scoreboardv2.ScoreboardV2(game_date=target_date.strftime("%Y-%m-%d"), league_id="00")
         data = scoreboard.get_normalized_dict()["Available"]
         game_ids = [g.get("GAME_ID") for g in data]
+
+        # sb = scoreboard.ScoreBoard()
+        # data = sb.get_dict()
+        
+
+        # # LIVE API format:
+        # # data["scoreboard"]["games"] = list of games
+        # games = data.get("scoreboard", {}).get("games", [])
+
+        # print(games)
+
+        # target_str = target_date.strftime("%Y-%m-%d")
+
+        # game_ids = []
+        # for g in games:
+        #     # Example gameTimeUTC: "2025-11-20T00:00:00Z"
+        #     game_date = g.get("gameTimeUTC", "")
+        #     if game_date.startswith(target_str):
+        #         game_ids.append(g.get("gameId"))
 
         return game_ids
     
@@ -49,6 +155,10 @@ def get_game_for_game_id(game_id):
     try:
         box = boxscore.BoxScore(game_id=game_id)
         return box.game.get_dict()
+
+        # bs = live_boxscore.BoxScore(game_id)
+        # data = bs.get_dict().get("game", {})
+        # return data
     
     except Exception as e:
         print(f"Error fetching box scores for {game_id}: {e}")
@@ -213,6 +323,19 @@ def main_for_date(target_date, supabase):
         game_details.append(get_game_details_for_game(game, gameweek))
         player_games.append(get_player_details_for_game(game, supabase))
 
+    date_str = target_date.strftime("%Y-%m-%d")
+    # Save game_details.csv
+    # if game_details:
+    #     save_csv(f"game_details_{date_str}.csv", game_details)
+
+    # all_player_games = [p for game in player_games for p in game]
+
+    # # Save player_games.csv
+    # if all_player_games:
+    #     save_csv(f"player_games_{date_str}.csv", all_player_games)
+
+    # return
+
     if game_details:
         # Insert games into Supabase
         print(f"Inserting {len(game_details)} games into Supabase...")
@@ -230,6 +353,14 @@ def main_for_date(target_date, supabase):
         supabase.table("player_game").insert(all_player_games).execute()
         print("✅ Player Games inserted successfully.")
 
+def daily_runner(supabase):
+    # Step 1: Insert today's games into pending_game
+    insert_todays_pending_games(supabase)
+
+    # Step 2: Process any previously-pending games
+    # process_pending_games(supabase)
+
+
 if __name__ == "__main__":
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
 
@@ -237,12 +368,12 @@ if __name__ == "__main__":
     
     try:
         print("Running daily job for %s...", day)
-        daily_job_logger.info("Starting daily job for %s", day)
+        # daily_job_logger.info("Starting daily job for %s", day)
         main_for_date(day, supabase)
-        daily_job_logger.info("✅ Successfully completed job for  %s", day)
+        # daily_job_logger.info("✅ Successfully completed job for  %s", day)
 
     except Exception as e:
-        daily_job_logger.error("❌ Error running job for  %s: %s", day, e)
+        # daily_job_logger.error("❌ Error running job for  %s: %s", day, e)
         print(f"Error: {e}")
 
     # start_date = datetime.strptime("2025-11-06", "%Y-%m-%d").date()

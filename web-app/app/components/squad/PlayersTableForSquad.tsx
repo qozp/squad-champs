@@ -18,7 +18,6 @@ const PAGE_SIZE = 12;
 const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
 
 type PlayersTableForSquadProps = {
-  mode?: "create" | "view";
   selected?: number[];
   playersMap?: Record<number, PlayerBasic>;
   budget?: number;
@@ -26,7 +25,6 @@ type PlayersTableForSquadProps = {
 };
 
 export default function PlayersTableForSquad({
-  mode = "view",
   selected = [],
   playersMap,
   budget,
@@ -79,7 +77,7 @@ export default function PlayersTableForSquad({
         avg_stl: statsMap[p.id]?.avg_stl ?? 0,
         avg_blk: statsMap[p.id]?.avg_blk ?? 0,
         avg_fp: statsMap[p.id]?.avg_fp ?? 0,
-        price: p.price ?? "N/A",
+        current_price: p.current_price ?? "N/A",
       }));
 
       playersWithStats = playersWithStats?.sort((a, b) => b.avg_fp - a.avg_fp);
@@ -92,11 +90,15 @@ export default function PlayersTableForSquad({
     }
   };
 
+  useEffect(() => {
+    fetchPlayersAndTeams();
+  }, []);
+
   const columns = [
     { key: "first_name", label: "Player" },
     { key: "position", label: "Pos" },
     { key: "avg_fp", label: "FPPG" },
-    { key: "price", label: "Price ($)" },
+    { key: "current_price", label: "Price ($)" },
     { key: "team_abbreviation", label: "Team" },
   ];
 
@@ -117,10 +119,6 @@ export default function PlayersTableForSquad({
   };
 
   useEffect(() => {
-    fetchPlayersAndTeams();
-  }, []);
-
-  useEffect(() => {
     let filtered = players;
 
     if (search.trim()) {
@@ -131,11 +129,11 @@ export default function PlayersTableForSquad({
     }
 
     if (positionFilter !== "All Positions") {
-      filtered = filtered.filter((p) => p.position === positionFilter);
+      filtered = filtered.filter((p) => p.pos === positionFilter);
     }
 
     if (maxPrice !== "Any") {
-      filtered = filtered.filter((p) => p.price <= maxPrice);
+      filtered = filtered.filter((p) => p.current_price <= maxPrice);
     }
 
     setFilteredPlayers(filtered);
@@ -197,8 +195,6 @@ export default function PlayersTableForSquad({
   };
 
   const isAddDisabled = (p: any) => {
-    if (mode !== "create") return true; // disable add entirely in view mode
-
     const position = p.pos as "Guard" | "Forward" | "Center";
 
     // Already added
@@ -208,7 +204,7 @@ export default function PlayersTableForSquad({
     if (selected.length >= 13) return true;
 
     // Budget check
-    if (budget !== undefined && p.price > budget) return true;
+    if (budget !== undefined && p.current_price > budget) return true;
 
     // Position limits
     const counts = getPositionCounts();
@@ -243,7 +239,7 @@ export default function PlayersTableForSquad({
         <TableHeader>
           <TableRow>
             {/* ADD NEW COLUMN FOR CREATE MODE */}
-            {mode === "create" && <TableHead>Add</TableHead>}
+            <TableHead>Add</TableHead>
             {columns.map((col) => (
               <TableHead
                 key={col.key}
@@ -272,21 +268,21 @@ export default function PlayersTableForSquad({
             paginatedPlayers.map((p) => (
               <TableRow key={p.id}>
                 {/* ADD BUTTON LOGIC */}
-                {mode === "create" && (
-                  <TableCell>
-                    {selected.includes(p.id) ? (
-                      <span className="">Added</span>
-                    ) : (
-                      <Button
-                        size="sm"
-                        disabled={isAddDisabled(p)}
-                        onClick={() => onAddPlayer?.(p.id)}
-                      >
-                        Add
-                      </Button>
-                    )}
-                  </TableCell>
-                )}
+
+                <TableCell>
+                  {selected.includes(p.id) ? (
+                    <span className="">Added</span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      disabled={isAddDisabled(p)}
+                      onClick={() => onAddPlayer?.(p.id)}
+                    >
+                      Add
+                    </Button>
+                  )}
+                </TableCell>
+
                 {columns.map((col) => (
                   <TableCell key={col.key}>
                     {col.key === "first_name" ? (

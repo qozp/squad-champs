@@ -36,11 +36,11 @@ export default function FAQSection() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="multiple-squads">
-            <AccordionTrigger>Can I have multiple squads?</AccordionTrigger>
+          <AccordionItem value="price-calculation">
+            <AccordionTrigger>How are prices calculated?</AccordionTrigger>
             <AccordionContent className="text-sm">
-              For the fairness of the game and competition, only one squad per
-              person.
+              The prices were generated using an algorithm based on player
+              statistics.
             </AccordionContent>
           </AccordionItem>
 

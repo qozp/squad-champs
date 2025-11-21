@@ -9,9 +9,10 @@ import {
   TableCell,
 } from "~/components/ui/table";
 import { toast } from "sonner";
-import type { SquadPlayer } from "~/lib/types/squad";
+import { type SquadPlayer } from "~/lib/types/squad";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import { ArrowUpDown, Repeat } from "lucide-react";
+import { getSalePrice } from "~/lib/helpers/squadPlayer";
 
 interface LineupEditorTableProps {
   initialPlayers: SquadPlayer[];
@@ -67,21 +68,17 @@ export default function LineupEditorTable({
     return `${first.charAt(0)}. ${last}`;
   };
 
-function discardChanges() {
-  // Convert initialOrder IDs back to full player objects
-  const restoredRows = initialOrder.map(
-    (id) => initialPlayers.find((p) => p.player_id === id)!
-  );
+  function discardChanges() {
+    // Convert initialOrder IDs back to full player objects
+    const restoredRows = initialOrder.map(
+      (id) => initialPlayers.find((p) => p.player_id === id)!
+    );
 
-  setRows(restoredRows);
-
-  // Clear pending swap
-  setPendingSwitch(null);
-
-  // No more unsaved changes
-  setHasChanges(false);
-}
-
+    setRows(restoredRows);
+    setPendingSwitch(null);
+    setHasChanges(false);
+    toast.success("Changes discarded.");
+  }
 
   // -------------------------------
   // Row Switch Logic
@@ -131,9 +128,6 @@ function discardChanges() {
     return true;
   }
 
-  // -------------------------------
-  // Save RPC (placeholder)
-  // -------------------------------
   async function saveLineup() {
     if (!validateLineup()) return;
 
@@ -188,7 +182,7 @@ function discardChanges() {
         <TableCell>{formatName(player.first_name, player.last_name)}</TableCell>
         <TableCell>{shortPos(player.pos)}</TableCell>
         <TableCell>{player.team_abbreviation}</TableCell>
-        <TableCell>${player.purchase_price}</TableCell>
+        <TableCell>${getSalePrice(player)}</TableCell>
       </TableRow>
     );
   }
@@ -233,15 +227,13 @@ function discardChanges() {
   // -------------------------------
   return (
     <div className="space-y-2">
-      <h2 className="text-lg font-semibold">Edit Lineup</h2>
-
       {hasChanges && (
         <div className="rounded-md bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-300">
           Click <strong>Save Lineup</strong> below to save your changes.
         </div>
       )}
 
-      <Table className="border rounded-lg">
+      <Table className="">
         <TableHeader>
           <TableRow>
             <TableHead>Action</TableHead>
@@ -260,17 +252,16 @@ function discardChanges() {
       </Table>
 
       <div className="flex justify-end gap-3 mt-4">
-        {hasChanges && (
-          <Button
-            variant="outline"
-            onClick={discardChanges}
-            className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
-          >
-            Discard Changes
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          onClick={discardChanges}
+          className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+          disabled={!hasChanges}
+        >
+          Discard Changes
+        </Button>
 
-        <Button onClick={saveLineup} disabled={!hasChanges}>
+        <Button variant="outline" onClick={saveLineup} disabled={!hasChanges}>
           Save Lineup
         </Button>
       </div>

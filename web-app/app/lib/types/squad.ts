@@ -1,9 +1,9 @@
 export type PlayerBasic = {
-    id: number;
+    player_id: number;
     first_name: string;
     last_name: string;
     pos: "Guard" | "Forward" | "Center";
-    price: number;
+    current_price: number;
 };
 
 export type SquadPlayer = PlayerBasic & {

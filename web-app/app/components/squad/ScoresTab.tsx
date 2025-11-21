@@ -6,8 +6,7 @@ export default function ScoresTab({ squadMeta }: { squadMeta: any }) {
       <CardContent className="px-4">
         <CardTitle className="mb-4">Weekly Scores</CardTitle>
         <p className="text-muted-foreground">
-          Coming soon ... will show weekly gameweek scores, rank, highest
-          scoring week, etc.
+          Coming soon ... will show weekly gameweek scores, past lineups, etc.
         </p>
       </CardContent>
     </Card>

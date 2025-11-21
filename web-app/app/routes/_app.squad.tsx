@@ -138,19 +138,37 @@ export default function SquadPage() {
     await fetchSquad();
   };
 
-  function submitTrade({
+  async function submitTrade({
     rowsOut,
     rowsIn,
   }: {
-    rowsOut: SquadPlayer[];
-    rowsIn: PlayerBasic[];
+    rowsOut: number[];
+    rowsIn: number[];
   }) {
-    console.log("Trade Payload", { rowsOut, rowsIn });
+    try {
+      // Validate before calling RPC
+      if (rowsOut.length === 0 && rowsIn.length === 0) {
+        toast.error("No trades to submit.");
+        return;
+      }
 
-    // Later:
-    // await supabaseBrowser.rpc("apply_trades", { rows_out: rowsOut, rows_in: rowsIn });
+      const { error } = await supabaseBrowser.rpc("submit_trades", {
+        p_rows_out: rowsOut,
+        p_rows_in: rowsIn,
+      });
 
-    return Promise.resolve();
+      if (error) {
+        console.error("RPC submit_trades error:", error);
+        toast.error(error.message ?? "Trade submission failed.");
+        return;
+      }
+
+      await fetchSquad();
+      toast.success("Trades submitted successfully!");
+    } catch (err: any) {
+      console.error("Unexpected trade error:", err);
+      toast.error(err.message ?? "Unexpected error submitting trades.");
+    }
   }
 
   // -------------------------

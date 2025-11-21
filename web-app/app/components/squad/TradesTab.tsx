@@ -8,8 +8,8 @@ import { getSalePrice } from "~/lib/helpers/squadPlayer";
 import { toast } from "sonner";
 
 interface TradePayload {
-  rowsOut: SquadPlayer[];
-  rowsIn: PlayerBasic[];
+  rowsOut: number[]; // player_ids removed
+  rowsIn: number[]; // player_ids added
 }
 
 interface TradesTabProps {
@@ -32,6 +32,11 @@ export default function TradesTab({
   const [displayedPlayers, setDisplayedPlayers] =
     useState<SquadPlayerSlot[]>(squadPlayers);
   const [budgetDiff, setBudgetDiff] = useState<number>(0);
+
+  useEffect(() => {
+    setDisplayedPlayers(squadPlayers);
+    setBudgetDiff(0);
+  }, [squadPlayers]);
 
   function removePlayer(playerId: number) {
     const sp = displayedPlayers.find((p) => p?.player_id === playerId);
@@ -81,16 +86,7 @@ export default function TradesTab({
     player: PlayerBasic,
     players: SquadPlayerSlot[]
   ): number | null {
-    // Layout: 5 Guards, 5 Forwards, 3 Centers
-    const POSITIONS = {
-      Guard: { start: 0, count: 5 },
-      Forward: { start: 5, count: 5 },
-      Center: { start: 10, count: 3 },
-    } as const;
-
-    const { start, count } = POSITIONS[player.pos];
-
-    for (let i = start; i < start + count; i++) {
+    for (let i = 0; i < displayedPlayers.length; i++) {
       if (players[i] === null) return i; // found empty slot
     }
 
@@ -115,32 +111,32 @@ export default function TradesTab({
       .map((p) => p.player_id);
   }, [displayedPlayers]);
 
-  // Players removed or replaced
   const rowsOut = useMemo(() => {
     return squadPlayers
       .map((orig, idx) => {
         const cur = displayedPlayers[idx];
 
-        if (orig && !cur) return orig; // removed
-        if (orig && cur && orig.player_id !== cur.player_id) return orig; // replaced
+        if (orig && !cur) return orig.player_id; // removed
+        if (orig && cur && orig.player_id !== cur.player_id)
+          return orig.player_id; // replaced
 
         return null;
       })
-      .filter((p): p is SquadPlayer => p !== null);
+      .filter((id): id is number => id !== null);
   }, [displayedPlayers, squadPlayers]);
 
-  // Players added or replacements
   const rowsIn = useMemo(() => {
     return displayedPlayers
       .map((cur, idx) => {
         const orig = squadPlayers[idx];
 
-        if (!orig && cur) return cur; // newly added
-        if (orig && cur && orig.player_id !== cur.player_id) return cur; // replacement
+        if (!orig && cur) return cur.player_id; // new
+        if (orig && cur && orig.player_id !== cur.player_id)
+          return cur.player_id; // replacement
 
         return null;
       })
-      .filter((p): p is PlayerBasic => p !== null);
+      .filter((id): id is number => id !== null);
   }, [displayedPlayers, squadPlayers]);
 
   const hasChanges = useMemo(() => {

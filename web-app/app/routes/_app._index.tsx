@@ -14,28 +14,28 @@ import FeatureCarousel from "~/components/home/FeatureCarousel";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Squad Champs – Build Your NBA/NFL Fantasy Team" },
+    { title: "Squad Champs – Build Your NBA Fantasy Team" },
     {
       name: "description",
       content:
-        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+        "Create and manage your NBA fantasy squads, compete with friends, and track live player stats.",
     },
     {
       name: "keywords",
       content:
-        "fantasy basketball, fantasy football, NBA, NFL, fantasy sports, leagues, squads, live stats",
+        "fantasy basketball, fantasy football, NBA, fantasy sports, leagues, squads, live stats",
     },
     { name: "author", content: "Squad Champs Team" },
 
     // Open Graph (for social media sharing)
     {
       property: "og:title",
-      content: "Squad Champs – Build Your NBA/NFL Fantasy Team",
+      content: "Squad Champs – Build Your NBA Fantasy Team",
     },
     {
       property: "og:description",
       content:
-        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+        "Create and manage your NBA fantasy squads, compete with friends, and track live player stats.",
     },
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://squadchamps.com" },
@@ -48,12 +48,12 @@ export function meta({}: Route.MetaArgs) {
     { name: "twitter:card", content: "summary_large_image" },
     {
       name: "twitter:title",
-      content: "Squad Champs – Build Your NBA/NFL Fantasy Team",
+      content: "Squad Champs – Build Your NBA Fantasy Team",
     },
     {
       name: "twitter:description",
       content:
-        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+        "Create and manage your NBA fantasy squads, compete with friends, and track live player stats.",
     },
     {
       name: "twitter:image",

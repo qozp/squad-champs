@@ -32,7 +32,7 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
           echo "Running daily NBA fetch..."
-          python daily_runner.py
+          python daily_game_runner.py
 
       - name: Upload daily logs
         if: always()

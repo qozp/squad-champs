@@ -6,6 +6,7 @@ import {
   TableBody,
   TableCell,
 } from "~/components/ui/table";
+import { formatName, shortPos } from "~/lib/helpers/player";
 import type { PlayerBasic } from "~/lib/types/squad";
 
 const POSITION_SLOTS = {
@@ -65,8 +66,6 @@ export default function CreateSquadPlayersPanel({
           )}
         </TableCell>
 
-        <TableCell>{pos}</TableCell>
-
         <TableCell>{p ? `$${p.current_price}` : "—"}</TableCell>
 
         <TableCell>
@@ -94,7 +93,6 @@ export default function CreateSquadPlayersPanel({
               <TableRow>
                 <TableHead>#</TableHead>
                 <TableHead>Player</TableHead>
-                <TableHead>Pos</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>

@@ -13,6 +13,7 @@ import { Input } from "../ui/input";
 import PositionFilter from "../players/PositionSelect";
 import type { PlayerBasic } from "~/lib/types/squad";
 import PriceSelect from "../players/PriceSelect";
+import { formatName, shortPos } from "~/lib/helpers/player";
 
 const PAGE_SIZE = 12;
 const POSITION_LIMITS = { Guard: 5, Forward: 5, Center: 3 };
@@ -101,22 +102,6 @@ export default function PlayersTableForSquad({
     { key: "current_price", label: "Price ($)" },
     { key: "team_abbreviation", label: "Team" },
   ];
-
-  const shortPos = (pos: string) => {
-    if (!pos) return "";
-    const map: Record<string, string> = {
-      Guard: "G",
-      Forward: "F",
-      Center: "C",
-    };
-    return map[pos] ?? pos.charAt(0);
-  };
-
-  const formatName = (first: string, last: string) => {
-    const full = `${first} ${last}`;
-    if (full.length <= 16) return full;
-    return `${first.charAt(0)}. ${last}`;
-  };
 
   useEffect(() => {
     let filtered = players;

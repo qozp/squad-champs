@@ -5,7 +5,7 @@ import os
 def main():
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
     process_pending_games(supabase)
-    insert_todays_pending_games(supabase)
+    # insert_todays_pending_games(supabase)
     
 if __name__ == "__main__":
     main()

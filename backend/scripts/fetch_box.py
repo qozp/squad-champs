@@ -9,7 +9,7 @@ from supabase import create_client
 from nba_api.stats.endpoints import scoreboardv2
 from nba_api.live.nba.endpoints import boxscore, scoreboard
 
-from scripts.init_players import get_player_details
+from backend.scripts.init_players import get_player_details
 # from logger_config import daily_job_logger
 
 load_dotenv()
@@ -99,8 +99,8 @@ def process_pending_games(supabase):
             game_details = get_game_details_for_game(game, gameweek)
             player_stats = get_player_details_for_game(game, supabase)
 
-            print(f"Inserting {game_details["date"]} : {game_details["id"]} into Supabase...")
-            # supabase.table("game").upsert(game_details).execute()
+            print(f"Inserting {game_details['date']} : {game_details['id']} into Supabase...")
+            supabase.table("game").upsert(game_details).execute()
 
             print(f"Inserting {len(player_stats)} player_games into Supabase...")
             # Insert players

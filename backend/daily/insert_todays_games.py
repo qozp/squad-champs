@@ -1,4 +1,4 @@
-from scripts.fetch_box import insert_todays_pending_games
+from backend.scripts.fetch_box import insert_todays_pending_games
 from supabase import create_client
 import os
 

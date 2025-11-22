@@ -52,12 +52,13 @@ def insert_todays_pending_games(supabase):
     try:
         sb = scoreboard.ScoreBoard()
         data = sb.get_dict()["scoreboard"]["games"]
+        sb_date = sb.score_board_date
 
         rows = []
         for g in data:
             rows.append({
                 "game_id": g["gameId"],
-                "game_date": g["gameTimeUTC"][:10],  # YYYY-MM-DD
+                "game_date": sb_date,
                 "processed": False
             })
 
@@ -98,9 +99,10 @@ def process_pending_games(supabase):
             game_details = get_game_details_for_game(game, gameweek)
             player_stats = get_player_details_for_game(game, supabase)
 
-            # Insert game
+            print(f"Inserting {game_details["date"]} : {game_details["id"]} into Supabase...")
             supabase.table("game").upsert(game_details).execute()
 
+            print(f"Inserting {len(player_stats)} player_games into Supabase...")
             # Insert players
             if player_stats:
                 supabase.table("player_game").insert(player_stats).execute()
@@ -209,7 +211,6 @@ def calculate_score(stats):
     )
 
     return round(score, 1)
-
 
 def get_player_details_for_game(game, supabase):
     
@@ -323,19 +324,6 @@ def main_for_date(target_date, supabase):
         game_details.append(get_game_details_for_game(game, gameweek))
         player_games.append(get_player_details_for_game(game, supabase))
 
-    date_str = target_date.strftime("%Y-%m-%d")
-    # Save game_details.csv
-    # if game_details:
-    #     save_csv(f"game_details_{date_str}.csv", game_details)
-
-    # all_player_games = [p for game in player_games for p in game]
-
-    # # Save player_games.csv
-    # if all_player_games:
-    #     save_csv(f"player_games_{date_str}.csv", all_player_games)
-
-    # return
-
     if game_details:
         # Insert games into Supabase
         print(f"Inserting {len(game_details)} games into Supabase...")
@@ -352,13 +340,6 @@ def main_for_date(target_date, supabase):
     if all_player_games:
         supabase.table("player_game").insert(all_player_games).execute()
         print("✅ Player Games inserted successfully.")
-
-def daily_runner(supabase):
-    # Step 1: Insert today's games into pending_game
-    insert_todays_pending_games(supabase)
-
-    # Step 2: Process any previously-pending games
-    # process_pending_games(supabase)
 
 
 if __name__ == "__main__":

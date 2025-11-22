@@ -1,12 +1,12 @@
-name: Daily Fetch NBA Box Scores
+name: Process Pending NBA Games (Morning)
 
 on:
   schedule:
-    - cron: "0 11 * * *"  # Runs daily at 10:00 UTC (5am ET)
-  workflow_dispatch: {}  # Manual trigger
+    - cron: "0 10 * * *"  # 10:00 UTC = 5 AM ET
+  workflow_dispatch: {}
 
 jobs:
-  run-daily-job:
+  process-pending:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -25,11 +25,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run daily runner
+      - name: Process pending games
         working-directory: backend
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: |
-          echo "Running daily NBA fetch..."
-          python daily_game_runner.py
+          echo "Running morning pending game processor..."
+          python daily/process_pending_games.py

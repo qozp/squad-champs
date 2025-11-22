@@ -100,7 +100,7 @@ def process_pending_games(supabase):
             player_stats = get_player_details_for_game(game, supabase)
 
             print(f"Inserting {game_details["date"]} : {game_details["id"]} into Supabase...")
-            supabase.table("game").upsert(game_details).execute()
+            # supabase.table("game").upsert(game_details).execute()
 
             print(f"Inserting {len(player_stats)} player_games into Supabase...")
             # Insert players

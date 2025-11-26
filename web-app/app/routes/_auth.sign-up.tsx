@@ -21,13 +21,29 @@ export function meta() {
   return [{ title: "Sign-Up - Squad Champs" }];
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+  const APP_URL = context.cloudflare.env.APP_URL;
   const { supabase } = createSupabaseClient(request);
 
   const url = new URL(request.url);
   const origin = url.origin;
 
   const formData = await request.formData();
+
+  // Handle Google OAuth
+  if (formData.get("_action") === "google") {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${APP_URL}/auth/callback`, // You can adjust this
+      },
+    });
+
+    if (error) return { error: error.message };
+
+    // Supabase returns a URL to redirect the browser to Google
+    return redirect(data.url!);
+  }
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -139,7 +155,35 @@ export default function SignUp() {
                     <Button type="submit" className="w-full" disabled={loading}>
                       {loading ? "Creating an account..." : "Sign up"}
                     </Button>
+
+                    {/* ---- Separator ---- */}
+                    <div className="flex items-center gap-4">
+                      <div className="h-px flex-1 bg-border"></div>
+                      <span className="text-sm text-muted-foreground">Or</span>
+                      <div className="h-px flex-1 bg-border"></div>
+                    </div>
+
+                    {/* ---- Google LOGIN ---- */}
+                    <Button
+                      type="submit"
+                      name="_action"
+                      value="google"
+                      formNoValidate
+                      disabled={loading}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Continue with Google
+                    </Button>
                   </div>
+
                   <div className="mt-4 text-center text-sm">
                     Already have an account?{" "}
                     <Link to="/login" className="underline underline-offset-4">

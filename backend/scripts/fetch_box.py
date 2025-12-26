@@ -245,19 +245,8 @@ def get_player_details_for_game(game, supabase):
 
 
             if player_id not in existing_info:
-                details = get_player_details(player_id)  # Your helper from the other file
-                if not details:
-                    print(f"Failed to fetch details for player {player_id}")
-                    continue
-
-                details["price"] = 4.0 # hardcoded entry price
-                if details:
-                    supabase.table("player").insert(details).execute()
-                    existing_info[player_id] = team_id
-                    print(f"Inserted new player {player_id} into Supabase")
-                else:
-                    print(f"Failed to fetch details for player {player_id}")
-                    continue
+                save_new_player(supabase, player_id)
+                continue
 
             stats = p.get("statistics", {})
 
@@ -298,6 +287,33 @@ def get_player_details_for_game(game, supabase):
     process_team_players(away_players, away_team_id)
 
     return player_stats
+
+def save_new_player(supabase, player_id):
+    """Save a new player to be fetched later."""
+    try:
+        supabase.table("new_player").insert({
+            "player_id": player_id
+        }).execute()
+        print(f"📝 Added player {player_id} to new players table")
+    except Exception as e:
+        # Ignore duplicate key errors
+        if '23505' not in str(e):
+            print(f"Error saving new player {player_id}: {e}")
+
+def get_new_players(supabase):
+    """Get all new player IDs from Supabase."""
+    try:
+        resp = supabase.table("new_player").select("player_id").execute()
+        return [row["player_id"] for row in resp.data]
+    except:
+        return []
+
+def remove_new_player(supabase, player_id):
+    """Remove a player from the new players table."""
+    try:
+        supabase.table("new_player").delete().eq("player_id", player_id).execute()
+    except Exception as e:
+        print(f"Error removing new player {player_id}: {e}")
 
 # -----------------------------
 # Main

@@ -34,7 +34,3 @@ jobs:
         run: |
           echo "Running afternoon game fetch..."
           python daily/insert_todays_games.py
-
-      - name: Notify on failure
-        if: failure()
-        run: echo "Squad snapshot failed! Check logs above for details."

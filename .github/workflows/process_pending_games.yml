@@ -34,7 +34,3 @@ jobs:
         run: |
           echo "Running morning pending game processor..."
           python daily/process_pending_games.py
-
-      - name: Notify on failure
-        if: failure()
-        run: echo "Squad snapshot failed! Check logs above for details."

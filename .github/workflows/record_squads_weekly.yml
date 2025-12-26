@@ -33,7 +33,3 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           PYTHONPATH: ${{ github.workspace }}
-      
-      - name: Notify on failure
-        if: failure()
-        run: echo "Squad snapshot failed! Check logs above for details."

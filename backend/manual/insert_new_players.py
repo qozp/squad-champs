@@ -14,37 +14,39 @@ def backfill_player_games(supabase, player_id):
         player_log = playergamelog.PlayerGameLog(player_id)
         data = player_log.get_dict()
         
-        games = data['resultSets'][0]['rowSet']
+        headers = data['resultSets'][0]['headers']
+        rows = data['resultSets'][0]['rowSet']
         
-        if not games:
+        if not rows:
             print(f"  No games found for player {player_id}")
             return
         
-        print(f"  Found {len(games)} games to backfill")
+        print(f"  Found {len(rows)} games to backfill")
         
         player_games = []
-        for game in games:
-            game_id = int(game[2])  # Game_ID
-            minutes = game[6] if game[6] else 0  # MIN
+        for row in rows:
+            game = dict(zip(headers, row))
+            
+            minutes = game.get('MIN') if game.get('MIN') else 0
             
             if minutes == 0:
                 continue
             
             player_game = {
                 "player_id": player_id,
-                "game_id": game_id,
-                "points": int(game[24] or 0),  # PTS
-                "rebounds": int(game[18] or 0),  # REB
-                "assists": int(game[19] or 0),  # AST
-                "steals": int(game[20] or 0),  # STL
-                "blocks": int(game[21] or 0),  # BLK
-                "turnovers": int(game[22] or 0),  # TOV
-                "3pm": int(game[10] or 0),  # FG3M
-                "3pa": int(game[11] or 0),  # FG3A
-                "fgm": int(game[7] or 0),  # FGM
-                "fga": int(game[8] or 0),  # FGA
-                "ftm": int(game[13] or 0),  # FTM
-                "fta": int(game[14] or 0),  # FTA
+                "game_id": int(game.get('Game_ID')),
+                "points": int(game.get('PTS') or 0),
+                "rebounds": int(game.get('REB') or 0),
+                "assists": int(game.get('AST') or 0),
+                "steals": int(game.get('STL') or 0),
+                "blocks": int(game.get('BLK') or 0),
+                "turnovers": int(game.get('TOV') or 0),
+                "3pm": int(game.get('FG3M') or 0),
+                "3pa": int(game.get('FG3A') or 0),
+                "fgm": int(game.get('FGM') or 0),
+                "fga": int(game.get('FGA') or 0),
+                "ftm": int(game.get('FTM') or 0),
+                "fta": int(game.get('FTA') or 0),
                 "minutes": int(minutes),
             }
             
@@ -59,7 +61,7 @@ def backfill_player_games(supabase, player_id):
             
     except Exception as e:
         print(f"  ❌ Error backfilling player {player_id}: {e}")
-        raise  # Re-raise so we don't remove from new_player table
+        raise
 
 def process_new_players():
     """Fetch and insert all players from the new players table."""
@@ -67,7 +69,8 @@ def process_new_players():
         os.getenv("SUPABASE_URL"),
         os.getenv("SUPABASE_SERVICE_KEY")
     )
-    
+
+    # new_players = [1630679]
     new_players = get_new_players(supabase)
     
     if not new_players:

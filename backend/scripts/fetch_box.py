@@ -105,7 +105,7 @@ def process_pending_games(supabase):
             print(f"Inserting {len(player_stats)} player_games into Supabase...")
             # Insert players
             if player_stats:
-                supabase.table("player_game").insert(player_stats).execute()
+                supabase.table("player_game").upsert(player_stats).execute()
 
             # Mark as processed
             supabase.table("pending_game") \

@@ -1,40 +1,37 @@
-name: Insert Today's NBA Games (Afternoon)
+name: Snapshot Squads for Gameweek
 
 on:
   schedule:
-    - cron: "0 22 * * *"  # 22:00 UTC = 5 PM ET
-  workflow_dispatch: {}
+    # Every Monday at 9:00 AM UTC (4 AM ET)
+    - cron: '0 9 * * 1'
+  
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
-  insert-games:
+  snapshot-squads:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
-
+          python-version: '3.11'
+      
       - name: Install dependencies
-        working-directory: backend
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Insert today's games
-        working-directory: backend
+      
+      - name: Record squad snapshot for gameweek
+        run: python backend/weekly/record_squads.py
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           PYTHONPATH: ${{ github.workspace }}
-        run: |
-          echo "Running afternoon game fetch..."
-          python daily/insert_todays_games.py
-
+      
       - name: Notify on failure
         if: failure()
         run: echo "Squad snapshot failed! Check logs above for details."

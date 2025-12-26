@@ -1,4 +1,4 @@
-name: Snapshot Squads for Gameweek
+name: Record Squads for Gameweek
 
 on:
   schedule:
@@ -21,12 +21,14 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
+        working-directory: backend
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
       
       - name: Record squad snapshot for gameweek
-        run: python backend/weekly/record_squads.py
+        working-directory: backend
+        run: python weekly/record_squads.py
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}

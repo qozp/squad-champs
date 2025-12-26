@@ -25,8 +25,7 @@ def get_upcoming_gameweek() -> Optional[int]:
     Returns the gameweek number whose start_date is today or in the near future
     """
     try:
-        # today = datetime.now(timezone.utc).date()
-        today = datetime(2025,12,22)
+        today = datetime.now(timezone.utc).date()
         
         # Get gameweek starting today or the next upcoming one
         response = supabase.table("gameweek")\

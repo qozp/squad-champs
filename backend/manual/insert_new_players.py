@@ -91,6 +91,7 @@ def process_new_players():
                 continue
             
             details["price"] = 4.0
+            details["current_price"] = 4.0
             supabase.table("player").upsert(details).execute()
             
             print(f"  ✅ Successfully inserted player {player_id}")

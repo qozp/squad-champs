@@ -3,8 +3,8 @@ Run from main to init local
 python3 -m venv venv
 source venv/bin/activate
 cd backend
-pip install -r backend.requirements.txt
-pip freeze > requirements.txt
+
+pip install -r requirements.txt
 cd ..
 ```
 
@@ -15,5 +15,6 @@ pip freeze > requirements.txt
 
 Insert new players list when convenient (run from main)
 ```
-python3 -m backend.manual.insert_new_players
+cd backend
+python3 manual/insert_new_players.py
 ```

@@ -190,6 +190,8 @@ def record_squads_for_gameweek():
     print("=" * 60)
     print(f"✅ Successfully recorded: {results['success_count']} player records")
     print(f"❌ Failed: {results['error_count']} player records")
+
+    increment_free_trades()
     
     if results["errors"]:
         print("\n⚠️  ERRORS ENCOUNTERED:")
@@ -201,7 +203,24 @@ def record_squads_for_gameweek():
         print("   Historical snapshot created")
         return True
 
+def increment_free_trades():
+    """
+    Increment free_trade by 1 for all squads
+    Runs after a successful gameweek snapshot
+    """
+    try:
+        response = supabase.rpc(
+            "increment_free_trades"
+        ).execute()
+
+        print("🔁 Incremented free_trade by 1 for all squads")
+        return True
+
+    except Exception as e:
+        print(f"❌ Error incrementing free trades: {e}")
+        return False
 
 if __name__ == "__main__":
     success = record_squads_for_gameweek()
+
     exit(0 if success else 1)

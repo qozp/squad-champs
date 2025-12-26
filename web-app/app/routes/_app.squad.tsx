@@ -220,7 +220,12 @@ export default function SquadPage() {
           </TabsContent>
 
           <TabsContent value="scores">
-            <ScoresTab squadMeta={squadMeta} />
+            <TabsContent value="scores">
+              <ScoresTab
+                squadMeta={squadMeta}
+                currentGameweek={currentGameweek}
+              />
+            </TabsContent>
           </TabsContent>
 
           <TabsContent value="trades">

@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useState, useMemo } from "react";
 import { sanitizeInput } from "~/lib/moderation";
+import { Link } from "react-router";
 
 interface Squad {
   user_id: string;
@@ -22,11 +23,13 @@ interface Squad {
 
 interface LeaderboardTableProps {
   data: Squad[];
+  gameweek: number;
   pageSize?: number;
 }
 
 export default function LeaderboardTable({
   data,
+  gameweek,
   pageSize = 10,
 }: LeaderboardTableProps) {
   const [search, setSearch] = useState("");
@@ -132,7 +135,14 @@ export default function LeaderboardTable({
           ) : (
             paginatedData.map((s) => (
               <TableRow key={s.user_id}>
-                <TableCell>{sanitizeInput(s.squad_name)}</TableCell>
+                <TableCell>
+                  <Link
+                    to={`/squad/${s.user_id}/week/${gameweek}`}
+                    className="font-medium hover:underline underline-offset-4"
+                  >
+                    {sanitizeInput(s.squad_name)}
+                  </Link>
+                </TableCell>
                 <TableCell>{sanitizeInput(s.display_name)}</TableCell>
                 <TableCell>{s.total_points}</TableCell>
               </TableRow>

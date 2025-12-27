@@ -11,6 +11,7 @@ import {
 export default function Leaderboard() {
   const [squads, setSquads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentGameweek, setCurrentGameweek] = useState<number>(1);
 
   const fetchSquads = async () => {
     setLoading(true);
@@ -29,6 +30,23 @@ export default function Leaderboard() {
     fetchSquads();
   }, []);
 
+  useEffect(() => {
+    async function loadGameweek() {
+      const today = new Date().toISOString().slice(0, 10);
+
+      const { data } = await supabaseBrowser
+        .from("gameweek")
+        .select("gameweek")
+        .lte("start_date", today)
+        .gte("end_date", today)
+        .maybeSingle();
+
+      setCurrentGameweek(data?.gameweek ?? 1);
+    }
+
+    loadGameweek();
+  }, []);
+
   if (loading)
     return (
       <p className="flex flex-1 items-center min-h-screen justify-center text-lg text-foreground">
@@ -44,7 +62,7 @@ export default function Leaderboard() {
           <CardDescription className="text-lg">
             View top squads and their points.
           </CardDescription>
-          <LeaderboardTable data={squads} />
+          <LeaderboardTable data={squads} gameweek={currentGameweek} />
         </CardContent>
       </Card>
     </div>

@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { requireAuth } from "~/lib/requireAuth";
 import type { Route } from "../+types/root";
 import { useEffect, useState } from "react";
@@ -21,6 +21,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export default function SquadPage() {
   const { user } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [squadMeta, setSquadMeta] = useState<any | null>(null);
@@ -173,6 +175,15 @@ export default function SquadPage() {
     }
   }
 
+  // Determine current tab based on route
+  const currentTab = location.pathname.includes("/lineup")
+    ? "lineup"
+    : location.pathname.includes("/week")
+      ? "scores"
+      : location.pathname.includes("/trades")
+        ? "trades"
+        : "lineup"; // default
+
   // -------------------------
 
   const hasSquad = !!squadMeta;
@@ -207,36 +218,37 @@ export default function SquadPage() {
           onSubmit={submitSquad}
         />
       ) : (
-        <Tabs defaultValue="scores" className="w-full">
+        <Tabs
+          value={currentTab}
+          onValueChange={(value) => {
+            if (value === "lineup") {
+              navigate("/squad/lineup");
+            } else if (value === "scores") {
+              navigate(`/squad/${user.id}/week/${currentGameweek || 1}`);
+            } else if (value === "trades") {
+              navigate("/squad/trades");
+            }
+          }}
+          className="w-full"
+        >
           {/* TABS OUTSIDE CARD */}
           <TabsList className="mb-2 w-full justify-start">
-            <TabsTrigger value="scores">Scores</TabsTrigger>
             <TabsTrigger value="lineup">Lineup</TabsTrigger>
+            <TabsTrigger value="scores">Scores</TabsTrigger>
             <TabsTrigger value="trades">Trades</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="lineup">
-            <LineupTab squadPlayers={squadPlayers} />
-          </TabsContent>
-
-          <TabsContent value="scores">
-            <TabsContent value="scores">
-              <ScoresTab
-                squadMeta={squadMeta}
-                currentGameweek={currentGameweek}
-              />
-            </TabsContent>
-          </TabsContent>
-
-          <TabsContent value="trades">
-            <TradesTab
-              squadPlayers={squadPlayers}
-              allPlayersMap={playersMap}
-              budget={budget}
-              onBudgetChange={setBudget}
-              onSubmit={submitTrade}
-            />
-          </TabsContent>
+          <Outlet
+            context={{
+              squadMeta,
+              currentGameweek,
+              squadPlayers,
+              playersMap,
+              budget,
+              setBudget,
+              submitTrade,
+            }}
+          />
         </Tabs>
       )}
 

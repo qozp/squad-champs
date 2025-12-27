@@ -20,15 +20,24 @@ import {
 import { supabaseBrowser } from "~/lib/supabase/client";
 import type { SquadHistoryWeek, SquadHistoryPlayer } from "~/lib/types/squad";
 import { shortPos, formatName } from "~/lib/helpers/player";
+import { useNavigate } from "react-router";
 
 interface Props {
   squadMeta: any;
   currentGameweek: number | null;
+  initialWeek?: number;
+  userId: string | undefined;
 }
 
-export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
+export default function ScoresTab({
+  squadMeta,
+  currentGameweek,
+  initialWeek,
+  userId,
+}: Props) {
+  const navigate = useNavigate();
   const [selectedWeek, setSelectedWeek] = useState<number | null>(
-    currentGameweek
+    initialWeek || currentGameweek
   );
   const [historyWeeks, setHistoryWeeks] = useState<number[]>([]);
   const [weekData, setWeekData] = useState<SquadHistoryWeek | null>(null);
@@ -39,7 +48,8 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
   useEffect(() => {
     async function fetchHistoryWeeks() {
       const { data } = await supabaseBrowser.rpc(
-        "get_user_gameweeks_with_history"
+        "get_user_gameweeks_with_history",
+        { p_user_id: userId }
       );
       if (data) {
         setHistoryWeeks(data.map((d: any) => d.gameweek));
@@ -77,7 +87,7 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
     // Always fetch players from squad_history_player (snapshot)
     const playersResponse = await supabaseBrowser.rpc(
       "get_squad_history_players",
-      { p_gameweek: gameweek }
+      { p_user_id: userId, p_gameweek: gameweek }
     );
 
     if (playersResponse.data) {
@@ -95,6 +105,7 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
 
     // Try to fetch squad_history (may not exist for current week)
     const historyResponse = await supabaseBrowser.rpc("get_squad_history", {
+      p_user_id: userId,
       p_gameweek: gameweek,
     });
 
@@ -129,6 +140,7 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
     const newWeek = selectedWeek - 1;
     if (newWeek >= 1) {
       setSelectedWeek(newWeek);
+      navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
     }
   }
 
@@ -137,6 +149,7 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
     const newWeek = selectedWeek + 1;
     if (newWeek <= currentGameweek) {
       setSelectedWeek(newWeek);
+      navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
     }
   }
 

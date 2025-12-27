@@ -1,7 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { ChevronLeft, ChevronRight, Crown, Star } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Crown,
+  Scroll,
+  ScrollText,
+  Star,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -150,6 +157,12 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
   const starting = weekPlayers.filter((p) => p.is_starting);
   const bench = weekPlayers.filter((p) => !p.is_starting);
 
+  const hasNoData =
+    !weekData &&
+    weekPlayers.length === 0 &&
+    selectedWeek !== null &&
+    selectedWeek >= (currentGameweek ?? 0);
+
   if (loading) {
     return (
       <Card className="w-full">
@@ -225,71 +238,87 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
           </div>
         )}
 
-        {/* Players Table */}
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12"></TableHead>
-              <TableHead>Player</TableHead>
-              <TableHead>Position</TableHead>
-              <TableHead>Team</TableHead>
-              <TableHead className="text-right">Score</TableHead>
-            </TableRow>
-          </TableHeader>
+        {/* Players Table or Empty State */}
+        {hasNoData ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <ScrollText className="h-10 w-10 text-muted-foreground mb-4" />
+            <p className="text-lg font-medium">
+              Your squad hasn't been recorded yet
+            </p>
+            <p className="text-sm text-muted-foreground max-w-md mt-1">
+              Your squad's scores will begin appearing here once the next
+              gameweek starts (typically on Monday). In the meantime, make sure
+              to set your line-up.
+            </p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12"></TableHead>
+                <TableHead>Player</TableHead>
+                <TableHead>Position</TableHead>
+                <TableHead>Team</TableHead>
+                <TableHead className="text-right">Score</TableHead>
+              </TableRow>
+            </TableHeader>
 
-          <TableBody>
-            {/* Starting Lineup */}
-            <TableRow className="bg-muted/30">
-              <TableCell colSpan={5} className="font-semibold text-sm">
-                Starting Lineup
-              </TableCell>
-            </TableRow>
-            {starting.map((player) => (
-              <TableRow key={player.player_id}>
-                <TableCell>
-                  <div className="flex gap-1">
-                    {player.is_captain && "C"}
-                    {player.is_vice_captain && "VC"}
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {formatName(player.first_name, player.last_name)}
-                </TableCell>
-                <TableCell>{shortPos(player.pos)}</TableCell>
-                <TableCell>{player.team_abbreviation}</TableCell>
-                <TableCell className="text-right font-semibold">
-                  {player.is_captain && (
-                    <span className="ml-1 text-xs text-yellow-600">(×2) </span>
-                  )}
-                  {player.effective_score?.toFixed(1) || "0.0"}
+            <TableBody>
+              {/* Starting Lineup */}
+              <TableRow className="bg-muted/30">
+                <TableCell colSpan={5} className="font-semibold text-sm">
+                  Starting Lineup
                 </TableCell>
               </TableRow>
-            ))}
+              {starting.map((player) => (
+                <TableRow key={player.player_id}>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      {player.is_captain && "C"}
+                      {player.is_vice_captain && "VC"}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {formatName(player.first_name, player.last_name)}
+                  </TableCell>
+                  <TableCell>{shortPos(player.pos)}</TableCell>
+                  <TableCell>{player.team_abbreviation}</TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {/* {player.is_captain && (
+                      <span className="ml-1 text-xs text-yellow-600">
+                        (×2){" "}
+                      </span>
+                    )} */}
+                    {player.effective_score?.toFixed(1) || "0.0"}
+                  </TableCell>
+                </TableRow>
+              ))}
 
-            {/* Bench */}
-            <TableRow className="bg-muted/30">
-              <TableCell colSpan={5} className="font-semibold text-sm">
-                Bench
-              </TableCell>
-            </TableRow>
-            {bench.map((player) => (
-              <TableRow
-                key={player.player_id}
-                className="text-muted-foreground"
-              >
-                <TableCell></TableCell>
-                <TableCell className="font-medium">
-                  {formatName(player.first_name, player.last_name)}
-                </TableCell>
-                <TableCell>{shortPos(player.pos)}</TableCell>
-                <TableCell>{player.team_abbreviation}</TableCell>
-                <TableCell className="text-right">
-                  {player.effective_score?.toFixed(1) || "0.0"}
+              {/* Bench */}
+              <TableRow className="bg-muted/30">
+                <TableCell colSpan={5} className="font-semibold text-sm">
+                  Bench
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              {bench.map((player) => (
+                <TableRow
+                  key={player.player_id}
+                  className="text-muted-foreground"
+                >
+                  <TableCell></TableCell>
+                  <TableCell className="font-medium">
+                    {formatName(player.first_name, player.last_name)}
+                  </TableCell>
+                  <TableCell>{shortPos(player.pos)}</TableCell>
+                  <TableCell>{player.team_abbreviation}</TableCell>
+                  <TableCell className="text-right">
+                    {player.effective_score?.toFixed(1) || "0.0"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );

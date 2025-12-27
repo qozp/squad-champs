@@ -2,7 +2,7 @@ name: Process Pending NBA Games (Morning)
 
 on:
   schedule:
-    - cron: "0 10 * * *"  # 10:00 UTC = 5 AM ET
+    - cron: "0 9 * * *"  # 9:00 UTC = 4 AM ET
   workflow_dispatch: {}
 
 jobs:

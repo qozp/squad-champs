@@ -1,0 +1,34 @@
+name: Score Squads for Gameweek
+
+on:
+  schedule:
+    # Every Monday at 9:00 AM UTC (4 AM ET)
+    - cron: '0 9 * * 1'
+  
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+jobs:
+  snapshot-squads:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install supabase
+      
+      - name: Record squad snapshot for gameweek
+        working-directory: backend
+        run: python weekly/write_squad_history.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          PYTHONPATH: ${{ github.workspace }}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { ChevronLeft, ChevronRight, Crown, Star } from "lucide-react";
@@ -133,12 +133,19 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
     }
   }
 
+  const sortedHistoryWeeks = useMemo(() => {
+    return [...historyWeeks].sort((a, b) => a - b);
+  }, [historyWeeks]);
+
+  const currentIndex = useMemo(() => {
+    if (selectedWeek == null) return -1;
+    return sortedHistoryWeeks.indexOf(selectedWeek);
+  }, [sortedHistoryWeeks, selectedWeek]);
+
   const isCurrentWeek = selectedWeek === currentGameweek;
-  const canGoPrev = selectedWeek !== null && selectedWeek > 1;
+  const canGoPrev = currentIndex > 0;
   const canGoNext =
-    selectedWeek !== null &&
-    currentGameweek !== null &&
-    selectedWeek < currentGameweek;
+    currentIndex !== -1 && currentIndex < sortedHistoryWeeks.length - 1;
 
   const starting = weekPlayers.filter((p) => p.is_starting);
   const bench = weekPlayers.filter((p) => !p.is_starting);

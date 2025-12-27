@@ -35,20 +35,6 @@ export default function SquadMetadata({
           {/* Left: Overview title */}
           <CardTitle className="w-1/3 justify-start">Squad</CardTitle>
 
-          {/* Middle: Gameweek with arrows */}
-          <div className="w-1/3 flex justify-center items-center gap-x-3 text-sm text-muted-foreground">
-            <Button variant="default" size="icon" className="h-7 w-7" disabled>
-              <ChevronLeft size={16} />
-            </Button>
-
-            <span className="font-medium text-lg">
-              {currentGameweek ? `Week ${currentGameweek}` : "Week —"}
-            </span>
-
-            <Button variant="default" size="icon" className="h-7 w-7" disabled>
-              <ChevronRight size={16} />
-            </Button>
-          </div>
 
           {/* Right: Squad name + edit */}
           <div className="flex justify-end items-center space-x-2 w-1/3">

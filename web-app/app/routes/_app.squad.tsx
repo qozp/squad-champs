@@ -207,11 +207,11 @@ export default function SquadPage() {
           onSubmit={submitSquad}
         />
       ) : (
-        <Tabs defaultValue="lineup" className="w-full">
+        <Tabs defaultValue="scores" className="w-full">
           {/* TABS OUTSIDE CARD */}
           <TabsList className="mb-2 w-full justify-start">
-            <TabsTrigger value="lineup">Lineup</TabsTrigger>
             <TabsTrigger value="scores">Scores</TabsTrigger>
+            <TabsTrigger value="lineup">Lineup</TabsTrigger>
             <TabsTrigger value="trades">Trades</TabsTrigger>
           </TabsList>
 

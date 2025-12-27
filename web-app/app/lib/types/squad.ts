@@ -37,4 +37,5 @@ export interface SquadHistoryPlayer {
     is_captain: boolean;
     is_vice_captain: boolean;
     total_score: number;
+    effective_score?: number;
 }

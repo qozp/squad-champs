@@ -13,6 +13,7 @@ import { type SquadPlayer } from "~/lib/types/squad";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import { ArrowUpDown, Repeat } from "lucide-react";
 import { getSalePrice } from "~/lib/helpers/squadPlayer";
+import { shortPos, formatName } from "~/lib/helpers/player";
 
 interface LineupEditorTableProps {
   initialPlayers: SquadPlayer[];
@@ -51,22 +52,6 @@ export default function LineupEditorTable({
   const changedRowIndexes = useMemo(() => {
     return rows.map((p, i) => p.player_id !== initialOrder[i]);
   }, [rows, initialOrder]);
-
-  const shortPos = (pos: string) => {
-    if (!pos) return "";
-    const map: Record<string, string> = {
-      Guard: "G",
-      Forward: "F",
-      Center: "C",
-    };
-    return map[pos] ?? pos.charAt(0);
-  };
-
-  const formatName = (first: string, last: string) => {
-    const full = `${first} ${last}`;
-    if (full.length <= 16) return full;
-    return `${first.charAt(0)}. ${last}`;
-  };
 
   function discardChanges() {
     // Convert initialOrder IDs back to full player objects

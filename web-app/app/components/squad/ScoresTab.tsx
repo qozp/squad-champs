@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/table";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import type { SquadHistoryWeek, SquadHistoryPlayer } from "~/lib/types/squad";
+import { shortPos, formatName } from "~/lib/helpers/player";
 
 interface Props {
   squadMeta: any;
@@ -73,7 +74,16 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
     );
 
     if (playersResponse.data) {
-      setWeekPlayers(playersResponse.data);
+      const normalizedPlayers = playersResponse.data.map((p: any) => {
+        const baseScore = p.total_score || 0;
+        const multiplier = p.is_captain ? 2 : 1;
+
+        return {
+          ...p,
+          effective_score: baseScore * multiplier,
+        };
+      });
+      setWeekPlayers(normalizedPlayers);
     }
 
     // Try to fetch squad_history (may not exist for current week)
@@ -165,7 +175,6 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
 
             <span className="font-medium text-lg min-w-[120px] text-center">
               Week {selectedWeek}
-              {isCurrentWeek && <span className="ml-2">(Current)</span>}
             </span>
 
             <Button
@@ -185,7 +194,7 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
           <div className="flex items-center divide-x divide-border bg-muted/20 rounded-lg p-3 text-sm">
             <div className="px-4">
               <p className="font-medium">Gameweek Points</p>
-              <p className="text-lg">{weekData.gameweek_points}</p>
+              <p className="text-lg">{weekData.gameweek_points.toFixed(1)}</p>
             </div>
 
             {!isCurrentWeek && (
@@ -232,32 +241,20 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
               <TableRow key={player.player_id}>
                 <TableCell>
                   <div className="flex gap-1">
-                    {player.is_captain && (
-                      <Crown
-                        size={16}
-                        className="text-yellow-500"
-                        // title="Captain (2x points)"
-                      />
-                    )}
-                    {player.is_vice_captain && (
-                      <Star
-                        size={16}
-                        className="text-blue-500"
-                        // title="Vice Captain"
-                      />
-                    )}
+                    {player.is_captain && "C"}
+                    {player.is_vice_captain && "VC"}
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">
-                  {player.first_name} {player.last_name}
+                  {formatName(player.first_name, player.last_name)}
                 </TableCell>
-                <TableCell>{player.pos}</TableCell>
+                <TableCell>{shortPos(player.pos)}</TableCell>
                 <TableCell>{player.team_abbreviation}</TableCell>
                 <TableCell className="text-right font-semibold">
-                  {player.total_score?.toFixed(1) || "0.0"}
                   {player.is_captain && (
-                    <span className="ml-1 text-xs text-yellow-600">(×2)</span>
+                    <span className="ml-1 text-xs text-yellow-600">(×2) </span>
                   )}
+                  {player.effective_score?.toFixed(1) || "0.0"}
                 </TableCell>
               </TableRow>
             ))}
@@ -275,12 +272,12 @@ export default function ScoresTab({ squadMeta, currentGameweek }: Props) {
               >
                 <TableCell></TableCell>
                 <TableCell className="font-medium">
-                  {player.first_name} {player.last_name}
+                  {formatName(player.first_name, player.last_name)}
                 </TableCell>
-                <TableCell>{player.pos}</TableCell>
+                <TableCell>{shortPos(player.pos)}</TableCell>
                 <TableCell>{player.team_abbreviation}</TableCell>
                 <TableCell className="text-right">
-                  {player.total_score?.toFixed(1) || "0.0"}
+                  {player.effective_score?.toFixed(1) || "0.0"}
                 </TableCell>
               </TableRow>
             ))}

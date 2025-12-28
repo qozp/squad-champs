@@ -43,7 +43,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
   ];
 
   const mainLinks = [
-    { href: "/home", label: "Home" },
+    // { href: "/home", label: "Home" },
     { href: "/leaderboard", label: "Leaderboard" },
     { href: "/players", label: "Players" },
     { href: "/help", label: "Help" },
@@ -150,6 +150,8 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     setMobileDropdown(mobileDropdown === dropdown ? null : dropdown);
   };
 
+  const isHomeActive = location.pathname === "/home";
+
   if (loading) {
     // wait for profile to load
     return (
@@ -165,7 +167,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
-      <div className="py-2 flex justify-between items-center">
+      <div className="mt-1 py-1 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -180,27 +182,20 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-2">
-          {mainLinks.map((link) => {
-            const isActive = location.pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-gray-600 grayscale-50 text-navbar"
-                      : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
-                  }`}
-              >
-                {link.label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
-                )}
-              </Link>
-            );
-          })}
-
+          <Link
+            to="/home"
+            className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+              ${
+                isHomeActive
+                  ? "bg-gray-600 grayscale-50 text-navbar"
+                  : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+              }`}
+          >
+            Home
+            {isHomeActive && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+            )}
+          </Link>
           {/* Squad Dropdown */}
           <div className="relative" ref={dropdownRefs.squad}>
             <button
@@ -225,7 +220,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
             </button>
 
             {desktopDropdown === "squad" && (
-              <div className="absolute top-full left-0 mt-2 w-40 bg-card border border-border rounded-md shadow-lg z-50">
+              <div className="absolute top-full left-0 w-40 bg-card border border-border rounded-md shadow-lg z-50">
                 {squadLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -238,7 +233,26 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
               </div>
             )}
           </div>
-
+          {mainLinks.map((link) => {
+            const isActive = location.pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+                  ${
+                    isActive
+                      ? "bg-gray-600 grayscale-50 text-navbar"
+                      : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+                  }`}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+                )}
+              </Link>
+            );
+          })}
           {/* Account Dropdown */}
           <div className="relative" ref={dropdownRefs.account}>
             <button
@@ -263,7 +277,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
             </button>
 
             {desktopDropdown === "account" && (
-              <div className="absolute top-full right-0 mt-2 w-40 bg-card border border-border rounded-md shadow-lg z-50">
+              <div className="absolute top-full right-0 w-40 bg-card border border-border rounded-md shadow-lg z-50">
                 {accountLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -276,52 +290,45 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
               </div>
             )}
           </div>
-
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-gray-200"
+          className="md:hidden cursor-pointer text-gray-200"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Hamburger */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
           menuOpen ? "max-h-[600px]" : "max-h-0"
         }`}
       >
         <div className="flex flex-col items-center gap-3 py-4 border-t border-border bg-navbar/95 backdrop-blur-sm">
-          {mainLinks.map((link) => {
-            const isActive = location.pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-gray-600 grayscale-50 text-navbar"
-                      : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
-                  }`}
-              >
-                {link.label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
-                )}
-              </Link>
-            );
-          })}
+          <Link
+            to="/home"
+            className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+              ${
+                isHomeActive
+                  ? "bg-gray-600 grayscale-50 text-navbar"
+                  : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+              }`}
+          >
+            Home
+            {isHomeActive && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+            )}
+          </Link>
 
           {/* Mobile Squad Section */}
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={() => toggleMobileDropdown("squad")}
-              className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
+              className={`cursor-pointer relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
                 ${
                   isSquadActive
                     ? "bg-gray-600 grayscale-50 text-navbar"
@@ -346,7 +353,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="px-3 py-1 text-sm text-navbar/80 hover:text-navbar transition-colors"
+                    className="px-3 py-1 text-sm text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -355,11 +362,32 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
             )}
           </div>
 
+          {mainLinks.map((link) => {
+            const isActive = location.pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+                  ${
+                    isActive
+                      ? "bg-gray-600 grayscale-50 text-navbar"
+                      : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+                  }`}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+                )}
+              </Link>
+            );
+          })}
+
           {/* Mobile Account Section */}
           <div className="flex flex-col items-center gap-2">
             <button
               onClick={() => toggleMobileDropdown("account")}
-              className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
+              className={`cursor-pointer relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
                 ${
                   isAccountActive
                     ? "bg-gray-600 grayscale-50 text-navbar"
@@ -384,7 +412,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="px-3 py-1 text-sm text-navbar/80 hover:text-navbar transition-colors"
+                    className="px-3 py-1 text-sm text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-colors"
                   >
                     {link.label}
                   </Link>

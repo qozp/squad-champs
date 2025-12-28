@@ -1,4 +1,10 @@
-import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
+import {
+  NavLink,
+  Outlet,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import { requireAuth } from "~/lib/requireAuth";
 import type { Route } from "../+types/root";
 import { useEffect, useState } from "react";
@@ -12,7 +18,6 @@ import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import TradesTab from "~/components/squad/TradesTab";
 import LineupTab from "~/components/squad/LineupTab";
-import ScoresTab from "~/components/squad/ScoresTab";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
@@ -37,7 +42,6 @@ export default function SquadPage() {
     try {
       const { data: squadData } = await supabaseBrowser.rpc("get_squad");
       const meta = squadData?.[0] ?? null;
-      console.log(meta);
 
       setSquadMeta(meta);
       setBudget(meta?.budget ?? 0);
@@ -190,6 +194,8 @@ export default function SquadPage() {
   const hasPlayers = squadPlayers.length > 0;
   const mode: "create" | "edit" = hasSquad && !hasPlayers ? "create" : "edit";
 
+  const isScoresPage = location.pathname.includes("/week/");
+
   if (loading) {
     return (
       <p className="flex min-h-screen items-center justify-center text-lg">
@@ -200,13 +206,6 @@ export default function SquadPage() {
 
   return (
     <div className="space-y-4 p-4">
-      <SquadMetadata
-        squadMeta={squadMeta}
-        budget={budget}
-        currentGameweek={currentGameweek}
-        onEditName={() => setShowDialog(true)}
-      />
-
       {mode === "create" ? (
         <CreateSquad
           selectedPlayers={selectedPlayers}
@@ -218,39 +217,45 @@ export default function SquadPage() {
           onSubmit={submitSquad}
         />
       ) : (
-        <Tabs
-          value={currentTab}
-          onValueChange={(value) => {
-            if (value === "lineup") {
-              navigate("/squad/lineup");
-            } else if (value === "scores") {
-              navigate(`/squad/${user.id}/week/${currentGameweek || 1}`);
-            } else if (value === "trades") {
-              navigate("/squad/trades");
-            }
-          }}
-          className="w-full"
-        >
-          {/* TABS OUTSIDE CARD */}
-          <TabsList className="mb-2 w-full justify-start">
-            <TabsTrigger value="lineup">Lineup</TabsTrigger>
-            <TabsTrigger value="scores">Scores</TabsTrigger>
-            <TabsTrigger value="trades">Trades</TabsTrigger>
-          </TabsList>
+        !isScoresPage && (
+          <>
+            <SquadMetadata
+              squadMeta={squadMeta}
+              budget={budget}
+              currentGameweek={currentGameweek}
+              onEditName={() => setShowDialog(true)}
+            />
 
-          <Outlet
-            context={{
-              squadMeta,
-              currentGameweek,
-              squadPlayers,
-              playersMap,
-              budget,
-              setBudget,
-              submitTrade,
-            }}
-          />
-        </Tabs>
+            <Tabs
+              value={
+                location.pathname.includes("/trades") ? "trades" : "lineup"
+              }
+              className="w-full"
+            >
+              <TabsList className="mb-2 w-full justify-start">
+                <TabsTrigger value="lineup" asChild>
+                  <NavLink to="/squad/lineup">Lineup</NavLink>
+                </TabsTrigger>
+                <TabsTrigger value="trades" asChild>
+                  <NavLink to="/squad/trades">Trades</NavLink>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </>
+        )
       )}
+
+      <Outlet
+        context={{
+          squadMeta,
+          currentGameweek,
+          squadPlayers,
+          playersMap,
+          budget,
+          setBudget,
+          submitTrade,
+        }}
+      />
 
       <SquadNameForm
         open={showDialog}

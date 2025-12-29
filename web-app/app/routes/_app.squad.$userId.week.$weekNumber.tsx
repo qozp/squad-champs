@@ -140,37 +140,43 @@ export default function WeekScoresRoute() {
     }
   }
 
+  // Compute bounds
+  const minWeek = useMemo(() => {
+    if (historyWeeks.length === 0) return null;
+    return Math.min(...historyWeeks);
+  }, [historyWeeks]);
+
+  const maxWeek = currentGameweek ?? null;
+
+  // Determine if navigation is possible
+  const canGoPrev = useMemo(() => {
+    if (selectedWeek == null || minWeek == null) return false;
+    return selectedWeek > minWeek;
+  }, [selectedWeek, minWeek]);
+
+  const canGoNext = useMemo(() => {
+    if (selectedWeek == null || maxWeek == null) return false;
+    return selectedWeek < maxWeek;
+  }, [selectedWeek, maxWeek]);
+
+  const isCurrentWeek = selectedWeek === currentGameweek;
+
+  // Handlers
   function handlePrevWeek() {
-    if (selectedWeek === null) return;
+    if (!canGoPrev || selectedWeek == null || minWeek == null) return;
+
     const newWeek = selectedWeek - 1;
-    if (newWeek >= 1) {
-      setSelectedWeek(newWeek);
-      navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
-    }
+    setSelectedWeek(newWeek);
+    navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
   }
 
   function handleNextWeek() {
-    if (selectedWeek === null || currentGameweek === null) return;
+    if (!canGoNext || selectedWeek == null || maxWeek == null) return;
+
     const newWeek = selectedWeek + 1;
-    if (newWeek <= currentGameweek) {
-      setSelectedWeek(newWeek);
-      navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
-    }
+    setSelectedWeek(newWeek);
+    navigate(`/squad/${squadMeta.user_id}/week/${newWeek}`);
   }
-
-  const sortedHistoryWeeks = useMemo(() => {
-    return [...historyWeeks].sort((a, b) => a - b);
-  }, [historyWeeks]);
-
-  const currentIndex = useMemo(() => {
-    if (selectedWeek == null) return -1;
-    return sortedHistoryWeeks.indexOf(selectedWeek);
-  }, [sortedHistoryWeeks, selectedWeek]);
-
-  const isCurrentWeek = selectedWeek === currentGameweek;
-  const canGoPrev = currentIndex > 0;
-  const canGoNext =
-    currentIndex !== -1 && currentIndex < sortedHistoryWeeks.length - 1;
 
   const starting = weekPlayers.filter((p) => p.is_starting);
   const bench = weekPlayers.filter((p) => !p.is_starting);

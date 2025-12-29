@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime, date, timedelta
 import re
+from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 from supabase import create_client
 from nba_api.stats.endpoints import scoreboardv2
@@ -13,6 +14,20 @@ from backend.scripts.init_players import get_player_details
 # from logger_config import daily_job_logger
 
 load_dotenv()
+
+def fantasy_date_from_utc(utc_iso: str):
+    """
+    Convert a UTC ISO timestamp to fantasy date:
+    - Eastern Time
+    - Before 4 AM ET counts as previous day
+    """
+    utc_dt = datetime.fromisoformat(utc_iso.replace("Z", "+00:00"))
+    et = utc_dt.astimezone(ZoneInfo("America/New_York"))
+
+    if et.hour < 4:
+        et -= timedelta(days=1)
+
+    return et.date()
 
 def save_csv(filename, rows):
     """Save a list of dicts to CSV."""
@@ -35,15 +50,28 @@ def save_csv(filename, rows):
 # Helper Functions
 # -----------------------------
 
-def get_gameweek_for_date(supabase, target_date):
-    """Return the gameweek number that target_date falls into."""
-    resp = supabase.table("gameweek").select("gameweek, start_date, end_date").execute()
-    for gw in resp.data:
-        start = datetime.strptime(gw["start_date"], "%Y-%m-%d").date()
-        end = datetime.strptime(gw["end_date"], "%Y-%m-%d").date()
-        if start <= target_date <= end:
-            return gw["gameweek"]
-    return 1
+def get_gameweek_for_date(target_date) -> Optional[int]:
+    """
+    Return the gameweek number that target_date falls into.
+    target_date should be a date object in Eastern Time
+    """
+    try:
+        resp = supabase.table("gameweek")\
+            .select("gameweek, start_date, end_date")\
+            .execute()
+        
+        for gw in resp.data:
+            from datetime import datetime
+            start = datetime.strptime(gw["start_date"], "%Y-%m-%d").date()
+            end = datetime.strptime(gw["end_date"], "%Y-%m-%d").date()
+            if start <= target_date <= end:
+                return gw["gameweek"]
+        
+        # If no match found, return None instead of defaulting to 1
+        return None
+    except Exception as e:
+        print(f"Error in get_gameweek_for_date: {e}")
+        return None
 
 
 def insert_todays_pending_games(supabase):
@@ -90,10 +118,12 @@ def process_pending_games(supabase):
             bs = boxscore.BoxScore(gid)
             game = bs.get_dict()["game"]
 
+            fantasy_date = fantasy_date_from_utc(game["gameTimeUTC"])
+
             # Build your inserts
             gameweek = get_gameweek_for_date(
                 supabase,
-                datetime.strptime(game["gameTimeUTC"][:10], "%Y-%m-%d").date()
+                fantasy_date
             )
 
             game_details = get_game_details_for_game(game, gameweek)

@@ -8,6 +8,7 @@ Run via GitHub Actions every Monday at 4 AM ET (after snapshot_squads.py)
 
 import os
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from supabase import create_client, Client
 from typing import Optional, Dict, List, Tuple
 
@@ -17,18 +18,52 @@ SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-def get_completed_gameweek() -> Optional[int]:
+def get_gameweek_for_date(target_date) -> Optional[int]:
     """
-    Get the most recently completed gameweek (ended yesterday or earlier)
-    This ensures all games have been played and scored
+    Return the gameweek number that target_date falls into.
+    target_date should be a date object in Eastern Time
     """
     try:
-        return 10 # for testing purposes
-        today = datetime.now(timezone.utc).date()
+        resp = supabase.table("gameweek")\
+            .select("gameweek, start_date, end_date")\
+            .execute()
+        
+        for gw in resp.data:
+            from datetime import datetime
+            start = datetime.strptime(gw["start_date"], "%Y-%m-%d").date()
+            end = datetime.strptime(gw["end_date"], "%Y-%m-%d").date()
+            if start <= target_date <= end:
+                return gw["gameweek"]
+        
+        # If no match found, return None instead of defaulting to 1
+        return None
+    except Exception as e:
+        print(f"Error in get_gameweek_for_date: {e}")
+        return None
+
+
+def get_completed_gameweek() -> Optional[int]:
+    """
+    Get the most recently completed gameweek (ended yesterday or earlier in ET)
+    This ensures all games have been played and scored
+    Uses Eastern Time since gameweeks are defined in ET
+    """
+    try:
+        # For testing - hardcode gameweek 10
+        # Comment out this line in production:
+        return 10
+        
+        # Production code:
+        eastern = ZoneInfo("America/New_York")
+        now_et = datetime.now(eastern)
+        today_et = now_et.date()
+        
+        print(f"Current time in ET: {now_et.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+        print(f"Looking for gameweek that ended before: {today_et}")
         
         response = supabase.table("gameweek")\
-            .select("gameweek, end_date")\
-            .lt("end_date", str(today))\
+            .select("gameweek, start_date, end_date")\
+            .lt("end_date", str(today_et))\
             .order("end_date", desc=True)\
             .limit(1)\
             .execute()
@@ -38,7 +73,7 @@ def get_completed_gameweek() -> Optional[int]:
             print(f"Found completed gameweek: {gameweek_data['gameweek']} (ended {gameweek_data['end_date']})")
             return gameweek_data["gameweek"]
         
-        print(f"No completed gameweek found before date: {today}")
+        print(f"No completed gameweek found before date: {today_et}")
         return None
     
     except Exception as e:
@@ -276,20 +311,21 @@ def calculate_user_score(user_id: str, gameweek: int) -> Tuple[float, int, int]:
             multiplier = 2.0 if player["is_captain"] else 1.0
             total_points += player_score * multiplier
         
-        # Get trade info from squad table
-        squad_response = supabase.table("squad")\
-            .select("trades_made, penalty_trades_made")\
+        # Get all trades for this user in this gameweek
+        trade_response = supabase.table("trade")\
+            .select("free", count="exact")\
             .eq("user_id", user_id)\
-            .single()\
+            .eq("gameweek", gameweek)\
             .execute()
-        
-        trades_made = 0
-        trade_penalty = 0
-        
-        if squad_response.data:
-            trades_made = squad_response.data.get("trades_made", 0)
-            penalty_trades = squad_response.data.get("penalty_trades_made", 0)
-            trade_penalty = penalty_trades * 50  # 50 points per penalty trade
+
+        trades_made = trade_response.count or 0
+
+        penalty_trades = 0
+        if trade_response.data:
+            penalty_trades = sum(1 for t in trade_response.data if not t["free"])
+
+        trade_penalty = penalty_trades * 50
+
         
         return total_points, trades_made, trade_penalty
     
@@ -317,19 +353,29 @@ def calculate_all_scores(gameweek: int) -> List[Dict]:
         print(f"📊 Calculating scores for {len(user_ids)} users...")
         
         squad_history_records = []
-        
+
         for user_id in user_ids:
             points, trades, penalty = calculate_user_score(user_id, gameweek)
-            
+
+            net_points = points - penalty
+
             squad_history_records.append({
                 "user_id": user_id,
                 "gameweek": gameweek,
-                "gameweek_points": points,
-                "rank": 0,  # Will be calculated after sorting
+                "gameweek_points": net_points,
+                "rank": 0,
                 "trades_made": trades,
                 "trade_penalty": penalty,
                 "created_at": datetime.now(timezone.utc).isoformat()
             })
+
+            supabase.rpc(
+                "increment_total_points",
+                {
+                    "p_user_id": user_id,
+                    "p_delta": net_points
+                }
+            ).execute()
         
         # Sort by points to calculate ranks
         squad_history_records.sort(key=lambda x: x["gameweek_points"], reverse=True)

@@ -48,12 +48,7 @@ def get_completed_gameweek() -> Optional[int]:
     This ensures all games have been played and scored
     Uses Eastern Time since gameweeks are defined in ET
     """
-    try:
-        # For testing - hardcode gameweek 10
-        # Comment out this line in production:
-        return 10
-        
-        # Production code:
+    try:        
         eastern = ZoneInfo("America/New_York")
         now_et = datetime.now(eastern)
         today_et = now_et.date()

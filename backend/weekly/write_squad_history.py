@@ -1,4 +1,3 @@
-
 """
 Calculate Weekly Scores Script for Squad Champs
 Runs Monday morning (4 AM ET) to calculate previous week's scores
@@ -24,6 +23,7 @@ def get_completed_gameweek() -> Optional[int]:
     This ensures all games have been played and scored
     """
     try:
+        return 10 # for testing purposes
         today = datetime.now(timezone.utc).date()
         
         response = supabase.table("gameweek")\
@@ -67,8 +67,9 @@ def check_if_scores_calculated(gameweek: int) -> bool:
 
 def get_player_activity(gameweek: int) -> Dict[int, bool]:
     """
-    Get which players were active (played in any game) during the gameweek
+    Get which players were active (actually played minutes) during the gameweek
     Returns dict mapping player_id -> bool (True if active)
+    A player is considered active only if they played minutes > 0
     """
     try:
         # Get all games in this gameweek
@@ -82,17 +83,20 @@ def get_player_activity(gameweek: int) -> Dict[int, bool]:
             return {}
         
         game_ids = [g["id"] for g in games_response.data]
+        print(f"   Found {len(game_ids)} games in gameweek {gameweek}")
         
         # Get all player_game entries for these games
+        # Since player_game only exists when minutes > 0, we don't need to filter
         player_games_response = supabase.table("player_game")\
-            .select("player_id")\
+            .select("player_id, minutes")\
             .in_("game_id", game_ids)\
             .execute()
         
-        # Create set of active player IDs
+        # Create set of active player IDs (those who played)
         active_players = set()
         if player_games_response.data:
             active_players = {pg["player_id"] for pg in player_games_response.data}
+            print(f"   Sample of active players: {list(active_players)[:10]}")
         
         print(f"📊 Found {len(active_players)} active players in gameweek {gameweek}")
         return {pid: True for pid in active_players}
@@ -159,6 +163,13 @@ def adjust_user_squad(players: List[Dict], active_players: Dict[int, bool], game
     adjustments = 0
     user_id = players[0]["user_id"]
     
+    # DEBUG: Print detailed info
+    print(f"  👤 User {user_id[:8]}:")
+    print(f"     Starting players: {[p['player_id'] for p in starting]}")
+    print(f"     Bench players: {[p['player_id'] for p in bench]}")
+    print(f"     Inactive starters: {[p['player_id'] for p in inactive_starters]}")
+    print(f"     Active bench: {[p['player_id'] for p in active_bench]}")
+    
     # Sort bench by bench_order to get substitution priority
     active_bench.sort(key=lambda x: x["bench_order"] or 999)
     
@@ -207,7 +218,9 @@ def adjust_user_squad(players: List[Dict], active_players: Dict[int, bool], game
                     .execute()
             
             adjustments += 2
-            print(f"  🔄 User {user_id[:8]}: Subbed out player {inactive['player_id']} for {sub_player['player_id']}")
+            print(f"    🔄 Subbed out inactive player {inactive['player_id']} for active player {sub_player['player_id']}")
+        else:
+            print(f"    ⚠️  No active bench player available to replace inactive player {inactive['player_id']}")
     
     return adjustments
 
@@ -218,15 +231,9 @@ def calculate_user_score(user_id: str, gameweek: int) -> Tuple[float, int, int]:
     Returns (gameweek_points, trades_made, trade_penalty)
     """
     try:
-        # Get squad_history_player with scores
-        response = supabase.rpc(
-            "get_squad_history_players",
-            {"p_gameweek": gameweek}
-        ).execute()
-        
-        # Note: RPC uses auth.uid(), so we need to query directly for batch processing
+        # Get squad_history_player entries for this user
         response = supabase.table("squad_history_player")\
-            .select("player_id, is_starting, is_captain, total_score")\
+            .select("player_id, is_starting, is_captain, is_vice_captain")\
             .eq("user_id", user_id)\
             .eq("gameweek", gameweek)\
             .execute()
@@ -282,7 +289,7 @@ def calculate_user_score(user_id: str, gameweek: int) -> Tuple[float, int, int]:
         if squad_response.data:
             trades_made = squad_response.data.get("trades_made", 0)
             penalty_trades = squad_response.data.get("penalty_trades_made", 0)
-            trade_penalty = penalty_trades * 4  # 4 points per penalty trade
+            trade_penalty = penalty_trades * 50  # 50 points per penalty trade
         
         return total_points, trades_made, trade_penalty
     

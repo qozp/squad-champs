@@ -259,7 +259,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
           <div className="relative" ref={dropdownRefs.account}>
             <button
               onClick={() => toggleDesktopDropdown("account")}
-              className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
+              className={`cursor-pointer relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
                 ${
                   isAccountActive
                     ? "bg-gray-600 grayscale-50 text-navbar"

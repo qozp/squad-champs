@@ -6,6 +6,12 @@ import PlayersTableForSquad from "./PlayersTableForSquad";
 import { type SquadPlayer, type PlayerBasic } from "~/lib/types/squad";
 import { getSalePrice } from "~/lib/helpers/squadPlayer";
 import { toast } from "sonner";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 
 interface TradePayload {
   rowsOut: number[]; // player_ids removed
@@ -182,49 +188,88 @@ export default function TradesTab({
   // UI
   // ------------------------------
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      {/* LEFT PANEL - CURRENT SQUAD */}
-      <Card className="flex-1">
+    <div className="space-y-4">
+      {/* Help Accordion */}
+      <Card>
         <CardContent>
-          <CardTitle>Your Squad</CardTitle>
-          <CreateSquadPlayersPanel
-            players={displayedPlayers}
-            onRemove={removePlayer}
-          ></CreateSquadPlayersPanel>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="help">
+              <AccordionTrigger className="text-2xl font-bold leading-none">
+                Trades Help
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground space-y-3">
+                <p>
+                  After your initial squad selection, you may buy/sell players
+                  each Gameweek.
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Unlimited transfers before the first deadline</li>
+                  <li>1 free transfer per Gameweek afterward</li>
+                  <li>Each non-free transfer costs a penalty of -50 points</li>
+                  <li>Unused free transfers can be saved each week (max 10)</li>
+                </ul>
 
-          <div className="flex justify-end gap-3 mt-4">
-            <Button
-              variant="outline"
-              onClick={discardChanges}
-              className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
-              disabled={!hasChanges}
-            >
-              Discard Changes
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={sendSubmit}
-              disabled={!hasChanges || !canSubmit}
-            >
-              Submit Trades
-            </Button>
-          </div>
+                <p className="font-semibold">Player Prices</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    Once the season starts, prices may rise/fall based on
+                    performance/popularity
+                  </li>
+                  <li>
+                    Sale prices include a 50% sell-on fee for profit (rounded
+                    down). For example, if you buy Jokic for $13.0 and his price
+                    rises to $13.5, your sale price will be $13.2
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </CardContent>
       </Card>
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* LEFT PANEL - CURRENT SQUAD */}
+        <Card className="flex-1">
+          <CardContent>
+            <CardTitle>Your Squad</CardTitle>
+            <CreateSquadPlayersPanel
+              players={displayedPlayers}
+              onRemove={removePlayer}
+            ></CreateSquadPlayersPanel>
 
-      {/* RIGHT PANEL - AVAILABLE PLAYERS */}
-      <Card className="flex-1">
-        <CardContent>
-          <CardTitle>Trade In</CardTitle>
-          <PlayersTableForSquad
-            selected={selectedIds}
-            playersMap={allPlayersMap}
-            budget={budget}
-            onAddPlayer={addPlayer}
-          ></PlayersTableForSquad>
-        </CardContent>
-      </Card>
+            <div className="flex justify-end gap-3 mt-4">
+              <Button
+                variant="outline"
+                onClick={discardChanges}
+                className="border-red-400 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+                disabled={!hasChanges}
+              >
+                Discard Changes
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={sendSubmit}
+                disabled={!hasChanges || !canSubmit}
+              >
+                Submit Trades
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* RIGHT PANEL - AVAILABLE PLAYERS */}
+        <Card className="flex-1">
+          <CardContent>
+            <CardTitle>Trade In</CardTitle>
+            <PlayersTableForSquad
+              selected={selectedIds}
+              playersMap={allPlayersMap}
+              budget={budget}
+              onAddPlayer={addPlayer}
+            ></PlayersTableForSquad>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

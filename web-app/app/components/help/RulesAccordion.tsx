@@ -67,8 +67,8 @@ export default function RulesAccordion() {
               <ul className="list-disc pl-5 space-y-1">
                 <li>Unlimited transfers before the first deadline</li>
                 <li>1 free transfer per Gameweek afterward</li>
-                <li>Each extra transfer costs -20 points</li>
-                <li>Unused free transfers can be saved each week (max 5)</li>
+                <li>Each non-free transfer costs a penalty of -50 points</li>
+                <li>Unused free transfers can be saved each week (max 10)</li>
               </ul>
 
               <p className="font-semibold">Player Prices</p>

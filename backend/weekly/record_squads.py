@@ -7,12 +7,9 @@ Note: trades_made is a cumulative counter and is NOT reset by this script
 """
 
 import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 from supabase import create_client, Client
 from typing import Optional, Dict, List
-
-load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")  # Use service key for backend operations

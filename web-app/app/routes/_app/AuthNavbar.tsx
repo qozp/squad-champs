@@ -8,6 +8,7 @@ import logoDark from "~/assets/logo-dark.svg";
 import { NavLinks, ThemeToggle } from "./NavbarUtils";
 import { supabaseBrowser } from "~/lib/supabase/client";
 import CreateProfileForm from "~/components/profile/CreateProfileForm";
+import { getEasternSportsDate } from "~/lib/helpers/gameweek";
 
 interface AuthNavbarProps {
   user: User;
@@ -66,7 +67,8 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
   const fetchCurrentGameweek = async () => {
     try {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getEasternSportsDate();
+
       const { data } = await supabaseBrowser
         .from("gameweek")
         .select("gameweek")

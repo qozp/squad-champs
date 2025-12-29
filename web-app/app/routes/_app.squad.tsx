@@ -18,6 +18,7 @@ import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import TradesTab from "~/components/squad/TradesTab";
 import LineupTab from "~/components/squad/LineupTab";
+import { getEasternSportsDate } from "~/lib/helpers/gameweek";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireAuth(request);
@@ -82,7 +83,7 @@ export default function SquadPage() {
   };
 
   async function fetchCurrentGameweek() {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const today = getEasternSportsDate();
 
     const { data } = await supabaseBrowser
       .from("gameweek")

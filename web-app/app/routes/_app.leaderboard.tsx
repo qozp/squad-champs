@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardTitle,
 } from "~/components/ui/card";
+import { getEasternSportsDate } from "~/lib/helpers/gameweek";
 
 export default function Leaderboard() {
   const [squads, setSquads] = useState<any[]>([]);
@@ -32,11 +33,11 @@ export default function Leaderboard() {
 
   useEffect(() => {
     async function loadGameweek() {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = getEasternSportsDate();
 
       const { data } = await supabaseBrowser
         .from("gameweek")
-        .select("gameweek")
+        .select("gameweek, start_date, end_date")
         .lte("start_date", today)
         .gte("end_date", today)
         .maybeSingle();

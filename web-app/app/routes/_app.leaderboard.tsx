@@ -59,7 +59,7 @@ export default function Leaderboard() {
     <div className="flex-1 text-foreground m-4">
       <Card className="">
         <CardContent className="">
-          <CardTitle className="">Leaderboard</CardTitle>
+          <CardTitle className="">Global Leaderboard</CardTitle>
           <CardDescription className="text-lg">
             View top squads and their points.
           </CardDescription>

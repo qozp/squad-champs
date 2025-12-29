@@ -16,7 +16,6 @@ import { Link } from "react-router";
 interface Squad {
   user_id: string;
   squad_name: string;
-  display_name: string;
   total_points: number;
   created_at: string;
 }
@@ -41,9 +40,7 @@ export default function LeaderboardTable({
     let filtered = data;
     if (search.trim()) {
       const q = search.toLowerCase();
-      filtered = filtered.filter((s) =>
-        `${s.squad_name} ${s.display_name}`.toLowerCase().includes(q)
-      );
+      filtered = filtered.filter((s) => `${s.squad_name} `);
     }
     return filtered;
   }, [data, search]);
@@ -103,17 +100,6 @@ export default function LeaderboardTable({
             </TableHead>
             <TableHead
               className="cursor-pointer"
-              onClick={() => handleSort("display_name")}
-            >
-              Display Name{" "}
-              {sortBy === "display_name"
-                ? sortDirection === "asc"
-                  ? "▲"
-                  : "▼"
-                : ""}
-            </TableHead>
-            <TableHead
-              className="cursor-pointer"
               onClick={() => handleSort("total_points")}
             >
               Total Points{" "}
@@ -143,7 +129,6 @@ export default function LeaderboardTable({
                     {sanitizeInput(s.squad_name)}
                   </Link>
                 </TableCell>
-                <TableCell>{sanitizeInput(s.display_name)}</TableCell>
                 <TableCell>{s.total_points}</TableCell>
               </TableRow>
             ))

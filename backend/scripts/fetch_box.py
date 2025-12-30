@@ -50,7 +50,7 @@ def save_csv(filename, rows):
 # Helper Functions
 # -----------------------------
 
-def get_gameweek_for_date(target_date):
+def get_gameweek_for_date(supabase, target_date):
     """
     Return the gameweek number that target_date falls into.
     target_date should be a date object in Eastern Time

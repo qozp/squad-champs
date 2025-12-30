@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from supabase import create_client
 from nba_api.stats.endpoints import playergamelog
-from backend.scripts.init_players import get_player_details
-from backend.scripts.fetch_box import get_new_players, remove_new_player, calculate_score
+from scripts.init_players import get_player_details
+from scripts.fetch_box import get_new_players, remove_new_player, calculate_score
 
 load_dotenv()
 

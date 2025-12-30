@@ -16,5 +16,5 @@ pip freeze > requirements.txt
 Insert new players list when convenient (run from main)
 ```
 cd backend
-python3 manual/insert_new_players.py
+python3 -m manual.insert_new_players
 ```

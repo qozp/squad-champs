@@ -14,7 +14,7 @@ hyperframe==6.1.0
 idna==3.11
 multidict==6.7.0
 nba_api==1.10.2
-numpy==2.4.0
+numpy==1.26.4
 packaging==25.0
 pandas==2.3.3
 postgrest==2.23.0

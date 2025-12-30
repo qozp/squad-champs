@@ -10,7 +10,6 @@ from supabase import create_client
 from nba_api.stats.endpoints import scoreboardv2
 from nba_api.live.nba.endpoints import boxscore, scoreboard
 
-from backend.scripts.init_players import get_player_details
 # from logger_config import daily_job_logger
 
 load_dotenv()

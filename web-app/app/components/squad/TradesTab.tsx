@@ -13,6 +13,14 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 
+import { requireAuth } from "~/lib/requireAuth";
+import type { Route } from "../../+types/root";
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const user = await requireAuth(request);
+  return { user };
+};
+
 interface TradePayload {
   rowsOut: number[]; // player_ids removed
   rowsIn: number[]; // player_ids added

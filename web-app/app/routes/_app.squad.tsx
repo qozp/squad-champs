@@ -16,19 +16,10 @@ import CreateSquad from "~/components/squad/CreateSquad";
 import SquadNameForm from "~/components/squad/SquadNameForm";
 import type { PlayerBasic, SquadPlayer } from "~/lib/types/squad";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import TradesTab from "~/components/squad/TradesTab";
-import LineupTab from "~/components/squad/LineupTab";
 import { getEasternSportsDate } from "~/lib/helpers/gameweek";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const user = await requireAuth(request);
-  return { user };
-};
-
 export default function SquadPage() {
-  const { user } = useLoaderData<typeof loader>();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [squadMeta, setSquadMeta] = useState<any | null>(null);
@@ -258,12 +249,14 @@ export default function SquadPage() {
         }}
       />
 
-      <SquadNameForm
-        open={showDialog}
-        onClose={() => setShowDialog(false)}
-        userId={user.id}
-        squadName={squadMeta?.name}
-      />
+      {squadMeta && !isScoresPage && (
+        <SquadNameForm
+          open={showDialog}
+          onClose={() => setShowDialog(false)}
+          userId={squadMeta.user_id}
+          squadName={squadMeta.name}
+        />
+      )}
     </div>
   );
 }

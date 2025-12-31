@@ -14,7 +14,7 @@ interface AuthNavbarProps {
   user: User;
 }
 
-type DropdownType = "squad" | "account" | null;
+type DropdownType = "squad" | "leaderboard" | "account" | null;
 
 export default function AuthNavbar({ user }: AuthNavbarProps) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -29,6 +29,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
   const location = useLocation();
   const dropdownRefs = {
     squad: useRef<HTMLDivElement>(null),
+    leaderboard: useRef<HTMLDivElement>(null),
     account: useRef<HTMLDivElement>(null),
   };
 
@@ -38,6 +39,11 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
     { href: `/squad/${user.id}/week/${currentGameweek}`, label: "Scores" },
   ];
 
+  const leaderboardLinks = [
+    { href: "/leaderboard/global", label: "Global" },
+    { href: "/leaderboard/weekly", label: "Weekly" },
+  ];
+
   const accountLinks = [
     { href: "/profile", label: "Profile" },
     { href: "/logout", label: "Logout" },
@@ -45,7 +51,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
 
   const mainLinks = [
     // { href: "/home", label: "Home" },
-    { href: "/leaderboard", label: "Leaderboard" },
+    // { href: "/leaderboard", label: "Leaderboard" },
     { href: "/players", label: "Players" },
     { href: "/help", label: "Help" },
   ];
@@ -166,6 +172,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
   const isSquadActive = location.pathname.startsWith("/squad");
   const isAccountActive =
     location.pathname === "/profile" || location.pathname === "/logout";
+  const isLeaderboardActive = location.pathname.startsWith("/leaderboard");
 
   return (
     <nav className="px-5 bg-navbar shadow-md transition-colors duration-300">
@@ -183,7 +190,7 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-1">
           <Link
             to="/home"
             className={`relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
@@ -235,6 +242,45 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
               </div>
             )}
           </div>
+
+          {/* Leaderboard Dropdown */}
+          <div className="relative" ref={dropdownRefs.leaderboard}>
+            <button
+              onClick={() => toggleDesktopDropdown("leaderboard")}
+              className={`cursor-pointer relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
+      ${
+        isLeaderboardActive
+          ? "bg-gray-600 grayscale-50 text-navbar"
+          : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+      }`}
+            >
+              Leaderboard
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${
+                  desktopDropdown === "leaderboard" ? "rotate-180" : ""
+                }`}
+              />
+              {isLeaderboardActive && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+              )}
+            </button>
+
+            {desktopDropdown === "leaderboard" && (
+              <div className="absolute top-full left-0 w-40 bg-card border border-border rounded-md shadow-lg z-50">
+                {leaderboardLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           {mainLinks.map((link) => {
             const isActive = location.pathname === link.href;
             return (
@@ -355,7 +401,55 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="px-3 py-1 text-sm text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-colors"
+                    className={`px-3 py-1 text-sm text-navbar/80 rounded-md hover:bg-gray-500 hover:text-navbar transition-colors
+            ${
+              location.pathname === link.href
+                ? "bg-gray-600 grayscale-50 text-navbar"
+                : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+            }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Leaderboard Section */}
+          <div className="flex flex-col items-center gap-2">
+            <button
+              onClick={() => toggleMobileDropdown("leaderboard")}
+              className={`cursor-pointer relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-1
+      ${
+        isLeaderboardActive
+          ? "bg-gray-600 grayscale-50 text-navbar"
+          : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+      }`}
+            >
+              Leaderboard
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${
+                  mobileDropdown === "leaderboard" ? "rotate-180" : ""
+                }`}
+              />
+              {isLeaderboardActive && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-secondary rounded-full"></span>
+              )}
+            </button>
+
+            {mobileDropdown === "leaderboard" && (
+              <div className="flex flex-col items-center gap-2">
+                {leaderboardLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className={`px-3 py-1 text-sm text-navbar/80 rounded-md hover:bg-gray-500 hover:text-navbar transition-colors
+            ${
+              location.pathname === link.href
+                ? "bg-gray-600 grayscale-50 text-navbar"
+                : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+            }`}
                   >
                     {link.label}
                   </Link>
@@ -414,7 +508,12 @@ export default function AuthNavbar({ user }: AuthNavbarProps) {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="px-3 py-1 text-sm text-navbar/80 hover:bg-gray-500 hover:text-navbar transition-colors"
+                    className={`px-3 py-1 text-sm text-navbar/80 rounded-md hover:bg-gray-500 hover:text-navbar transition-colors
+            ${
+              location.pathname === link.href
+                ? "bg-gray-600 grayscale-50 text-navbar"
+                : "text-navbar/80 hover:bg-gray-500 hover:text-navbar"
+            }`}
                   >
                     {link.label}
                   </Link>

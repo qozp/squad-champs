@@ -178,7 +178,7 @@ export default function SquadPage() {
       ? "scores"
       : location.pathname.includes("/trades")
         ? "trades"
-        : "lineup"; // default
+        : ""; // default
 
   // -------------------------
 
@@ -218,12 +218,7 @@ export default function SquadPage() {
               onEditName={() => setShowDialog(true)}
             />
 
-            <Tabs
-              value={
-                location.pathname.includes("/trades") ? "trades" : "lineup"
-              }
-              className="w-full"
-            >
+            <Tabs value={currentTab} className="w-full">
               <TabsList className="mb-2 w-full justify-start">
                 <TabsTrigger value="lineup" asChild>
                   <NavLink to="/squad/lineup">Lineup</NavLink>

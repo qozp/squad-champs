@@ -9,41 +9,69 @@ import {
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { useState, useMemo } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { useState, useMemo, useEffect } from "react";
 import { sanitizeInput } from "~/lib/moderation";
 import { Link } from "react-router";
 
 interface Squad {
   user_id: string;
   squad_name: string;
-  total_points: number;
+  total_points?: number;
+  gameweek_points?: number;
   created_at: string;
+  rank?: number;
 }
 
 interface LeaderboardTableProps {
   data: Squad[];
   gameweek: number;
   pageSize?: number;
+  pageSizeOptions?: number[];
+  showPageSizeSelector?: boolean;
+  isWeekly?: boolean;
 }
 
 export default function LeaderboardTable({
   data,
   gameweek,
-  pageSize = 10,
+  pageSize: initialPageSize = 10,
+  pageSizeOptions = [10, 25, 50, 100],
+  showPageSizeSelector = true,
+  isWeekly = false,
 }: LeaderboardTableProps) {
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<keyof Squad>("total_points");
+  const [sortBy, setSortBy] = useState<keyof Squad>(
+    isWeekly ? "gameweek_points" : "total_points"
+  );
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(initialPageSize);
+
+  const [rankedData] = useState(() => {
+    return [...data]
+      .sort((a, b) => {
+        const aPts = isWeekly ? a.gameweek_points : a.total_points;
+        const bPts = isWeekly ? b.gameweek_points : b.total_points;
+        return (bPts ?? 0) - (aPts ?? 0);
+      })
+      .map((s, index) => ({
+        ...s,
+        rank: index + 1,
+      }));
+  });
 
   const filteredData = useMemo(() => {
-    let filtered = data;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      filtered = filtered.filter((s) => `${s.squad_name} `);
-    }
-    return filtered;
-  }, [data, search]);
+    if (!search.trim()) return rankedData;
+    const q = search.toLowerCase();
+    return rankedData.filter((s) => s.squad_name.toLowerCase().includes(q));
+  }, [rankedData, search]);
 
   const sortedData = useMemo(() => {
     return [...filteredData].sort((a, b) => {
@@ -75,18 +103,52 @@ export default function LeaderboardTable({
     }
   };
 
+  const handlePageSizeChange = (newSize: string) => {
+    setPageSize(Number(newSize));
+    setPage(1); // Reset to first page
+  };
+
+  // Reset page when data changes
+  useEffect(() => {
+    setPage(1);
+  }, [data]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, sortDirection]);
+
+  const pointsColumn = isWeekly ? "gameweek_points" : "total_points";
+  const pointsLabel = isWeekly ? "Gameweek Points" : "Total Points";
+
   return (
     <div>
-      <Input
-        placeholder="Search squads or users..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm mb-4"
-      />
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <Input
+          placeholder="Search squads..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+        {showPageSizeSelector && (
+          <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+            <SelectTrigger className="">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size} per page
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
 
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Rank</TableHead>
             <TableHead
               className="cursor-pointer"
               onClick={() => handleSort("squad_name")}
@@ -100,10 +162,10 @@ export default function LeaderboardTable({
             </TableHead>
             <TableHead
               className="cursor-pointer"
-              onClick={() => handleSort("total_points")}
+              onClick={() => handleSort(pointsColumn as keyof Squad)}
             >
-              Total Points{" "}
-              {sortBy === "total_points"
+              {pointsLabel}{" "}
+              {sortBy === pointsColumn
                 ? sortDirection === "asc"
                   ? "▲"
                   : "▼"
@@ -121,6 +183,7 @@ export default function LeaderboardTable({
           ) : (
             paginatedData.map((s) => (
               <TableRow key={s.user_id}>
+                <TableCell className="font-medium">{s.rank}</TableCell>
                 <TableCell>
                   <Link
                     to={`/squad/${s.user_id}/week/${gameweek}`}
@@ -129,7 +192,9 @@ export default function LeaderboardTable({
                     {sanitizeInput(s.squad_name)}
                   </Link>
                 </TableCell>
-                <TableCell>{s.total_points}</TableCell>
+                <TableCell>
+                  {isWeekly ? s.gameweek_points : s.total_points}
+                </TableCell>
               </TableRow>
             ))
           )}

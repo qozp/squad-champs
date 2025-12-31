@@ -120,43 +120,47 @@ export default function WeeklyLeaderboard({
     );
 
   return (
-    <Card>
-      <CardContent>
-        <div className="flex items-center justify-between mb-2">
-          <CardTitle>Weekly Leaderboard</CardTitle>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handlePreviousWeek}
-              disabled={selectedGameweek <= minGameweek}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium px-2">
-              Week {selectedGameweek}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleNextWeek}
-              disabled={selectedGameweek >= maxGameweek}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        <CardDescription className="text-lg mb-4">
-          {gameweekInfo
-            ? `${formatDate(gameweekInfo.start_date)} - ${formatDate(gameweekInfo.end_date)}`
-            : "Select a gameweek to view"}
-        </CardDescription>
-        <LeaderboardTable
-          data={squads}
-          gameweek={selectedGameweek}
-          isWeekly={true}
-        />
-      </CardContent>
-    </Card>
+    <div className="flex-1 text-foreground m-4">
+      <div className="flex flex-col gap-4">
+        <Card>
+          <CardContent>
+            <div className="flex items-center justify-between mb-2">
+              <CardTitle>Weekly Leaderboard</CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handlePreviousWeek}
+                  disabled={selectedGameweek <= minGameweek}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium px-2">
+                  Week {selectedGameweek}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleNextWeek}
+                  disabled={selectedGameweek >= maxGameweek}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <CardDescription className="text-lg mb-4">
+              {gameweekInfo
+                ? `${formatDate(gameweekInfo.start_date)} - ${formatDate(gameweekInfo.end_date)}`
+                : "Select a gameweek to view"}
+            </CardDescription>
+            <LeaderboardTable
+              data={squads}
+              gameweek={selectedGameweek}
+              isWeekly={true}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

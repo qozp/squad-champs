@@ -47,15 +47,19 @@ export default function GlobalLeaderboard() {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <CardTitle>Global Leaderboard</CardTitle>
-        <CardDescription className="text-lg mb-4">
-          View top squads and their total points.
-        </CardDescription>
+    <div className="flex-1 text-foreground m-4">
+      <div className="flex flex-col gap-4">
+        <Card>
+          <CardContent>
+            <CardTitle>Global Leaderboard</CardTitle>
+            <CardDescription className="text-lg mb-4">
+              View top squads and their total points.
+            </CardDescription>
 
-        <LeaderboardTable data={squads} gameweek={currentGameweek} />
-      </CardContent>
-    </Card>
+            <LeaderboardTable data={squads} gameweek={currentGameweek} />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

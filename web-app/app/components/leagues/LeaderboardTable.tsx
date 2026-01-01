@@ -127,7 +127,7 @@ export default function LeaderboardTable({
           placeholder="Search squads..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="w-full"
         />
         {showPageSizeSelector && (
           <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>

@@ -26,7 +26,7 @@ export default function WeeklyLeaderboard({
 }: WeeklyLeaderboardProps) {
   const [squads, setSquads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedGameweek, setSelectedGameweek] = useState<number>(1);
+  const [selectedGameweek, setSelectedGameweek] = useState<number>(0);
   const [gameweekInfo, setGameweekInfo] = useState<GameweekInfo | null>(null);
   const [minGameweek, setMinGameweek] = useState<number>(1);
   const [maxGameweek, setMaxGameweek] = useState<number>(1);
@@ -41,7 +41,7 @@ export default function WeeklyLeaderboard({
         }
       );
       if (error) throw error;
-      setSquads(data || []);
+      setSquads(data);
 
       // Fetch gameweek info
       const { data: gwData } = await supabaseBrowser
@@ -61,31 +61,42 @@ export default function WeeklyLeaderboard({
   useEffect(() => {
     async function initializeGameweek() {
       try {
-        // Get the range of available gameweeks
-        const { data: gameweeks } = await supabaseBrowser
-          .from("gameweek")
+        setLoading(true);
+
+        // Get distinct gameweeks that actually exist in squad history
+        const { data, error } = await supabaseBrowser
+          .from("squad_history")
           .select("gameweek")
           .order("gameweek", { ascending: true });
 
-        if (gameweeks && gameweeks.length > 0) {
-          const min = gameweeks[0].gameweek;
-          const max = gameweeks[gameweeks.length - 1].gameweek;
-          setMinGameweek(min);
-          setMaxGameweek(max);
-
-          // Default to previous gameweek or most recent completed
-          const defaultGameweek = Math.max(min, currentGameweek - 1);
-          setSelectedGameweek(defaultGameweek);
-          fetchWeeklySquads(defaultGameweek);
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          return;
         }
+
+        // Deduplicate just in case
+        const uniqueGameweeks = Array.from(
+          new Set(data.map((d) => d.gameweek))
+        );
+
+        const min = uniqueGameweeks[0];
+        const max = uniqueGameweeks[uniqueGameweeks.length - 1];
+
+        setMinGameweek(min);
+        setMaxGameweek(max);
+
+        // Default to latest recorded gameweek
+        const defaultGameweek = max;
+        setSelectedGameweek(defaultGameweek);
+        fetchWeeklySquads(defaultGameweek);
       } catch (err) {
         console.error(err);
-        setLoading(false);
+      } finally {
       }
     }
 
     initializeGameweek();
-  }, [currentGameweek]);
+  }, []);
 
   const handlePreviousWeek = () => {
     const newGameweek = Math.max(minGameweek, selectedGameweek - 1);
@@ -110,13 +121,17 @@ export default function WeeklyLeaderboard({
 
   if (loading)
     return (
-      <Card>
-        <CardContent className="py-8">
-          <p className="text-center text-muted-foreground">
-            Loading weekly leaderboard...
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex-1 text-foreground m-4">
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardContent className="py-8">
+              <p className="text-center text-muted-foreground">
+                Loading weekly leaderboard...
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     );
 
   return (

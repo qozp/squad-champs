@@ -23,6 +23,7 @@ import { Link } from "react-router";
 interface Squad {
   user_id: string;
   squad_name: string;
+  display_name: string;
   total_points?: number;
   gameweek_points?: number;
   created_at: string;
@@ -162,6 +163,17 @@ export default function LeaderboardTable({
             </TableHead>
             <TableHead
               className="cursor-pointer"
+              onClick={() => handleSort("display_name")}
+            >
+              Display Name{" "}
+              {sortBy === "display_name"
+                ? sortDirection === "asc"
+                  ? "▲"
+                  : "▼"
+                : ""}
+            </TableHead>
+            <TableHead
+              className="cursor-pointer"
               onClick={() => handleSort(pointsColumn as keyof Squad)}
             >
               {pointsLabel}{" "}
@@ -176,7 +188,7 @@ export default function LeaderboardTable({
         <TableBody>
           {paginatedData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={3} className="text-center py-6">
+              <TableCell colSpan={4} className="text-center py-6">
                 No squads found.
               </TableCell>
             </TableRow>
@@ -192,6 +204,7 @@ export default function LeaderboardTable({
                     {sanitizeInput(s.squad_name)}
                   </Link>
                 </TableCell>
+                <TableCell>{sanitizeInput(s.display_name)}</TableCell>
                 <TableCell>
                   {isWeekly ? s.gameweek_points : s.total_points}
                 </TableCell>

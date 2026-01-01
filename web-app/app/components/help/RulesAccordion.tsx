@@ -42,9 +42,10 @@ export default function RulesAccordion() {
             <AccordionTrigger>Weekly Line-ups</AccordionTrigger>
             <AccordionContent className="text-sm space-y-3 text-muted-foreground">
               <p>
-                Before each Gameweek starts you must choose a starting lineup of{" "}
-                <strong>10 active players</strong>. Your lineup must include at
-                least one of each position.
+                At the start of each Gameweek, Monday 4 AM ET, your starting
+                lineup will be recorded for the upcoming week. Your starting
+                lineup must include 10 active players, and at least one of each
+                position.
               </p>
 
               <p>

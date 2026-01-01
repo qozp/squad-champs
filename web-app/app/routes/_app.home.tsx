@@ -10,7 +10,7 @@ export function meta({}: Route.MetaArgs) {
     {
       name: "description",
       content:
-        "Create and manage your NBA and NFL fantasy squads, compete with friends, and track live player stats.",
+        "Create and manage your NBA fantasy squad, compete with friends, and track live player stats.",
     },
   ];
 }

@@ -31,8 +31,8 @@ export default function FAQSection() {
           <AccordionItem value="why">
             <AccordionTrigger>Why is Squad Champs?</AccordionTrigger>
             <AccordionContent className="text-sm">
-              I am a big fan of Fantasy Premier League and wanted an NBA and NFL
-              version of it.
+              I am a big fan of Fantasy Premier League and wanted an NBA version
+              of it (NFL as well if I have time).
             </AccordionContent>
           </AccordionItem>
 

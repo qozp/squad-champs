@@ -20,6 +20,7 @@ import { getEasternSportsDate } from "~/lib/helpers/gameweek";
 
 export default function SquadPage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [squadMeta, setSquadMeta] = useState<any | null>(null);
@@ -133,7 +134,7 @@ export default function SquadPage() {
       return;
     }
     toast.success("Squad created!");
-    await fetchSquad();
+    navigate("/squad/lineup");
   };
 
   async function submitTrade({
@@ -199,15 +200,23 @@ export default function SquadPage() {
   return (
     <div className="space-y-4 p-4">
       {mode === "create" ? (
-        <CreateSquad
-          selectedPlayers={selectedPlayers}
-          playersMap={playersMap}
-          budget={budget}
-          onAddPlayer={addPlayer}
-          onRemovePlayer={removePlayer}
-          onRemoveAll={removeAll}
-          onSubmit={submitSquad}
-        />
+        <>
+          <SquadMetadata
+            squadMeta={squadMeta}
+            budget={budget}
+            currentGameweek={currentGameweek}
+            onEditName={() => setShowDialog(true)}
+          />
+          <CreateSquad
+            selectedPlayers={selectedPlayers}
+            playersMap={playersMap}
+            budget={budget}
+            onAddPlayer={addPlayer}
+            onRemovePlayer={removePlayer}
+            onRemoveAll={removeAll}
+            onSubmit={submitSquad}
+          />
+        </>
       ) : (
         !isScoresPage && (
           <>

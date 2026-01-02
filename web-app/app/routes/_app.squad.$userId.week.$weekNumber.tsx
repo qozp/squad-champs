@@ -284,7 +284,7 @@ export default function WeekScoresRoute() {
             </p>
             <p className="text-sm text-muted-foreground max-w-md mt-1">
               Once created, this squad's scores will begin appearing here once
-              the next gameweek starts (typically on Monday).
+              the next gameweek starts (Sunday night/Monday morning).
             </p>
           </div>
         ) : (

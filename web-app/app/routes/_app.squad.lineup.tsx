@@ -5,12 +5,14 @@ import { useOutletContext } from "react-router";
 export default function LineupRoute() {
   const { squadPlayers } = useOutletContext<any>();
 
-  return (
-    <Card className="w-full">
-      <CardContent className="px-4">
-        <CardTitle className="mb-4">Edit Weekly Lineup</CardTitle>
-        <LineupEditor initialPlayers={squadPlayers} />
-      </CardContent>
-    </Card>
-  );
+  if (!squadPlayers || squadPlayers.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="px-4">
+          <CardTitle className="mb-4">Edit Weekly Lineup</CardTitle>
+          <LineupEditor initialPlayers={squadPlayers} />
+        </CardContent>
+      </Card>
+    );
+  }
 }

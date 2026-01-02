@@ -32,7 +32,7 @@ export default function SquadPage() {
   const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
 
   useEffect(() => {
-    if (squadPlayers.length === 0) {
+    if (squadPlayers.length === 0 && !isScoresPage) {
       navigate("/squad", { replace: true });
       return;
     }
@@ -206,7 +206,7 @@ export default function SquadPage() {
 
   return (
     <div className="space-y-4 p-4">
-      {mode === "create" ? (
+      {mode === "create" && !isScoresPage ? (
         <>
           <SquadMetadata
             squadMeta={squadMeta}

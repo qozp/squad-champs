@@ -31,6 +31,13 @@ export default function SquadPage() {
   const [showDialog, setShowDialog] = useState(false);
   const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (squadPlayers.length === 0) {
+      navigate("/squad", { replace: true });
+      return;
+    }
+  }, [loading, squadMeta, squadPlayers, location.pathname, navigate]);
+
   const fetchSquad = async () => {
     try {
       const { data: squadData } = await supabaseBrowser.rpc("get_squad");

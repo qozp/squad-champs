@@ -32,7 +32,7 @@ export default function SquadPage() {
   const [currentGameweek, setCurrentGameweek] = useState<number | null>(null);
 
   useEffect(() => {
-    if (squadPlayers.length === 0 && !isScoresPage) {
+    if (!loading && squadPlayers.length === 0 && !isScoresPage) {
       navigate("/squad", { replace: true });
       return;
     }

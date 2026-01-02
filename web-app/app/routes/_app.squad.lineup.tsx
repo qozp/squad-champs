@@ -5,7 +5,7 @@ import { useOutletContext } from "react-router";
 export default function LineupRoute() {
   const { squadPlayers } = useOutletContext<any>();
 
-  if (!squadPlayers || squadPlayers.length === 0) {
+  if (squadPlayers && squadPlayers.length !== 0) {
     return (
       <Card className="w-full">
         <CardContent className="px-4">

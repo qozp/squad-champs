@@ -30,7 +30,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Play?</h2>
           <p className="text-foreground mb-8 text-lg">
-            Start building your championship squad today
+            Start managing your championship squad today
           </p>
           <Link to="/squad/lineup">
             <Button size="lg" variant="default">

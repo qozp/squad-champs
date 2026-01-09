@@ -32,7 +32,7 @@ export default function Home() {
           <p className="text-foreground mb-8 text-lg">
             Start building your championship squad today
           </p>
-          <Link to="/squad">
+          <Link to="/squad/lineup">
             <Button size="lg" variant="default">
               Manage Your Squad
             </Button>

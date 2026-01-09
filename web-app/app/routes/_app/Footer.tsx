@@ -22,7 +22,7 @@ export default function Footer() {
           Source Code
         </a>
       </div>
-      <span className="">&copy; {new Date().getFullYear()} Squad Champs</span>
+      <span className="">{new Date().getFullYear()} Squad Champs</span>
     </footer>
   );
 }

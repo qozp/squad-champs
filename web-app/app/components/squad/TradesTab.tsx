@@ -203,7 +203,7 @@ export default function TradesTab({
           <Accordion type="single" collapsible>
             <AccordionItem value="help">
               <AccordionTrigger className="text-2xl font-bold leading-none">
-                Trades Help
+                Trades Info
               </AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground space-y-3">
                 <p>

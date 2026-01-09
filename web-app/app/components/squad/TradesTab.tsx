@@ -200,7 +200,7 @@ export default function TradesTab({
       {/* Help Accordion */}
       <Card>
         <CardContent>
-          <Accordion type="single" collapsible>
+          <Accordion type="single" defaultValue="help" collapsible>
             <AccordionItem value="help">
               <AccordionTrigger className="text-2xl font-bold leading-none">
                 Trades Info
